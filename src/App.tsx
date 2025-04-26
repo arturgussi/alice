@@ -1,13 +1,13 @@
 import React, { StrictMode } from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import AuthScreen from './screens/authentication/AuthScreen';
+import RegisterScreen from './screens/register/RegisterScreen';
 
 const App = (): React.JSX.Element => {
   return (
     <StrictMode>
       <React.Fragment>
         <SafeAreaView style={styles.safeAreaView}>
-          <AuthScreen />
+          <RegisterScreen />
         </SafeAreaView>
       </React.Fragment>
     </StrictMode>
