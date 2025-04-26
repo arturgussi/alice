@@ -1,6 +1,6 @@
 import React, { StrictMode } from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import RegisterScreen from './screens/register/RegisterScreen';
+import RegisterScreen from './screens/register/account/RegisterScreen';
 
 const App = (): React.JSX.Element => {
   return (
