@@ -9,7 +9,7 @@ import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
 
-const AuthScreen = () => {
+const AccountRegisterScreen = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,15 +66,16 @@ const AuthScreen = () => {
           <PrimaryButton title="Criar conta" onPress={handleRegister} />
         </View>
         <View>
-        <TouchableOpacity style={[styles.touchableOpacity, {marginTop: 20}]}
-          onPress={() => console.log('Navegar para login')}>
-          <ThemedText style={styles.text}>Já possui uma conta?</ThemedText>          
-          <ThemedText style={styles.login}>Login</ThemedText>
-        </TouchableOpacity>
-		</View>
+          <TouchableOpacity
+            style={[styles.touchableOpacity, {marginTop: 20}]}
+            onPress={() => console.log('Navegar para login')}>
+            <ThemedText style={styles.text}>Já possui uma conta?</ThemedText>
+            <ThemedText style={styles.login}>Login</ThemedText>
+          </TouchableOpacity>
+        </View>
       </View>
     </BackgroundWrapper>
   );
 };
 
-export default AuthScreen;
+export default AccountRegisterScreen;

@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "clean": "rimraf node_modules package-lock.json android/app/build && npm install",
+    "fullclean": "rimraf node_modules && rimraf android/.gradle && rimraf android/build && rimraf android/app/build && rimraf package-lock.json && npm install && cd android && gradlew clean",
+    "gradlew:clean": "cd android && gradlew clean",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
@@ -10,9 +13,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.3.10",
     "react": "19.0.0",
     "react-native": "0.79.1",
-    "react-native-linear-gradient": "^2.8.3"
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-modalize": "^2.1.1",
+    "react-native-portalize": "^1.0.7",
+    "react-native-vector-icons": "^10.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -24,9 +32,10 @@
     "@react-native/babel-preset": "0.79.1",
     "@react-native/eslint-config": "0.79.1",
     "@react-native/metro-config": "0.79.1",
-    "@react-native/typescript-config": "0.79.1",
+    "@react-native/typescript-config": "^0.79.1",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.0.0",
+    "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^19.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^8.19.0",

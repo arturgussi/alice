@@ -1,21 +1,23 @@
-import React, { StrictMode } from 'react';
+import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import RegisterScreen from './screens/register/account/RegisterScreen';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
+import {Host} from 'react-native-portalize';
 
 const App = (): React.JSX.Element => {
   return (
-    <StrictMode>
-      <React.Fragment>
-        <SafeAreaView style={styles.safeAreaView}>
-          <RegisterScreen />
+    <GestureHandlerRootView style={styles.view}>
+      <Host>
+        <SafeAreaView style={styles.view}>
+          <EquipmentRegisterScreen />
         </SafeAreaView>
-      </React.Fragment>
-    </StrictMode>
+      </Host>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeAreaView: {
+  view: {
     flex: 1,
   },
 });
