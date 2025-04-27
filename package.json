@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "depcheck": "depcheck --ignore-patterns=android,ios",
     "clean": "rimraf node_modules package-lock.json android/app/build && npm install",
     "fullclean": "rimraf node_modules && rimraf android/.gradle && rimraf android/build && rimraf android/app/build && rimraf package-lock.json && npm install && cd android && gradlew clean",
     "gradlew:clean": "cd android && gradlew clean",

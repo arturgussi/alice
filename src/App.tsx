@@ -1,10 +1,16 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import React, {useEffect} from 'react';
+import {SafeAreaView, StyleSheet, NativeModules, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
 import {Host} from 'react-native-portalize';
 
 const App = (): React.JSX.Element => {
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+            NativeModules.SplashScreenModule.hide();
+        }
+    },[]);
+
   return (
     <GestureHandlerRootView style={styles.view}>
       <Host>
