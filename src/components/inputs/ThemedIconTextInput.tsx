@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {ThemedColors} from '@constants/Theme.style';
 
 interface ThemedIconTextInputProps extends TextInputProps {
@@ -36,7 +36,7 @@ const ThemedIconTextInput = ({
         {...rest}
       />
       {iconName && (
-        <Icon
+        <FontAwesomeIcon
           name={iconName}
           size={20}
           color={ThemedColors.placeholder}

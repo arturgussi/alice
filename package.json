@@ -5,9 +5,9 @@
   "scripts": {
     "depcheck": "depcheck --ignore-patterns=android,ios",
     "clean": "rimraf node_modules package-lock.json android/app/build && npm install",
-    "fullclean": "rimraf node_modules && rimraf android/.gradle && rimraf android/build && rimraf android/app/build && rimraf package-lock.json && npm install && cd android && gradlew clean",
+    "fullclean": "rimraf node_modules && rimraf android/.gradle && rimraf android/build && rimraf android/app/build && rimraf package-lock.json && npm install && npx react-native link && cd android && gradlew clean && cd .. && npx react-native run-android",
     "gradlew:clean": "cd android && gradlew clean",
-    "android": "react-native run-android",
+    "android": "npx react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

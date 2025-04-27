@@ -74,7 +74,7 @@ const EquipmentRegisterScreen = () => {
             onIconPress={handleTooltip}
             value={equipmentCode}
             onChangeText={setEquipmentCode}
-            iconName="home"
+            iconName="info-circle"
           />
         </View>
         <View style={styles.inputContainer}>

@@ -51,6 +51,7 @@ const ThemedDropdownModal = ({
       <Portal>
         <Modalize ref={modalizeRef} adjustToContentHeight>
           <FlatList
+            style={stylesModal.portal}
             nestedScrollEnabled={true}
             scrollEnabled={false}
             data={options}
@@ -65,6 +66,9 @@ const ThemedDropdownModal = ({
 };
 
 const stylesModal = StyleSheet.create({
+  portal: {
+    backgroundColor: ThemedColors.background,
+  },
   item: {
     padding: 15,
     borderBottomWidth: 1,
@@ -73,6 +77,7 @@ const stylesModal = StyleSheet.create({
   itemText: {
     fontSize: 16,
     textAlign: 'center',
+    color: 'white',
   },
 });
 
