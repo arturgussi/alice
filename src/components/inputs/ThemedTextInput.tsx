@@ -6,7 +6,7 @@ import {
   TextStyle,
   StyleProp,
 } from 'react-native';
-import { ThemeColors } from 'src/constants/Theme.style';
+import {ThemedColors} from '@constants/Theme.style';
 
 interface ThemedTextInputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;
@@ -15,7 +15,7 @@ interface ThemedTextInputProps extends TextInputProps {
 const ThemedTextInput = ({style, ...rest}: ThemedTextInputProps) => {
   return (
     <TextInput
-      placeholderTextColor={ThemeColors.placeholder}
+      placeholderTextColor={ThemedColors.placeholder}
       style={[styles.textInput, style]}
       {...rest}
     />
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     color: 'white',
     borderWidth: 1,
     borderRadius: 15,
-    borderColor: ThemeColors.placeholder,
+    borderColor: ThemedColors.placeholder,
     paddingLeft: 20,
   },
 });

@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { ThemeColors } from 'src/constants/Theme.style';
+import {ThemedColors} from '@constants/Theme.style';
 
 interface ThemedIconTextInputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;
@@ -31,18 +31,18 @@ const ThemedIconTextInput = ({
     <View style={styles.container}>
       <TextInput
         placeholder={placeholder}
-        placeholderTextColor={ThemeColors.placeholder}
+        placeholderTextColor={ThemedColors.placeholder}
         style={[styles.textInput, style]}
         {...rest}
       />
       {iconName && (
-          <Icon
-            name={iconName}
-            size={20}
-            color={ThemeColors.placeholder}
-            style={[styles.icon, iconStyle]}
-            onPress={onIconPress}
-          />
+        <Icon
+          name={iconName}
+          size={20}
+          color={ThemedColors.placeholder}
+          style={[styles.icon, iconStyle]}
+          onPress={onIconPress}
+        />
       )}
     </View>
   );
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     color: 'white',
     borderWidth: 1,
     borderRadius: 15,
-    borderColor: ThemeColors.placeholder,
+    borderColor: ThemedColors.placeholder,
     paddingLeft: 20,
     paddingRight: 40,
   },

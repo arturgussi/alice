@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TextProps, TextStyle, StyleProp} from 'react-native';
+import {ThemedColors} from '@constants/Theme.style';
 
 interface ThemedTextProps extends TextProps {
   style?: StyleProp<TextStyle>;
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: '400',
     fontSize: 14,
-    color: 'rgba(132, 132, 132, 1)',
+    color: ThemedColors.text,
   },
 });
 

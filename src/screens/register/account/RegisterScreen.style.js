@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {ThemedColors} from '@constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   login: {
     marginTop: 6,
     textAlign: 'center',
-    color: 'rgba(184, 158, 255, 1)',
+    color: ThemedColors.lightPuerple,
   },
 });
 

@@ -1,6 +1,10 @@
 // src/constants/theme.ts
 
-export const ThemeColors = {
+export const ThemedColors = {
+  lightPuerple: 'rgba(184, 158, 255, 1)',
+  darkPurple: 'rgba(132, 132, 132, 1)',
+  background: 'rgba(19, 20, 26, 1)',
+  text: 'rgba(132, 132, 132, 1)',
   placeholder: 'rgba(179, 179, 179, 0.8)',
 };
 

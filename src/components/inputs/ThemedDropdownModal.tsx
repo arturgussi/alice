@@ -2,7 +2,7 @@ import React, {useRef} from 'react';
 import {Text, FlatList, TouchableOpacity, StyleSheet, View} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
-import {ThemeColors} from 'src/constants/Theme.style';
+import {ThemedColors} from '@constants/Theme.style';
 
 interface ThemedDropdownModalProps {
   value?: string;
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   textView: {
     borderWidth: 1,
     borderRadius: 15,
-    borderColor: ThemeColors.placeholder,
+    borderColor: ThemedColors.placeholder,
     paddingLeft: 20,
     paddingRight: 40,
   },
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     height: 52,
     fontWeight: '400',
     fontSize: 14,
-    color: ThemeColors.placeholder,
+    color: ThemedColors.placeholder,
     textAlignVertical: 'center',
   },
 });

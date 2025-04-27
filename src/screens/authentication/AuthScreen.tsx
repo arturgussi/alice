@@ -1,9 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import {View, TouchableOpacity, Image} from 'react-native';
 
 import styles from './AuthScreen.style';
 
