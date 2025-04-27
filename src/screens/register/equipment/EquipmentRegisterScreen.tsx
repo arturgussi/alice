@@ -40,7 +40,7 @@ const EquipmentRegisterScreen = () => {
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <ThemedText>Cadastro de equipamento</ThemedText>
+        <ThemedText style={styles.text}>Cadastro de equipamento</ThemedText>
         <View style={styles.inputContainer}>
           <ThemedTextInput
             placeholder="Apelido/Nome do equipamento"

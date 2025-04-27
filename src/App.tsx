@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, NativeModules, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
 import {Host} from 'react-native-portalize';
+import PlaceRegisterScreen from '@screens/register/place/PlaceRegisterScreen';
 
 const App = (): React.JSX.Element => {
     useEffect(() => {
@@ -15,7 +15,7 @@ const App = (): React.JSX.Element => {
     <GestureHandlerRootView style={styles.view}>
       <Host>
         <SafeAreaView style={styles.view}>
-          <EquipmentRegisterScreen />
+          <PlaceRegisterScreen />
         </SafeAreaView>
       </Host>
     </GestureHandlerRootView>
