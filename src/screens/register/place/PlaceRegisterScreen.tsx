@@ -3,12 +3,12 @@ import {View} from 'react-native';
 
 import styles from './PlaceRegisterScreen.style';
 
-import BackgroundWrapper from '@components/container/BackgroundWrapper';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
 
-const EquipmentRegisterScreen = () => {
+const PlaceRegisterScreen = () => {
   const [placeName, setPlaceName] = useState('');
 
   const handleRegister = () => {
@@ -18,7 +18,7 @@ const EquipmentRegisterScreen = () => {
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
-        <ThemedText style={styles.text}>Cadastro de equipamento</ThemedText>
+        <ThemedText style={styles.text}>Cadastro do local</ThemedText>
         <View style={styles.inputContainer}>
           <ThemedTextInput
             placeholder="Apelido/Nome do local"
@@ -36,4 +36,4 @@ const EquipmentRegisterScreen = () => {
   );
 };
 
-export default EquipmentRegisterScreen;
+export default PlaceRegisterScreen;

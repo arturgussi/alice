@@ -1,9 +1,10 @@
-// src/constants/theme.ts
+import LinearGradient from 'react-native-linear-gradient';
 
 export const ThemedColors = {
-  lightPuerple: 'rgba(184, 158, 255, 1)',
-  darkPurple: 'rgba(132, 132, 132, 1)',
+  lightPurple: 'rgba(184, 158, 255, 1)',
+  darkPurple: 'rgba(33, 23, 60, 1)',
   background: 'rgba(19, 20, 26, 1)',
+  backgroundSubmenu: 'rgba(30, 31, 38, 1)',
   text: 'rgba(132, 132, 132, 1)',
   placeholder: 'rgba(179, 179, 179, 0.8)',
 };

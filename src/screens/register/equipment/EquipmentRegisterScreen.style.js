@@ -4,7 +4,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'start',
-    padding: 32,
   },
   inputContainer: {
     height: 50,

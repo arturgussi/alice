@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {View, TouchableOpacity, Image} from 'react-native';
 
-import styles from './RegisterScreen.style';
+import styles from './AccountRegisterScreen.style';
 
 import images from '@assets/Images';
-import BackgroundWrapper from '@components/container/BackgroundWrapper';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
