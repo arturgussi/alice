@@ -43,7 +43,7 @@ export function Routes() {
                   justifyContent: 'center',
                   flex: 1,
                 }}>
-                <IconHome size={size} />
+                <IconHome size={size}/>
               </View>
             ),
           }}
