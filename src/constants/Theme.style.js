@@ -7,6 +7,8 @@ export const ThemedColors = {
   darkPurple_icon: 'rgba(153, 87, 223, 1)',
   background: 'rgba(19, 20, 26, 1)',
   backgroundSubmenu: 'rgba(30, 31, 38, 1)',
+  background_card: 'rgba(30, 31, 38, 1)',
+  background_card2: 'rgba(30, 31, 38, 0.53)',
   text: 'rgba(132, 132, 132, 1)',
   placeholder: 'rgba(179, 179, 179, 0.8)',
   title: 'rgba(92, 92, 92, 1)',

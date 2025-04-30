@@ -7,6 +7,7 @@ import {ThemedColors} from '@constants/Theme.style';
 import {IconAccount, IconAdd, IconHome} from '@assets/SVG';
 import {View} from 'react-native';
 import PlaceRegisterScreen from '@screens/register/place/PlaceRegisterScreen';
+import HomeScreen from '@screens/home/HomeScreen';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -34,7 +35,7 @@ export function Routes() {
         }}>
         <Screen
           name="Home"
-          component={EquipmentRegisterScreen}
+          component={HomeScreen}
           options={{
             tabBarIcon: ({size, color}) => (
               <View

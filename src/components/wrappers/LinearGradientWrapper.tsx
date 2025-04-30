@@ -1,20 +1,27 @@
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
 
-import { ThemedColors } from '@constants/Theme.style';
+import { StyleProp, ViewStyle } from 'react-native';
 
 interface LinearGradientWrapperProps {
+    color1: string;
+    color2: string;
+    style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 }
 
 const LinearGradientWrapper: React.FC<LinearGradientWrapperProps> = ({
+    color1,
+    color2,
+    style,
   children,
 }) => {
   return (
     <LinearGradient
-      colors={[ThemedColors.lightPurple, ThemedColors.darkPurple]}
+      colors={[color1, color2]}
       start={{x: 0, y: 0}}
-      end={{x: 1, y: 0}}>
+      end={{x: 0, y: 1}}
+      style={style}>
       {children}
     </LinearGradient>
   );
