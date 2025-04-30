@@ -20,4 +20,4 @@ const LinearGradientWrapper: React.FC<LinearGradientWrapperProps> = ({
   );
 };
 
-export default LinearGradient;
+export default LinearGradientWrapper;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TextStyle, StyleProp} from 'react-native';
+import {View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
