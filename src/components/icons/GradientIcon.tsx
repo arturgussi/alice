@@ -3,13 +3,15 @@ import {View, TextStyle, StyleProp} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { IconProps } from 'react-native-vector-icons/Icon';
+import { ThemedColors } from '@constants/Theme.style';
 
-interface GradientIconProps {
-  name?: string;
+interface GradientIconProps extends IconProps {
+  name: string;
   size?: number;
 }
 
-const GradientIcon = (name: string, {size = 60}: GradientIconProps) => {
+const GradientIcon = ({name, size}: GradientIconProps) => {
   return (
     <View style={{width: size, flex: 1}}>
       <MaskedView
@@ -26,7 +28,7 @@ const GradientIcon = (name: string, {size = 60}: GradientIconProps) => {
           </View>
         }>
         <LinearGradient
-          colors={['red', 'rgba(247, 198, 80, 0.71)']}
+          colors={[ThemedColors.darkPurple_icon, ThemedColors.lightPurple_icon]}
           style={{flex: 1}}
         />
       </MaskedView>
