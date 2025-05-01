@@ -4,10 +4,18 @@ import {View, Text} from 'react-native';
 import styles from './HomeScreen.style';
 
 import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
-import {IconAccount2, IconGraph, IconNewMeasure, IconRegister} from '@assets/SVG';
+import {
+  IconAccount2,
+  IconGraph,
+  IconNewMeasure,
+  IconRegister,
+} from '@assets/SVG';
 import HomeMenuButton from '@components/buttons/HomeMenuButton';
+import LinearScale from '@components/display/LinearScale';
+import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
+import {ThemedColors} from '@constants/Theme.style';
 
-const AuthScreen = () => {
+const HomeScreen = () => {
   return (
     <BackgroundWrapper>
       <View style={styles.container}>
@@ -34,9 +42,27 @@ const AuthScreen = () => {
             <IconAccount2 size={20} />
           </HomeMenuButton>
         </View>
+        <View>
+          <Text style={styles.text}>Consumo mensal</Text>
+          <LinearGradientWrapper
+            color1={ThemedColors.background_card}
+            color2={ThemedColors.background_card2}
+            style={styles.containerWapper}>
+            <LinearScale
+              value={10}
+              month="outubro"
+              year="23"
+              widthPercentage={1}></LinearScale>
+            <LinearScale
+              value={0}
+              month="novembro"
+              year="23"
+              widthPercentage={0}></LinearScale>
+          </LinearGradientWrapper>
+        </View>
       </View>
     </BackgroundWrapper>
   );
 };
 
-export default AuthScreen;
+export default HomeScreen;

@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, NativeModules, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Host} from 'react-native-portalize';
-import { Routes } from './routes';
+import { Routes } from './routes/Routes';
 
 const App = (): React.JSX.Element => {
     useEffect(() => {

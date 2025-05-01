@@ -1,26 +1,31 @@
 import React from 'react';
-import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
+import LinearGradient, {
+} from 'react-native-linear-gradient';
 
-import { StyleProp, ViewStyle } from 'react-native';
+import {StyleProp, ViewStyle} from 'react-native';
 
 interface LinearGradientWrapperProps {
-    color1: string;
-    color2: string;
-    style?: StyleProp<ViewStyle>;
+  color1: string;
+  color2: string;
+  direction?: 'vertical' | 'horizontal';
+  style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 }
 
 const LinearGradientWrapper: React.FC<LinearGradientWrapperProps> = ({
-    color1,
-    color2,
-    style,
+  color1,
+  color2,
+  direction = 'vertical',
+  style,
   children,
 }) => {
+  var start =  direction === 'horizontal' ? {x: 0, y: 0.5} : {x: 0.5, y: 0};
+  var end = direction === 'horizontal' ? {x: 1, y: 0.5} : {x: 0.5, y: 1};
   return (
     <LinearGradient
       colors={[color1, color2]}
-      start={{x: 0, y: 0}}
-      end={{x: 0, y: 1}}
+      start={start}
+      end={end}
       style={style}>
       {children}
     </LinearGradient>
