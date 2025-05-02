@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity} from 'react-native';
 
 import styles from './HomeScreen.style';
 
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
 import {
   IconAccount2,
   IconGraph,

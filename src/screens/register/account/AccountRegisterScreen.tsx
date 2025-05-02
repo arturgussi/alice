@@ -4,7 +4,7 @@ import {View, TouchableOpacity, Image} from 'react-native';
 import styles from './AccountRegisterScreen.style';
 
 import images from '@assets/Images';
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';

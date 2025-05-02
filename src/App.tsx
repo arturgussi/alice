@@ -2,20 +2,22 @@ import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, NativeModules, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Host} from 'react-native-portalize';
-import { Routes } from './routes/Routes';
+import {Routes} from './routes/Routes';
+import AuthScreen from '@screens/authentication/AuthScreen';
 
 const App = (): React.JSX.Element => {
-    useEffect(() => {
-        if (Platform.OS === 'android') {
-            NativeModules.SplashScreenModule.hide();
-        }
-    },[]);
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NativeModules.SplashScreenModule.hide();
+    }
+  }, []);
 
   return (
     <GestureHandlerRootView style={styles.view}>
       <Host>
         <SafeAreaView style={styles.view}>
-          <Routes />
+          {/* <Routes /> */}
+          <AuthScreen />
         </SafeAreaView>
       </Host>
     </GestureHandlerRootView>
