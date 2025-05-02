@@ -20,6 +20,7 @@ module.exports = {
           '@constants': './src/constants',
           '@components': './src/components',
           '@contexts': './src/contexts',
+          '@routes': './src/routes',
           '@screens': './src/screens',
         },
       },

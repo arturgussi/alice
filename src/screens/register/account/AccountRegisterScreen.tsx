@@ -1,15 +1,26 @@
 import React, {useState} from 'react';
 import {View, TouchableOpacity, Image} from 'react-native';
+import {NavigationProp} from '@react-navigation/native';
 
 import styles from './AccountRegisterScreen.style';
 
 import images from '@assets/Images';
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
+import {AuthStackParamList} from '@routes/AuthNavigator';
 
-const AccountRegisterScreen = () => {
+type AccountRegisterNavigationProp = NavigationProp<
+  AuthStackParamList,
+  'Register'
+>;
+
+interface AccountRegisterProps {
+  navigation: AccountRegisterNavigationProp;
+}
+
+const AccountRegisterScreen = ({navigation}: AccountRegisterProps) => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -68,9 +79,9 @@ const AccountRegisterScreen = () => {
         <View>
           <TouchableOpacity
             style={[styles.touchableOpacity, {marginTop: 20}]}
-            onPress={() => console.log('Navegar para login')}>
+            onPress={() => navigation.goBack()}>
             <ThemedText style={styles.text}>Já possui uma conta?</ThemedText>
-            <ThemedText style={styles.login}>Login</ThemedText>
+            <ThemedText style={styles.text}>Login</ThemedText>
           </TouchableOpacity>
         </View>
       </View>

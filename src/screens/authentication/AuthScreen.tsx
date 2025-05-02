@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {View, TouchableOpacity, Image} from 'react-native';
+import {NavigationProp} from '@react-navigation/native';
 
 import styles from './AuthScreen.style';
 
@@ -8,13 +9,35 @@ import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
+import {useAuth} from '@routes/AppNavigator';
+import {AuthStackParamList} from '@routes/AuthNavigator';
 
-const AuthScreen = () => {
+type AuthScreenNavigationProp = NavigationProp<AuthStackParamList, 'Login'>;
+
+interface AuthScreenProps {
+  navigation: AuthScreenNavigationProp;
+}
+
+const AuthScreen = ({navigation}: AuthScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {setIsLoggedIn} = useAuth();
 
-  const handleLogin = () => {
-    console.log('Login', email, password);
+  const handleLogin = async () => {
+    // Todo: Implementar lógica de autenticação
+    // Exemplo de autenticação fictícia
+    const isAuthenticated = true;
+
+    if (isAuthenticated) {
+      setIsLoggedIn(true);
+    } else {
+      // Exibir erro de login
+      console.log('Erro de autenticação');
+    }
+  };
+
+  const navigateRegisterPage = () => {
+    navigation.navigate('Register');
   };
 
   return (
@@ -47,7 +70,7 @@ const AuthScreen = () => {
         </View>
         <TouchableOpacity
           style={styles.touchableOpacity}
-          onPress={() => console.log('Navegar para cadastro')}>
+          onPress={navigateRegisterPage}>
           <ThemedText style={styles.text}>Novo usuário</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity

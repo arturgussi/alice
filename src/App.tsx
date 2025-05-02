@@ -2,8 +2,7 @@ import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, NativeModules, Platform} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Host} from 'react-native-portalize';
-import {Routes} from './routes/Routes';
-import AuthScreen from '@screens/authentication/AuthScreen';
+import {AppNavigator, AuthProvider} from './routes/AppNavigator';
 
 const App = (): React.JSX.Element => {
   useEffect(() => {
@@ -16,8 +15,9 @@ const App = (): React.JSX.Element => {
     <GestureHandlerRootView style={styles.view}>
       <Host>
         <SafeAreaView style={styles.view}>
-          {/* <Routes /> */}
-          <AuthScreen />
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
         </SafeAreaView>
       </Host>
     </GestureHandlerRootView>
