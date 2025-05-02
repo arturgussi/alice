@@ -6,9 +6,15 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
   },
+  consumptionContainer: {
+    gap: 10,
+  },
   containerWapper: {
+    flex: 1,
+    width: '100%',
     borderRadius: 10,
-    padding: 16,
+    padding: 12,
+    alignItems: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -22,6 +28,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: ThemedColors.text,
+  },
+  consumptionText: {
+    color: ThemedColors.purple,
+    fontSize: 26,
+    fontWeight: 'bold',
   },
 });
 

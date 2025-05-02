@@ -3,6 +3,7 @@ import {View, StyleSheet, Text, Image} from 'react-native';
 import {ThemedColors} from '@constants/Theme.style';
 import images from '@assets/Images';
 import GradientIcon from '@components/icons/GradientIcon';
+import {ScrollView} from 'react-native-gesture-handler';
 
 interface BackgroundWrapperProps {
   children: React.ReactNode;
@@ -22,7 +23,7 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({children}) => {
           <GradientIcon name="bars" size={30} />
         </View>
       </View>
-      {children}
+      <ScrollView showsVerticalScrollIndicator={false}>{children}</ScrollView>
     </View>
   );
 };
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: ThemedColors.background,
-    padding: 32,
+    padding: 26,
   },
   header: {
     flexDirection: 'row',

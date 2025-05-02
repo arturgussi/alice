@@ -1,7 +1,6 @@
-import LinearGradient from 'react-native-linear-gradient';
-
 export const ThemedColors = {
   lightPurple: 'rgba(184, 158, 255, 1)',
+  purple: 'rgba(147, 84, 214, 1)',
   darkPurple: 'rgba(33, 23, 60, 1)',
   lightPurple_icon: 'rgba(184, 158, 255, 1)',
   darkPurple_icon: 'rgba(153, 87, 223, 1)',
@@ -9,10 +8,14 @@ export const ThemedColors = {
   backgroundSubmenu: 'rgba(30, 31, 38, 1)',
   background_card: 'rgba(30, 31, 38, 1)',
   background_card2: 'rgba(30, 31, 38, 0.53)',
+  background_card3: 'rgba(56, 56, 78, 1)',
+  background_submenu1: 'rgba(27, 29, 38, 1)',
+  background_submenu2: 'rgba(32, 33, 43, 1)',
   text: 'rgba(132, 132, 132, 1)',
   placeholder: 'rgba(179, 179, 179, 0.8)',
   title: 'rgba(92, 92, 92, 1)',
 };
+
 
 // export const Spacings = {
 //   small: 8,
