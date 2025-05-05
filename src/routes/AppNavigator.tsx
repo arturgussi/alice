@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from 'react';
+import {ReactNode, createContext, useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 
 import {MainNavigator} from './MainNavigator';
@@ -11,7 +11,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({children}: {children: React.ReactNode}) => {
+export const AuthProvider = ({children}: {children: ReactNode}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {

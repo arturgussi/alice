@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [
+    "assets/*",
+    "src/components/*",
+    "src/constants/*",
+    "src/routes/*",
+    "src/screens/*",
+    "src/services/*"
+  ]
+}

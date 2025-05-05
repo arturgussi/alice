@@ -1,3 +1,4 @@
+import { ThemedColors } from '@constants/Theme.style';
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -5,9 +6,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'start',
   },
-  inputContainer: {
-    height: 50,
-    marginVertical: 8,
+  flatListcontainer: {
+    flex: 1,
+    justifyContent: 'start',
+  },
+  meterContainer: {
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: ThemedColors.placeholder,
   },
   buttonContainer: {
     marginVertical: 14,

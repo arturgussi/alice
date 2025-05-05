@@ -9,7 +9,6 @@ import {
   Text,
 } from 'react-native';
 import Animated, {
-  Extrapolate,
   Extrapolation,
   interpolate,
   SharedValue,
@@ -18,7 +17,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {AnimatedView} from 'react-native-reanimated/lib/typescript/component/View';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 type AccordionItemProps = {

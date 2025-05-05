@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {BottomNavigator} from './BottomNavigator';
-import PlaceRegisterScreen from '@screens/register/place/PlaceRegisterScreen';
+import PlaceRegisterScreen from '@screens/register/device/DeviceRegisterScreen';
 import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
 
 type MainStackParamList = {

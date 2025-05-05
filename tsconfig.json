@@ -1,15 +1,17 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react-jsxdev",
     "strict": true,
     "baseUrl": "./",
     "paths": {
       "@assets/*": ["./assets/*"],
       "@constants/*": ["./src/constants/*"],
-	  "@components/*": ["./src/components/*"],
-	  "@contexts/*": ["./src/contexts/*"],
-	  "@routes/*": ["./src/routes/*"],
-	  "@screens/*": ["./src/screens/*"],
-    }
+      "@components/*": ["./src/components/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@services/*": ["./src/services/*"]
+    },
   }
 }

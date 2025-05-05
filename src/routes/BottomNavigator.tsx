@@ -1,4 +1,3 @@
-import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
@@ -6,7 +5,7 @@ import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegist
 import {ThemedColors} from '@constants/Theme.style';
 import {IconAccount, IconAdd, IconHome} from '@assets/SVG';
 import {View} from 'react-native';
-import PlaceRegisterScreen from '@screens/register/place/PlaceRegisterScreen';
+import PlaceRegisterScreen from '@screens/register/device/DeviceRegisterScreen';
 import HomeScreen from '@screens/home/HomeScreen';
 
 const Tab = createBottomTabNavigator();

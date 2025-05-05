@@ -22,6 +22,7 @@ module.exports = {
           '@contexts': './src/contexts',
           '@routes': './src/routes',
           '@screens': './src/screens',
+          '@services': './src/services',
         },
       },
     ],
