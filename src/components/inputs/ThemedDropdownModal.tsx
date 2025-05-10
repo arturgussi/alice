@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import {useRef} from 'react';
 import {Text, FlatList, TouchableOpacity, StyleSheet, View} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {Portal} from 'react-native-portalize';
@@ -22,6 +22,7 @@ const ThemedDropdownModal = ({
   const onOpen = () => {
     modalizeRef.current?.open();
   };
+
   const handleSelectValue = (selectedValue: string) => {
     onValueSelected(selectedValue);
     modalizeRef.current?.close();
