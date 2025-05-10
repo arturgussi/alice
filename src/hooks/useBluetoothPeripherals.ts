@@ -7,6 +7,7 @@ const useBluetoothPeripherals = () => {
     new Map<Peripheral['id'], Peripheral>(),
   );
 
+  //   Handlers
   const handleDiscoverPeripheral = (peripheral: Peripheral) => {
     if (!peripherals.has(peripheral.id)) {
       if (!peripheral.name) {
@@ -22,6 +23,7 @@ const useBluetoothPeripherals = () => {
     setIsScanning(false);
   };
 
+  //   Main hook function
   useEffect(() => {
     const listeners: any[] = [
       BleManager.onDiscoverPeripheral(handleDiscoverPeripheral),
@@ -29,7 +31,6 @@ const useBluetoothPeripherals = () => {
     ];
 
     return () => {
-      // Remove listeners from BleManager
       for (const listener of listeners) {
         listener.remove();
       }

@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import BleManager, {Peripheral} from 'react-native-ble-manager';
 
@@ -12,14 +12,8 @@ import {
   requestBluetoothPermissions,
   enableBluetooth,
 } from '@services/bluetooth/BluetoothManager';
-import {
-  scanDevices,
-  handleConnectPeripheral,
-  handleDisconnectedPeripheral,
-  handleUpdateValueForCharacteristic,
-} from '@services/bluetooth/BluetoothHandlers';
+import {scanDevices} from '@services/bluetooth/BluetoothUtils';
 import MeterButton from '@components/buttons/MeterButton';
-import {sleep} from '@util';
 import useBluetoothPeripherals from '@hooks/useBluetoothPeripherals';
 
 declare module 'react-native-ble-manager' {
@@ -32,6 +26,9 @@ declare module 'react-native-ble-manager' {
 const DeviceRegisterScreen = () => {
   const {isScanning, setIsScanning, peripherals, setPeripherals} =
     useBluetoothPeripherals();
+  const [connectedDeviceId, setConnectedDeviceId] = useState<string | null>(
+    null,
+  );
 
   const handleScanDevices = async () => {
     // Verifica permissões necessárias para Bluetooth
@@ -50,106 +47,6 @@ const DeviceRegisterScreen = () => {
     }
   };
 
-  const connectPeripheral = async (peripheral: Peripheral) => {
-    try {
-      if (peripheral) {
-        setPeripherals(map => {
-          let p = map.get(peripheral.id);
-          if (p) {
-            p.connecting = true;
-            return new Map(map.set(p.id, p));
-          }
-          return map;
-        });
-
-        await BleManager.connect(peripheral.id);
-        console.debug(`[connectPeripheral][${peripheral.id}] connected.`);
-
-        setPeripherals(map => {
-          let p = map.get(peripheral.id);
-          if (p) {
-            p.connecting = false;
-            p.connected = true;
-            return new Map(map.set(p.id, p));
-          }
-          return map;
-        });
-
-        // before retrieving services, it is often a good idea to let bonding & connection finish properly
-        await sleep(1000);
-
-        /* Test read current RSSI value, retrieve services first */
-        const peripheralData = await BleManager.retrieveServices(peripheral.id);
-        console.debug(
-          `[connectPeripheral][${peripheral.id}] retrieved peripheral services`,
-          peripheralData,
-        );
-
-        setPeripherals(map => {
-          let p = map.get(peripheral.id);
-          if (p) {
-            return new Map(map.set(p.id, p));
-          }
-          return map;
-        });
-
-        const rssi = await BleManager.readRSSI(peripheral.id);
-        console.debug(
-          `[connectPeripheral][${peripheral.id}] retrieved current RSSI value: ${rssi}.`,
-        );
-
-        if (peripheralData.characteristics) {
-          for (const characteristic of peripheralData.characteristics) {
-            if (characteristic.descriptors) {
-              for (const descriptor of characteristic.descriptors) {
-                try {
-                  let data = await BleManager.readDescriptor(
-                    peripheral.id,
-                    characteristic.service,
-                    characteristic.characteristic,
-                    descriptor.uuid,
-                  );
-                  console.debug(
-                    `[connectPeripheral][${peripheral.id}] ${characteristic.service} ${characteristic.characteristic} ${descriptor.uuid} descriptor read as:`,
-                    data,
-                  );
-                } catch (error) {
-                  console.error(
-                    `[connectPeripheral][${peripheral.id}] failed to retrieve descriptor ${descriptor} for characteristic ${characteristic}:`,
-                    error,
-                  );
-                }
-              }
-            }
-          }
-        }
-
-        setPeripherals(map => {
-          let p = map.get(peripheral.id);
-          if (p) {
-            p.rssi = rssi;
-            return new Map(map.set(p.id, p));
-          }
-          return map;
-        });
-
-        // navigation.navigate('PeripheralDetails', {
-        //   peripheralData: peripheralData,
-        // });
-      }
-    } catch (error) {}
-  };
-
-  const togglePeripheralConnection = async (peripheral: Peripheral) => {
-    if (peripheral && peripheral.connected) {
-      try {
-        await BleManager.disconnect(peripheral.id);
-      } catch (error) {}
-    } else {
-      await connectPeripheral(peripheral);
-    }
-  };
-
   useEffect(() => {
     const BleManagerStart = async () => {
       try {
@@ -165,25 +62,7 @@ const DeviceRegisterScreen = () => {
     };
 
     BleManagerStart().catch(console.error);
-
-    const listeners: any[] = [
-      BleManager.onConnectPeripheral(handleConnectPeripheral),
-      BleManager.onDidUpdateValueForCharacteristic(
-        handleUpdateValueForCharacteristic,
-      ),
-      BleManager.onDisconnectPeripheral(handleDisconnectedPeripheral),
-    ];
-
-    return () => {
-      for (const listener of listeners) {
-        listener.remove();
-      }
-    };
   }, []);
-
-  const renderPeripheral = ({item}: {item: Peripheral}) => (
-    <MeterButton peripheral={item} onConnect={togglePeripheralConnection} />
-  );
 
   return (
     <BackgroundWrapper>
@@ -206,8 +85,8 @@ const DeviceRegisterScreen = () => {
               name: peripheral.name || 'N/A',
             }))}
             contentContainerStyle={{rowGap: 12}}
-            renderItem={renderPeripheral}
             keyExtractor={item => item.id}
+            renderItem={({item}) => <MeterButton peripheral={item} />}
           />
         </View>
       </View>
