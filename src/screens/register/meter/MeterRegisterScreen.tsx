@@ -31,16 +31,16 @@ const DeviceRegisterScreen = () => {
     useBluetoothPeripherals();
 
   const handleScanDevices = async () => {
-    // Verifica permissões necessárias para Bluetooth
-    if (!(await checkBluetoothPermissions())) {
-      await requestBluetoothPermissions();
-    }
-
-    // Ativar o bluetooth se estiver desativado
-    await enableBluetooth();
-
-    // Escaneia os dispositivos que serão populados no handleDiscoverPeripheral
     if (!isScanning) {
+      // Verifica permissões necessárias para Bluetooth
+      if (!(await checkBluetoothPermissions())) {
+        await requestBluetoothPermissions();
+      }
+
+      // Ativar o bluetooth se estiver desativado
+      await enableBluetooth();
+
+      // Escaneia os dispositivos que serão populados no handleDiscoverPeripheral
       setPeripherals(new Map<Peripheral['id'], Peripheral>());
       setIsScanning(true);
       await scanDevices();

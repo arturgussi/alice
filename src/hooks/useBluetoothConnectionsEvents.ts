@@ -11,6 +11,7 @@ interface BluetoothConnectionsHookResult {
   isConnecting: boolean;
   isConnected: boolean;
   error: any;
+  wifiStatus: string;
   connectToDevice: () => Promise<void>;
   sendWifiCredentials: (
     wifiSSid: string | null | undefined,
@@ -20,20 +21,21 @@ interface BluetoothConnectionsHookResult {
 
 interface UseBluetoothConnectionsEventsProps {
   peripheral: Peripheral;
-  onDeviceConnected: () => void;
 }
 
 const useBluetoothConnectionsEvents = ({
   peripheral,
-  onDeviceConnected,
 }: UseBluetoothConnectionsEventsProps): BluetoothConnectionsHookResult => {
   const SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
   const SSID_CHARACTERISTIC_UUID = 'a3c157be-a11a-4a06-9c0f-c7e699451c9d';
   const PASSWORD_CHARACTERISTIC_UUID = 'f7a8b92d-8e7a-4d3c-9b1e-5a2f8c3d4e6f';
+  const WIFI_STATUS_CHARACTERISTIC_UUID =
+    '8b7a3e5c-9d2a-4e6f-a1c3-f0e8d7b1a5c2';
 
   const [isConnecting, setIsConnecting] = useState<any>(null);
   const [isConnected, setIsConnected] = useState<any>(null);
   const [error, setError] = useState<any>(null);
+  const [wifiStatus, setWifiStatus] = useState<any>('');
 
   const atualizaConexao = (
     connecting: boolean,
@@ -68,11 +70,25 @@ const useBluetoothConnectionsEvents = ({
     };
 
     const handleUpdateValueForCharacteristic = (
-      data: BleManagerDidUpdateValueForCharacteristicEvent,
+      event: BleManagerDidUpdateValueForCharacteristicEvent,
     ) => {
+      // Converte o Uint8Array para string
+      let response = '';
+      if (event.value) {
+        response = String.fromCharCode(...new Uint8Array(event.value));
+      }
       console.debug(
-        `[handleUpdateValueForCharacteristic] received data from '${data.peripheral}' with characteristic='${data.characteristic}' and value='${data.value}'`,
+        `[handleUpdateValueForCharacteristic] received data from '${event.peripheral}' with characteristic='${event.characteristic}' and value='${response}'`,
       );
+
+      // Recebe por bluetooth resposta da conexão do WiFi
+      if (
+        event.peripheral === peripheral.id &&
+        event.characteristic === WIFI_STATUS_CHARACTERISTIC_UUID
+      ) {
+        console.log('Status do WiFi recebido:', response);
+        setWifiStatus(response);
+      }
     };
 
     const listeners: any[] = [
@@ -146,12 +162,21 @@ const useBluetoothConnectionsEvents = ({
             }
           }
         }
+        // Habilita receber notificações de quando mensagens chegam por bluetooth
+        BleManager.startNotification(
+          peripheral.id,
+          SERVICE_UUID,
+          WIFI_STATUS_CHARACTERISTIC_UUID,
+        )
+          .then(() =>
+            console.debug(
+              'Habilitado para receber notificações das mensagens do bluetooth ',
+            ),
+          )
+          .catch(reason => console.error(reason));
 
         // Atualiza RSSI do periférico
         peripheral.rssi = rssi;
-
-        // Chama função recebida por parâmetro para trigger depois da conexão com dispositivo
-        onDeviceConnected();
       }
     } catch (error) {
       atualizaConexao(false, false, error);
@@ -162,7 +187,7 @@ const useBluetoothConnectionsEvents = ({
     // Se for o mesmo periférico, desconecta
     if (peripheral && peripheral.connected) {
       try {
-        await BleManager.disconnect(peripheral.id);
+        // await BleManager.disconnect(peripheral.id);
       } catch (error) {
         atualizaConexao(false, false, error);
       }
@@ -177,6 +202,7 @@ const useBluetoothConnectionsEvents = ({
     wifiSSid: string | null | undefined,
     wifiPassword: string | null | undefined,
   ): Promise<void> => {
+    // Função para transformar string em bytes
     const stringToBytes = (str: string): number[] => {
       const bytes: number[] = [];
       for (let i = 0; i < str.length; i++) {
@@ -187,23 +213,29 @@ const useBluetoothConnectionsEvents = ({
 
     if (wifiSSid && wifiPassword) {
       try {
+        setWifiStatus('0');
+        // Envia SSID
         await BleManager.writeWithoutResponse(
           peripheral.id,
           SERVICE_UUID,
           SSID_CHARACTERISTIC_UUID,
+          // Transforma a string para base64 e depois para bytes
           stringToBytes(btoa(wifiSSid)),
         );
         console.log('SSID enviado com sucesso!');
         BleManager.write;
+
+        // Envia PASSWORD
         await BleManager.writeWithoutResponse(
           peripheral.id,
           SERVICE_UUID,
           PASSWORD_CHARACTERISTIC_UUID,
+          // Transforma a string para base64 e depois para bytes
           stringToBytes(btoa(wifiPassword)),
         );
         console.log('Senha enviada com sucesso!');
       } catch (error) {
-        console.error('Erro ao enviar credenciais:', error);
+        console.log('Erro:', error);
       }
     }
   };
@@ -212,6 +244,7 @@ const useBluetoothConnectionsEvents = ({
     isConnecting,
     isConnected,
     error,
+    wifiStatus,
     connectToDevice,
     sendWifiCredentials,
   };

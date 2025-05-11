@@ -1,13 +1,14 @@
+import {useEffect, useRef, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Peripheral} from 'react-native-ble-manager';
+import {Modalize} from 'react-native-modalize';
+import {Portal} from 'react-native-portalize';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import ThemedText from '@components/texts/ThemedText';
 import {ThemedColors} from '@constants/Theme.style';
 import useBluetoothConnectionsEvent from '@hooks/useBluetoothConnectionsEvents';
-import {useRef, useState} from 'react';
-import {Modalize} from 'react-native-modalize';
-import {Portal} from 'react-native-portalize';
-import PrimaryButton from './PrimaryButton';
+import PrimaryButton from '@components/buttons/PrimaryButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 
 type MeterButtonProps = {
@@ -17,45 +18,75 @@ type MeterButtonProps = {
 const MeterButton = ({peripheral}: MeterButtonProps) => {
   const [wifiSSID, setWifiSSID] = useState<string | undefined>();
   const [wifiPassword, setWifiPassword] = useState<string | undefined>();
-
-  const onDeviceConnected = () => {
-    modalizeRef.current?.open();
-  };
-
-  const handleSendWifiCredencials = async () => {
-    await sendWifiCredentials(wifiSSID, wifiPassword);
-    modalizeRef.current?.close();
-  };
-
   const {
     isConnecting,
     isConnected,
     error,
+    wifiStatus,
     connectToDevice,
     sendWifiCredentials,
   } = useBluetoothConnectionsEvent({
     peripheral,
-    onDeviceConnected,
   });
   const modalizeRef = useRef<Modalize>(null);
+
+  const handleSendWifiCredencials = async () => {
+    sendWifiCredentials(wifiSSID, wifiPassword).then(() => {
+      modalizeRef.current?.close();
+    });
+  };
+
+  const handleConnectToDevice = () => {
+    connectToDevice().then(() => {
+      modalizeRef.current?.open();
+    });
+  };
+
+  let bluetoothStatusColor = 'transparent';
+  if (isConnecting) {
+    bluetoothStatusColor = 'orange';
+  } else if (isConnected) {
+    bluetoothStatusColor = 'green';
+  } else if (error != undefined) {
+    bluetoothStatusColor = 'red';
+  }
+
+  let wifiStatusColor = 'transparent';
+  if (isConnected) {
+    if (wifiStatus == '') {
+      wifiStatusColor = 'gray';
+    } else if (wifiStatus == '0') {
+      wifiStatusColor = 'orange';
+    } else if (wifiStatus == 'true') {
+      wifiStatusColor = 'green';
+    } else if (wifiStatus == 'false') {
+      wifiStatusColor = 'red';
+    }
+  }
 
   return (
     <TouchableOpacity
       style={styles.meterContainer}
-      onPress={connectToDevice}
+      onPress={handleConnectToDevice}
       disabled={isConnecting}>
       <ThemedText>Name: {peripheral.name || 'N/A'}</ThemedText>
       <ThemedText>ID: {peripheral.id}</ThemedText>
-      <ThemedText>RSSI: {peripheral.rssi}</ThemedText>
-      {isConnecting && (
-        <ThemedText style={{color: 'orange'}}>Conectando...</ThemedText>
-      )}
-      {isConnected && (
-        <ThemedText style={{color: 'green'}}> Conectado! </ThemedText>
-      )}
-      {error && (
-        <ThemedText style={{color: 'red'}}> Erro ao se conectar! </ThemedText>
-      )}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          marginTop: 16,
+        }}>
+        <FontAwesomeIcon
+          name={'bluetooth'}
+          style={{color: bluetoothStatusColor}}
+        />
+        <FontAwesomeIcon
+          name={'wifi'}
+          style={{color: wifiStatusColor, marginLeft: 8}}
+        />
+      </View>
+
       <Portal>
         <Modalize ref={modalizeRef} adjustToContentHeight>
           <View style={styles.portal}>
