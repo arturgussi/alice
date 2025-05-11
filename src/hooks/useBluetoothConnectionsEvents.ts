@@ -12,15 +12,25 @@ interface BluetoothConnectionsHookResult {
   isConnected: boolean;
   error: any;
   connectToDevice: () => Promise<void>;
+  sendWifiCredentials: (
+    wifiSSid: string | null | undefined,
+    wifiPassword: string | null | undefined,
+  ) => Promise<void>;
 }
 
 interface UseBluetoothConnectionsEventsProps {
   peripheral: Peripheral;
+  onDeviceConnected: () => void;
 }
 
 const useBluetoothConnectionsEvents = ({
   peripheral,
+  onDeviceConnected,
 }: UseBluetoothConnectionsEventsProps): BluetoothConnectionsHookResult => {
+  const SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
+  const SSID_CHARACTERISTIC_UUID = 'a3c157be-a11a-4a06-9c0f-c7e699451c9d';
+  const PASSWORD_CHARACTERISTIC_UUID = 'f7a8b92d-8e7a-4d3c-9b1e-5a2f8c3d4e6f';
+
   const [isConnecting, setIsConnecting] = useState<any>(null);
   const [isConnected, setIsConnected] = useState<any>(null);
   const [error, setError] = useState<any>(null);
@@ -57,14 +67,6 @@ const useBluetoothConnectionsEvents = ({
       }
     };
 
-    // const handleFailToConnect = (peripheralId: string, error: any) => {
-    //   if (peripheralId === peripheralId) {
-    //     setIsConnected(false);
-    //     setError(error);
-    //     console.error(`Falha ao conectar com ${peripheralId}:`, error);
-    //   }
-    // };
-
     const handleUpdateValueForCharacteristic = (
       data: BleManagerDidUpdateValueForCharacteristicEvent,
     ) => {
@@ -80,10 +82,6 @@ const useBluetoothConnectionsEvents = ({
       ),
       BleManager.onDisconnectPeripheral(handleDisconnected),
     ];
-    // const failToConnectListener = BleManager.addListener(
-    //   'BleManagerDidFailToConnect',
-    //   handleFailToConnect,
-    // );
 
     return () => {
       for (const listener of listeners) {
@@ -152,9 +150,8 @@ const useBluetoothConnectionsEvents = ({
         // Atualiza RSSI do periférico
         peripheral.rssi = rssi;
 
-        // navigation.navigate('PeripheralDetails', {
-        //   peripheralData: peripheralData,
-        // });
+        // Chama função recebida por parâmetro para trigger depois da conexão com dispositivo
+        onDeviceConnected();
       }
     } catch (error) {
       atualizaConexao(false, false, error);
@@ -176,25 +173,48 @@ const useBluetoothConnectionsEvents = ({
     }
   };
 
-  return {isConnecting, isConnected, error, connectToDevice};
+  const sendWifiCredentials = async (
+    wifiSSid: string | null | undefined,
+    wifiPassword: string | null | undefined,
+  ): Promise<void> => {
+    const stringToBytes = (str: string): number[] => {
+      const bytes: number[] = [];
+      for (let i = 0; i < str.length; i++) {
+        bytes.push(str.charCodeAt(i));
+      }
+      return bytes;
+    };
+
+    if (wifiSSid && wifiPassword) {
+      try {
+        await BleManager.writeWithoutResponse(
+          peripheral.id,
+          SERVICE_UUID,
+          SSID_CHARACTERISTIC_UUID,
+          stringToBytes(btoa(wifiSSid)),
+        );
+        console.log('SSID enviado com sucesso!');
+        BleManager.write;
+        await BleManager.writeWithoutResponse(
+          peripheral.id,
+          SERVICE_UUID,
+          PASSWORD_CHARACTERISTIC_UUID,
+          stringToBytes(btoa(wifiPassword)),
+        );
+        console.log('Senha enviada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao enviar credenciais:', error);
+      }
+    }
+  };
+
+  return {
+    isConnecting,
+    isConnected,
+    error,
+    connectToDevice,
+    sendWifiCredentials,
+  };
 };
 
 export default useBluetoothConnectionsEvents;
-
-// const connect = async () => {
-//   setIsConnecting(true);
-//   try {
-//     await BleManager.connect(peripheralId);
-//     const peripheralData = await BleManager.retrieveServices(peripheralId);
-//     setConnectedPeripheral(peripheralData);
-//     setIsConnected(true);
-//     setIsConnecting(false);
-//     if (onConnected) {
-//       onConnected(peripheralData);
-//     }
-//   } catch (e) {
-//     setError(e);
-//     setIsConnecting(false);
-//     setIsConnected(false);
-//   }
-// };

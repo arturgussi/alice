@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import BleManager, {Peripheral} from 'react-native-ble-manager';
 
@@ -15,6 +15,9 @@ import {
 import {scanDevices} from '@services/bluetooth/BluetoothUtils';
 import MeterButton from '@components/buttons/MeterButton';
 import useBluetoothPeripherals from '@hooks/useBluetoothPeripherals';
+import {Portal} from 'react-native-portalize';
+import {Modalize} from 'react-native-modalize';
+import ThemedTextInput from '@components/inputs/ThemedTextInput';
 
 declare module 'react-native-ble-manager' {
   interface Peripheral {
@@ -26,9 +29,6 @@ declare module 'react-native-ble-manager' {
 const DeviceRegisterScreen = () => {
   const {isScanning, setIsScanning, peripherals, setPeripherals} =
     useBluetoothPeripherals();
-  const [connectedDeviceId, setConnectedDeviceId] = useState<string | null>(
-    null,
-  );
 
   const handleScanDevices = async () => {
     // Verifica permissões necessárias para Bluetooth
