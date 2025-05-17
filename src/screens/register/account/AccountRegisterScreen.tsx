@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {View, TouchableOpacity, Image} from 'react-native';
+import {View, TouchableOpacity, Image, Alert} from 'react-native';
 import {NavigationProp} from '@react-navigation/native';
 
 import styles from './AccountRegisterScreen.style';
@@ -10,6 +10,7 @@ import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import PrimaryButton from '@components/buttons/PrimaryButton';
 import {AuthStackParamList} from '@routes/AuthNavigator';
+import {setDisplayName, signUp} from '@services/auth/Auth';
 
 type AccountRegisterNavigationProp = NavigationProp<
   AuthStackParamList,
@@ -26,8 +27,37 @@ const AccountRegisterScreen = ({navigation}: AccountRegisterProps) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = () => {
-    console.log('Register', nome, email, password);
+  const handleRegister = async () => {
+    if (!email || !password || !confirmPassword || !nome) {
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
+    try {
+      const userCredential = await signUp(email, password);
+      setDisplayName(userCredential.user, nome);
+
+      Alert.alert('Sucesso', 'Conta criada com sucesso!');
+
+      navigation.goBack(); // Volta para tela de login
+    } catch (error: any) {
+      let message = 'Erro ao criar conta.';
+
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'Este email já está em uso.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'Email inválido.';
+      } else if (error.code === 'auth/weak-password') {
+        message = 'A senha deve ter pelo menos 6 caracteres.';
+      }
+
+      Alert.alert('Erro', message);
+    }
   };
 
   return (
