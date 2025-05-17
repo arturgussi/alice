@@ -4,6 +4,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {MainNavigator} from './MainNavigator';
 import {AuthNavigator} from './AuthNavigator';
 import {subscribeToAuthChanges} from '@services/auth/Auth';
+import { getAuth } from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
 
 interface UserData {
   uid: string;
@@ -17,7 +19,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({children}: {children: ReactNode}) => {
+export const AuthProvider = ({children}: {children: ReactNode}) => { 
   const [user, setUser] = useState<UserData | null>(null);
 
   useEffect(() => {

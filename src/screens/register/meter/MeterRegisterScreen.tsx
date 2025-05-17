@@ -6,7 +6,7 @@ import styles from './MeterRegister.style';
 
 import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
 import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/PrimaryButton';
+import PrimaryButton from '@components/buttons/ThemedButton';
 import {
   checkBluetoothPermissions,
   requestBluetoothPermissions,

@@ -15,14 +15,17 @@ import LinearScale from '@components/display/LinearScale';
 import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
 import {ThemedColors} from '@constants/Theme.style';
 import AccordionButton from '@components/buttons/AccordionButton';
+import { useAuth } from '@routes/AppNavigator';
 
 const HomeScreen = () => {
+    const {user} = useAuth();
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <BackgroundWrapper>
         <View style={styles.container}>
           <View>
-            <Text style={styles.title}>Olá, Artur</Text>
+            <Text style={styles.title}>Olá, {user?.displayName}</Text>
           </View>
           <View style={styles.buttonContainer}>
             <HomeMenuButton

@@ -8,7 +8,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import ThemedText from '@components/texts/ThemedText';
 import {ThemedColors} from '@constants/Theme.style';
 import useBluetoothConnectionsEvent from '@hooks/useBluetoothConnectionsEvents';
-import PrimaryButton from '@components/buttons/PrimaryButton';
+import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 
 type MeterButtonProps = {

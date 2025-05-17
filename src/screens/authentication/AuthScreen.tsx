@@ -8,7 +8,7 @@ import images from '@assets/Images';
 import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/PrimaryButton';
+import PrimaryButton from '@components/buttons/ThemedButton';
 import {AuthStackParamList} from '@routes/AuthNavigator';
 import {signIn} from '@services/auth/Auth';
 

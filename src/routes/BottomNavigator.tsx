@@ -7,6 +7,7 @@ import {IconAccount, IconAdd, IconHome} from '@assets/SVG';
 import {View} from 'react-native';
 import PlaceRegisterScreen from '@screens/register/meter/MeterRegisterScreen';
 import HomeScreen from '@screens/home/HomeScreen';
+import UserProfileScreen from '@screens/userProfile/UserProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -65,7 +66,7 @@ export function BottomNavigator() {
       />
       <Tab.Screen
         name="Account"
-        component={EquipmentRegisterScreen}
+        component={UserProfileScreen}
         options={{
           tabBarIcon: ({size, color}) => (
             <View
