@@ -1,21 +1,21 @@
-import {useEffect, useRef, useState} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Peripheral} from 'react-native-ble-manager';
-import {Modalize} from 'react-native-modalize';
-import {Portal} from 'react-native-portalize';
+import { useRef, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Peripheral } from 'react-native-ble-manager';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-import ThemedText from '@components/texts/ThemedText';
-import {ThemedColors} from '@constants/Theme.style';
-import useBluetoothConnectionsEvent from '@hooks/useBluetoothConnectionsEvents';
 import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
+import ThemedText from '@components/texts/ThemedText';
+import { ThemedColors } from '@constants/Theme.style';
+import useBluetoothConnectionsEvent from '@hooks/useBluetoothConnectionsEvents';
 
 type MeterButtonProps = {
   peripheral: Peripheral;
 };
 
-const MeterButton = ({peripheral}: MeterButtonProps) => {
+const MeterButton = ({ peripheral }: MeterButtonProps) => {
   const [wifiSSID, setWifiSSID] = useState<string | undefined>();
   const [wifiPassword, setWifiPassword] = useState<string | undefined>();
   const {
@@ -68,7 +68,8 @@ const MeterButton = ({peripheral}: MeterButtonProps) => {
     <TouchableOpacity
       style={styles.meterContainer}
       onPress={handleConnectToDevice}
-      disabled={isConnecting}>
+      disabled={isConnecting}
+    >
       <ThemedText>Name: {peripheral.name || 'N/A'}</ThemedText>
       <ThemedText>ID: {peripheral.id}</ThemedText>
       <View
@@ -76,21 +77,22 @@ const MeterButton = ({peripheral}: MeterButtonProps) => {
           flex: 1,
           flexDirection: 'row',
           marginTop: 16,
-        }}>
+        }}
+      >
         <FontAwesomeIcon
           name={'bluetooth'}
-          style={{color: bluetoothStatusColor}}
+          style={{ color: bluetoothStatusColor }}
         />
         <FontAwesomeIcon
           name={'wifi'}
-          style={{color: wifiStatusColor, marginLeft: 8}}
+          style={{ color: wifiStatusColor, marginLeft: 8 }}
         />
       </View>
 
       <Portal>
         <Modalize ref={modalizeRef} adjustToContentHeight>
           <View style={styles.portal}>
-            <ThemedText style={{textAlign: 'center'}}>
+            <ThemedText style={{ textAlign: 'center' }}>
               Conectar ALICE na rede WiFi
             </ThemedText>
             <View style={styles.inputContainer}>

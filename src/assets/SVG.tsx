@@ -1,12 +1,18 @@
 import React from 'react';
-import Svg, {Path, Defs, LinearGradient, Stop, Circle} from 'react-native-svg';
-import {View} from 'react-native';
+import { View } from 'react-native';
+import Svg, {
+  Circle,
+  Defs,
+  LinearGradient,
+  Path,
+  Stop,
+} from 'react-native-svg';
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
 }
 
-export const IconAccount = ({size = 24}: IconProps) => (
+export const IconAccount = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Defs>
@@ -16,7 +22,8 @@ export const IconAccount = ({size = 24}: IconProps) => (
           y1="11"
           x2="9"
           y2="17"
-          gradientUnits="userSpaceOnUse">
+          gradientUnits="userSpaceOnUse"
+        >
           <Stop stopColor="#9957DF" />
           <Stop offset="1" stopColor="#B89EFF" />
         </LinearGradient>
@@ -26,7 +33,8 @@ export const IconAccount = ({size = 24}: IconProps) => (
           y1="1"
           x2="9"
           y2="7"
-          gradientUnits="userSpaceOnUse">
+          gradientUnits="userSpaceOnUse"
+        >
           <Stop stopColor="#9957DF" />
           <Stop offset="1" stopColor="#B89EFF" />
         </LinearGradient>
@@ -63,7 +71,7 @@ export const IconAccount = ({size = 24}: IconProps) => (
   </View>
 );
 
-export const IconAdd = ({size = 24}: IconProps) => (
+export const IconAdd = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -89,7 +97,8 @@ export const IconAdd = ({size = 24}: IconProps) => (
           y1="1"
           x2="10.5"
           y2="18"
-          gradientUnits="userSpaceOnUse">
+          gradientUnits="userSpaceOnUse"
+        >
           <Stop stopColor="#9957DF" />
           <Stop offset="1" stopColor="#B89EFF" />
         </LinearGradient>
@@ -98,7 +107,7 @@ export const IconAdd = ({size = 24}: IconProps) => (
   </View>
 );
 
-export const IconHome = ({size = 24}: IconProps) => (
+export const IconHome = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 21 19" fill="none">
       <Path
@@ -123,7 +132,8 @@ export const IconHome = ({size = 24}: IconProps) => (
           y1="1"
           x2="10.5"
           y2="18"
-          gradientUnits="userSpaceOnUse">
+          gradientUnits="userSpaceOnUse"
+        >
           <Stop stopColor="#9957DF" />
           <Stop offset="1" stopColor="#B89EFF" />
         </LinearGradient>
@@ -132,7 +142,7 @@ export const IconHome = ({size = 24}: IconProps) => (
   </View>
 );
 
-export const IconGraph = ({size = 24}: IconProps) => (
+export const IconGraph = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 18 18" fill="none">
       <Path
@@ -151,7 +161,8 @@ export const IconGraph = ({size = 24}: IconProps) => (
           y1="0"
           x2="9"
           y2="18"
-          gradientUnits="userSpaceOnUse">
+          gradientUnits="userSpaceOnUse"
+        >
           <Stop stopColor="#9957DF" />
           <Stop offset="1" stopColor="#B89EFF" />
         </LinearGradient>
@@ -160,92 +171,95 @@ export const IconGraph = ({size = 24}: IconProps) => (
   </View>
 );
 
-export const IconRegister = ({size = 24}: IconProps) => (
+export const IconRegister = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-        <Path
-          d="M8 1V15M1 8H15"
-          stroke="url(#paint0_linear_1354_43)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <Path
-          d="M8 1V15M1 8H15"
-          stroke="black"
-          strokeOpacity="0.2"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <Defs>
-          <LinearGradient
-            id="paint0_linear_1354_43"
-            x1="8"
-            y1="1"
-            x2="8"
-            y2="15"
-            gradientUnits="userSpaceOnUse">
-            <Stop stopColor="#9957DF" />
-            <Stop offset="1" stopColor="#B89EFF" />
-          </LinearGradient>
-        </Defs>
+      <Path
+        d="M8 1V15M1 8H15"
+        stroke="url(#paint0_linear_1354_43)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M8 1V15M1 8H15"
+        stroke="black"
+        strokeOpacity="0.2"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Defs>
+        <LinearGradient
+          id="paint0_linear_1354_43"
+          x1="8"
+          y1="1"
+          x2="8"
+          y2="15"
+          gradientUnits="userSpaceOnUse"
+        >
+          <Stop stopColor="#9957DF" />
+          <Stop offset="1" stopColor="#B89EFF" />
+        </LinearGradient>
+      </Defs>
     </Svg>
   </View>
 );
 
-export const IconNewMeasure = ({size = 24}: IconProps) => (
+export const IconNewMeasure = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 15 15" fill="none">
-        <Path
-          d="M1.875 15C2.90625 15 3.75 14.1562 3.75 13.125V6.5625C3.75 5.53125 2.90625 4.6875 1.875 4.6875C0.84375 4.6875 0 5.53125 0 6.5625V13.125C0 14.1562 0.84375 15 1.875 15ZM11.25 10.3125V13.125C11.25 14.1562 12.0938 15 13.125 15C14.1562 15 15 14.1562 15 13.125V10.3125C15 9.28125 14.1562 8.4375 13.125 8.4375C12.0938 8.4375 11.25 9.28125 11.25 10.3125ZM7.5 15C8.53125 15 9.375 14.1562 9.375 13.125V1.875C9.375 0.84375 8.53125 0 7.5 0C6.46875 0 5.625 0.84375 5.625 1.875V13.125C5.625 14.1562 6.46875 15 7.5 15Z"
-          fill="url(#paint0_linear_1354_47)"
-        />
-        <Path
-          d="M1.875 15C2.90625 15 3.75 14.1562 3.75 13.125V6.5625C3.75 5.53125 2.90625 4.6875 1.875 4.6875C0.84375 4.6875 0 5.53125 0 6.5625V13.125C0 14.1562 0.84375 15 1.875 15ZM11.25 10.3125V13.125C11.25 14.1562 12.0938 15 13.125 15C14.1562 15 15 14.1562 15 13.125V10.3125C15 9.28125 14.1562 8.4375 13.125 8.4375C12.0938 8.4375 11.25 9.28125 11.25 10.3125ZM7.5 15C8.53125 15 9.375 14.1562 9.375 13.125V1.875C9.375 0.84375 8.53125 0 7.5 0C6.46875 0 5.625 0.84375 5.625 1.875V13.125C5.625 14.1562 6.46875 15 7.5 15Z"
-          fill="black"
-          fillOpacity="0.2"
-        />
-        <Defs>
-          <LinearGradient
-            id="paint0_linear_1354_47"
-            x1="7.5"
-            y1="0"
-            x2="7.5"
-            y2="15"
-            gradientUnits="userSpaceOnUse">
-            <Stop stopColor="#9957DF" />
-            <Stop offset="1" stopColor="#B89EFF" />
-          </LinearGradient>
-        </Defs>
+      <Path
+        d="M1.875 15C2.90625 15 3.75 14.1562 3.75 13.125V6.5625C3.75 5.53125 2.90625 4.6875 1.875 4.6875C0.84375 4.6875 0 5.53125 0 6.5625V13.125C0 14.1562 0.84375 15 1.875 15ZM11.25 10.3125V13.125C11.25 14.1562 12.0938 15 13.125 15C14.1562 15 15 14.1562 15 13.125V10.3125C15 9.28125 14.1562 8.4375 13.125 8.4375C12.0938 8.4375 11.25 9.28125 11.25 10.3125ZM7.5 15C8.53125 15 9.375 14.1562 9.375 13.125V1.875C9.375 0.84375 8.53125 0 7.5 0C6.46875 0 5.625 0.84375 5.625 1.875V13.125C5.625 14.1562 6.46875 15 7.5 15Z"
+        fill="url(#paint0_linear_1354_47)"
+      />
+      <Path
+        d="M1.875 15C2.90625 15 3.75 14.1562 3.75 13.125V6.5625C3.75 5.53125 2.90625 4.6875 1.875 4.6875C0.84375 4.6875 0 5.53125 0 6.5625V13.125C0 14.1562 0.84375 15 1.875 15ZM11.25 10.3125V13.125C11.25 14.1562 12.0938 15 13.125 15C14.1562 15 15 14.1562 15 13.125V10.3125C15 9.28125 14.1562 8.4375 13.125 8.4375C12.0938 8.4375 11.25 9.28125 11.25 10.3125ZM7.5 15C8.53125 15 9.375 14.1562 9.375 13.125V1.875C9.375 0.84375 8.53125 0 7.5 0C6.46875 0 5.625 0.84375 5.625 1.875V13.125C5.625 14.1562 6.46875 15 7.5 15Z"
+        fill="black"
+        fillOpacity="0.2"
+      />
+      <Defs>
+        <LinearGradient
+          id="paint0_linear_1354_47"
+          x1="7.5"
+          y1="0"
+          x2="7.5"
+          y2="15"
+          gradientUnits="userSpaceOnUse"
+        >
+          <Stop stopColor="#9957DF" />
+          <Stop offset="1" stopColor="#B89EFF" />
+        </LinearGradient>
+      </Defs>
     </Svg>
   </View>
 );
 
-export const IconAccount2 = ({size = 24}: IconProps) => (
+export const IconAccount2 = ({ size = 24 }: IconProps) => (
   <View>
     <Svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-        <Path
-          d="M8 0C9.06087 0 10.0783 0.421427 10.8284 1.17157C11.5786 1.92172 12 2.93913 12 4C12 5.06087 11.5786 6.07828 10.8284 6.82843C10.0783 7.57857 9.06087 8 8 8C6.93913 8 5.92172 7.57857 5.17157 6.82843C4.42143 6.07828 4 5.06087 4 4C4 2.93913 4.42143 1.92172 5.17157 1.17157C5.92172 0.421427 6.93913 0 8 0ZM8 16C8 16 16 16 16 14C16 11.6 12.1 9 8 9C3.9 9 0 11.6 0 14C0 16 8 16 8 16Z"
-          fill="url(#paint0_linear_1354_51)"
-        />
-        <Path
-          d="M8 0C9.06087 0 10.0783 0.421427 10.8284 1.17157C11.5786 1.92172 12 2.93913 12 4C12 5.06087 11.5786 6.07828 10.8284 6.82843C10.0783 7.57857 9.06087 8 8 8C6.93913 8 5.92172 7.57857 5.17157 6.82843C4.42143 6.07828 4 5.06087 4 4C4 2.93913 4.42143 1.92172 5.17157 1.17157C5.92172 0.421427 6.93913 0 8 0ZM8 16C8 16 16 16 16 14C16 11.6 12.1 9 8 9C3.9 9 0 11.6 0 14C0 16 8 16 8 16Z"
-          fill="black"
-          fillOpacity="0.2"
-        />
-        <Defs>
-          <LinearGradient
-            id="paint0_linear_1354_51"
-            x1="8"
-            y1="0"
-            x2="8"
-            y2="16"
-            gradientUnits="userSpaceOnUse">
-            <Stop stopColor="#9957DF" />
-            <Stop offset="1" stopColor="#B89EFF" />
-          </LinearGradient>
-        </Defs>
+      <Path
+        d="M8 0C9.06087 0 10.0783 0.421427 10.8284 1.17157C11.5786 1.92172 12 2.93913 12 4C12 5.06087 11.5786 6.07828 10.8284 6.82843C10.0783 7.57857 9.06087 8 8 8C6.93913 8 5.92172 7.57857 5.17157 6.82843C4.42143 6.07828 4 5.06087 4 4C4 2.93913 4.42143 1.92172 5.17157 1.17157C5.92172 0.421427 6.93913 0 8 0ZM8 16C8 16 16 16 16 14C16 11.6 12.1 9 8 9C3.9 9 0 11.6 0 14C0 16 8 16 8 16Z"
+        fill="url(#paint0_linear_1354_51)"
+      />
+      <Path
+        d="M8 0C9.06087 0 10.0783 0.421427 10.8284 1.17157C11.5786 1.92172 12 2.93913 12 4C12 5.06087 11.5786 6.07828 10.8284 6.82843C10.0783 7.57857 9.06087 8 8 8C6.93913 8 5.92172 7.57857 5.17157 6.82843C4.42143 6.07828 4 5.06087 4 4C4 2.93913 4.42143 1.92172 5.17157 1.17157C5.92172 0.421427 6.93913 0 8 0ZM8 16C8 16 16 16 16 14C16 11.6 12.1 9 8 9C3.9 9 0 11.6 0 14C0 16 8 16 8 16Z"
+        fill="black"
+        fillOpacity="0.2"
+      />
+      <Defs>
+        <LinearGradient
+          id="paint0_linear_1354_51"
+          x1="8"
+          y1="0"
+          x2="8"
+          y2="16"
+          gradientUnits="userSpaceOnUse"
+        >
+          <Stop stopColor="#9957DF" />
+          <Stop offset="1" stopColor="#B89EFF" />
+        </LinearGradient>
+      </Defs>
     </Svg>
   </View>
 );

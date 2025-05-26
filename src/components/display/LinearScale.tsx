@@ -1,7 +1,8 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+
 import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
-import {ThemedColors} from '@constants/Theme.style';
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import { ThemedColors } from '@constants/Theme.style';
 
 type LinearScaleProps = {
   value: number;
@@ -45,12 +46,13 @@ const LinearScale = ({
         <LinearGradientWrapper
           color1={ThemedColors.darkPurple_icon}
           color2={ThemedColors.lightPurple_icon}
-          style={[styles.bar, {width: barWidth}]}
-          direction="horizontal">
+          style={[styles.bar, { width: barWidth }]}
+          direction="horizontal"
+        >
           <View />
         </LinearGradientWrapper>
       </View>
-      <View style={{alignItems: 'flex-end'}}>
+      <View style={{ alignItems: 'flex-end' }}>
         <View
           style={{
             flexDirection: 'row',
@@ -59,7 +61,8 @@ const LinearScale = ({
               Math.max(0, containerWidth - barWidth - 26), // Limita o máximo que o texto avança
               containerWidth - 46, // Limita o mínimo que o texto recua
             ),
-          }}>
+          }}
+        >
           <Text style={styles.textConsumptionValue}>{value} </Text>
           <Text style={[styles.textConsumption]}>kWh</Text>
         </View>

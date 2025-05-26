@@ -24,7 +24,8 @@ const ThemedDeleteButton = ({
   return (
     <Pressable
       onPress={onPress}
-      style={({pressed}) => [styles.button, style, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.button, style, pressed && styles.pressed]}
+    >
       <FontAwesomeIcon name="trash" size={20} style={styles.icon} />
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </Pressable>

@@ -1,14 +1,14 @@
-import {useState} from 'react';
-import {View} from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
 
-import styles from './EquipmentRegisterScreen.style';
-
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
+import PrimaryButton from '@components/buttons/ThemedButton';
+import ThemedDropdownModal from '@components/inputs/ThemedDropdownModal';
+import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/ThemedButton';
-import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
-import ThemedDropdownModal from '@components/inputs/ThemedDropdownModal';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+
+import styles from './EquipmentRegisterScreen.style';
 
 const EquipmentRegisterScreen = () => {
   const [equipmentName, setEquipmentName] = useState('');

@@ -1,5 +1,6 @@
-import {useState, useEffect} from 'react';
-import BleManager, {Peripheral} from 'react-native-ble-manager';
+import { useState, useEffect } from 'react';
+import { EventSubscription } from 'react-native';
+import BleManager, { Peripheral } from 'react-native-ble-manager';
 
 const useBluetoothPeripherals = () => {
   const [isScanning, setIsScanning] = useState(Boolean);
@@ -25,7 +26,7 @@ const useBluetoothPeripherals = () => {
 
   //   Main hook function
   useEffect(() => {
-    const listeners: any[] = [
+    const listeners: EventSubscription[] = [
       BleManager.onDiscoverPeripheral(handleDiscoverPeripheral),
       BleManager.onStopScan(handleStopScan),
     ];
@@ -37,7 +38,7 @@ const useBluetoothPeripherals = () => {
     };
   }, []);
 
-  return {isScanning, setIsScanning, peripherals, setPeripherals};
+  return { isScanning, setIsScanning, peripherals, setPeripherals };
 };
 
 export default useBluetoothPeripherals;

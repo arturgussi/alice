@@ -24,10 +24,12 @@ const ThemedButton = ({
   return (
     <Pressable
       onPress={onPress}
-      style={({pressed}) => [styles.button, style, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.button, style, pressed && styles.pressed]}
+    >
       <LinearGradient
         colors={['rgba(148, 85, 215, 1)', 'rgba(33, 23, 60, 1)']} // Gradiente de 180deg
-        style={styles.gradientBackground}>
+        style={styles.gradientBackground}
+      >
         <Text style={[styles.text, textStyle]}>{title}</Text>
       </LinearGradient>
     </Pressable>

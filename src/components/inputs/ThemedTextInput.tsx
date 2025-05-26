@@ -5,13 +5,14 @@ import {
   TextStyle,
   StyleProp,
 } from 'react-native';
-import {ThemedColors} from '@constants/Theme.style';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 interface ThemedTextInputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;
 }
 
-const ThemedTextInput = ({style, ...rest}: ThemedTextInputProps) => {
+const ThemedTextInput = ({ style, ...rest }: ThemedTextInputProps) => {
   return (
     <TextInput
       placeholderTextColor={ThemedColors.placeholder}

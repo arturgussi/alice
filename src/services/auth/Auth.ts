@@ -1,5 +1,6 @@
-import {getApp} from '@react-native-firebase/app';
-import {getAuth} from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
+import { getAuth } from '@react-native-firebase/auth';
+import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 const auth = getAuth(getApp());
 
@@ -14,13 +15,14 @@ export const signUp = (email: string, password: string) => {
 export const signOff = () => {
   return auth.signOut();
 };
-
-export const subscribeToAuthChanges = (callback: (user: any) => void) => {
+export const subscribeToAuthChanges = (
+  callback: (user: FirebaseAuthTypes.User | null) => void,
+) => {
   return auth.onAuthStateChanged(callback);
 };
 
 export const setDisplayName = (name: string) => {
-  return auth.currentUser?.updateProfile({displayName: name});
+  return auth.currentUser?.updateProfile({ displayName: name });
 };
 
 export const updateAccountData = (name: string, newPassord: string) => {

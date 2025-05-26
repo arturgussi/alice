@@ -1,12 +1,19 @@
 import React from 'react';
-import {StyleSheet, Text, TextProps, TextStyle, StyleProp} from 'react-native';
-import {ThemedColors} from '@constants/Theme.style';
+import {
+  StyleSheet,
+  Text,
+  TextProps,
+  TextStyle,
+  StyleProp,
+} from 'react-native';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 interface ThemedTextProps extends TextProps {
   style?: StyleProp<TextStyle>;
 }
 
-const ThemedText = ({style, ...rest}: ThemedTextProps) => {
+const ThemedText = ({ style, ...rest }: ThemedTextProps) => {
   return <Text style={[styles.text, style]} {...rest} />;
 };
 

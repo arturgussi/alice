@@ -1,7 +1,6 @@
 import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
-import {StyleProp, ViewStyle} from 'react-native';
 
 interface LinearGradientWrapperProps {
   color1: string;
@@ -18,14 +17,16 @@ const LinearGradientWrapper: React.FC<LinearGradientWrapperProps> = ({
   style,
   children,
 }) => {
-  const start = direction === 'horizontal' ? {x: 0, y: 0.5} : {x: 0.5, y: 0};
-  const end = direction === 'horizontal' ? {x: 1, y: 0.5} : {x: 0.5, y: 1};
+  const start =
+    direction === 'horizontal' ? { x: 0, y: 0.5 } : { x: 0.5, y: 0 };
+  const end = direction === 'horizontal' ? { x: 1, y: 0.5 } : { x: 0.5, y: 1 };
   return (
     <LinearGradient
       colors={[color1, color2]}
       start={start}
       end={end}
-      style={style}>
+      style={style}
+    >
       {children}
     </LinearGradient>
   );

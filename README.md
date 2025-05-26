@@ -7,4 +7,5 @@ Software desenvolvido em react-native para o projeto ALICE
 Seguir os padrões estabelecidos na documentação
 
 ### Versionammento
+
 [Git](docs/versionamento/git.md)

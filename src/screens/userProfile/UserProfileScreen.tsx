@@ -1,28 +1,26 @@
-import {useState} from 'react';
-import {View, Alert} from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
+import { useState } from 'react';
+import { Alert, View } from 'react-native';
+
+import PrimaryButton from '@components/buttons/ThemedButton';
+import ThemedDeleteButton from '@components/buttons/ThemedDeleteButton';
+import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
+import ThemedTextInput from '@components/inputs/ThemedTextInput';
+import ThemedText from '@components/texts/ThemedText';
+import BackgroundWrapperTitle from '@components/wrappers/BackgroundWrapper';
+import { useAuth } from 'src/navigation/routes/AppNavigator';
+import { deleteAccount, updateAccountData } from '@services/auth/Auth';
 
 import styles from './UserProfileScreen.style';
 
-import ThemedTextInput from '@components/inputs/ThemedTextInput';
-import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/ThemedButton';
-import {useAuth} from '@routes/AppNavigator';
-import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
-import BackgroundWrapperTitle from '@components/wrappers/BackgroundWrapperTitle';
-import {deleteAccount, updateAccountData} from '@services/auth/Auth';
-import ThemedDeleteButton from '@components/buttons/ThemedDeleteButton';
-
-// type UserProfileNavigationProp = NavigationProp<
-//   AuthStackParamList,
-//   'Register'
-// >;
+type UserProfileNavigationProp = NavigationProp<'Profile'>;
 
 interface UserProfileProps {
-  navigation: any; //UserProfileNavigationProp;
+  navigation: UserProfileNavigationProp;
 }
 
-const UserProfileScreen = ({navigation}: UserProfileProps) => {
-  const {user} = useAuth();
+const UserProfileScreen = ({ navigation }: UserProfileProps) => {
+  const { user } = useAuth();
   const [nome, setNome] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -45,15 +43,23 @@ const UserProfileScreen = ({navigation}: UserProfileProps) => {
       updateAccountData(nome, password);
 
       Alert.alert('Sucesso', 'Dados alterados com sucesso!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       let message = 'Erro ao alterar dados da conta.';
 
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'Este email já está em uso.';
-      } else if (error.code === 'auth/invalid-email') {
-        message = 'Email inválido.';
-      } else if (error.code === 'auth/weak-password') {
-        message = 'A senha deve ter pelo menos 6 caracteres.';
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string'
+      ) {
+        const code = (error as { code: string }).code;
+        if (code === 'auth/email-already-in-use') {
+          message = 'Este email já está em uso.';
+        } else if (code === 'auth/invalid-email') {
+          message = 'Email inválido.';
+        } else if (code === 'auth/weak-password') {
+          message = 'A senha deve ter pelo menos 6 caracteres.';
+        }
       }
 
       Alert.alert('Erro', message);
@@ -76,7 +82,7 @@ const UserProfileScreen = ({navigation}: UserProfileProps) => {
           style: 'destructive',
         },
       ],
-      {cancelable: true},
+      { cancelable: true },
     );
   };
 
@@ -95,7 +101,7 @@ const UserProfileScreen = ({navigation}: UserProfileProps) => {
           <ThemedText style={styles.text}>Dados da conta</ThemedText>
         </View>
         <ThemedText>email: {user?.email}</ThemedText>
-        <View style={[styles.inputContainer, {marginTop: 12}]}>
+        <View style={[styles.inputContainer, { marginTop: 12 }]}>
           <ThemedTextInput
             placeholder="Digite seu nome"
             autoCapitalize="words"
@@ -128,7 +134,7 @@ const UserProfileScreen = ({navigation}: UserProfileProps) => {
           <PrimaryButton title="Salvar" onPress={handleRegister} />
         </View>
         {/* Spacer */}
-        <View style={{flex: 1, height: 0}} />
+        <View style={{ flex: 1, height: 0 }} />
         <View style={styles.buttonContainer}>
           <ThemedDeleteButton
             title="Deletar conta"

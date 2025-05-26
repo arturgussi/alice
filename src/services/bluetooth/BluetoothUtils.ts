@@ -1,6 +1,4 @@
 import BleManager, {
-  BleDisconnectPeripheralEvent,
-  BleManagerDidUpdateValueForCharacteristicEvent,
   BleScanCallbackType,
   BleScanMatchMode,
   BleScanMode,
@@ -23,7 +21,7 @@ const startScan = async () => {
         .then(() => {
           console.debug('[startScan] scan promise returned successfully.');
         })
-        .catch((err: any) => {
+        .catch((err: unknown) => {
           console.error('[startScan] ble scan returned in error', err);
         });
     } catch (error) {

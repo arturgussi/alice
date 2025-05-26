@@ -1,5 +1,3 @@
-import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
-import {ThemedColors} from '@constants/Theme.style';
 import React from 'react';
 import {
   StyleSheet,
@@ -8,18 +6,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
+import { ThemedColors } from '@constants/Theme.style';
+
 type HomeMenuButtonProps = {
   text: string;
   onPress: (event: GestureResponderEvent) => void;
   children: React.ReactNode;
 };
 
-const HomeMenuButton = ({text, onPress, children}: HomeMenuButtonProps) => {
+const HomeMenuButton = ({ text, onPress, children }: HomeMenuButtonProps) => {
   return (
     <LinearGradientWrapper
       color1={ThemedColors.background_card}
       color2={ThemedColors.background_card2}
-      style={styles.touchableOpacity}>
+      style={styles.touchableOpacity}
+    >
       <TouchableOpacity style={styles.touchableOpacity} onPress={onPress}>
         {children}
         <Text style={styles.text}>{text}</Text>

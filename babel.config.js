@@ -16,7 +16,7 @@ module.exports = {
           '.ios.tsx',
         ],
         alias: {
-          '@assets': './assets',
+          '@assets': './src/assets',
           '@constants': './src/constants',
           '@components': './src/components',
           '@contexts': './src/contexts',

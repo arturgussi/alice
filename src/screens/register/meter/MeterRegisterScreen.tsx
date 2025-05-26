@@ -1,23 +1,20 @@
-import {useEffect, useRef, useState} from 'react';
-import {FlatList, View} from 'react-native';
-import BleManager, {Peripheral} from 'react-native-ble-manager';
+import { useEffect } from 'react';
+import { FlatList, View } from 'react-native';
+import BleManager, { Peripheral } from 'react-native-ble-manager';
 
-import styles from './MeterRegister.style';
-
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
-import ThemedText from '@components/texts/ThemedText';
+import MeterButton from '@components/buttons/MeterButton';
 import PrimaryButton from '@components/buttons/ThemedButton';
+import ThemedText from '@components/texts/ThemedText';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import useBluetoothPeripherals from '@hooks/useBluetoothPeripherals';
 import {
   checkBluetoothPermissions,
-  requestBluetoothPermissions,
   enableBluetooth,
+  requestBluetoothPermissions,
 } from '@services/bluetooth/BluetoothManager';
-import {scanDevices} from '@services/bluetooth/BluetoothUtils';
-import MeterButton from '@components/buttons/MeterButton';
-import useBluetoothPeripherals from '@hooks/useBluetoothPeripherals';
-import {Portal} from 'react-native-portalize';
-import {Modalize} from 'react-native-modalize';
-import ThemedTextInput from '@components/inputs/ThemedTextInput';
+import { scanDevices } from '@services/bluetooth/BluetoothUtils';
+
+import styles from './MeterRegister.style';
 
 declare module 'react-native-ble-manager' {
   interface Peripheral {
@@ -26,8 +23,8 @@ declare module 'react-native-ble-manager' {
   }
 }
 
-const DeviceRegisterScreen = () => {
-  const {isScanning, setIsScanning, peripherals, setPeripherals} =
+const MeterRegisterScreen = () => {
+  const { isScanning, setIsScanning, peripherals, setPeripherals } =
     useBluetoothPeripherals();
 
   const handleScanDevices = async () => {
@@ -50,9 +47,9 @@ const DeviceRegisterScreen = () => {
   useEffect(() => {
     const BleManagerStart = async () => {
       try {
-        await BleManager.start({showAlert: false, forceLegacy: true})
+        await BleManager.start({ showAlert: false, forceLegacy: true })
           .then(() => console.debug('BleManager started.'))
-          .catch((error: any) =>
+          .catch((error: unknown) =>
             console.error('BleManager could not be started.', error),
           );
       } catch (error) {
@@ -84,9 +81,9 @@ const DeviceRegisterScreen = () => {
               ...peripheral,
               name: peripheral.name || 'N/A',
             }))}
-            contentContainerStyle={{rowGap: 12}}
+            contentContainerStyle={{ rowGap: 12 }}
             keyExtractor={item => item.id}
-            renderItem={({item}) => <MeterButton peripheral={item} />}
+            renderItem={({ item }) => <MeterButton peripheral={item} />}
           />
         </View>
       </View>
@@ -94,4 +91,4 @@ const DeviceRegisterScreen = () => {
   );
 };
 
-export default DeviceRegisterScreen;
+export default MeterRegisterScreen;

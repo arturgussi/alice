@@ -1,24 +1,24 @@
 import React from 'react';
-import {View, Text, ScrollView} from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 
-import styles from './HomeScreen.style';
-
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapperTitle';
 import {
   IconAccount2,
   IconGraph,
   IconNewMeasure,
   IconRegister,
-} from '@assets/SVG';
+} from 'src/assets/SVG';
+import AccordionButton from '@components/buttons/AccordionButton';
 import HomeMenuButton from '@components/buttons/HomeMenuButton';
 import LinearScale from '@components/display/LinearScale';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
-import {ThemedColors} from '@constants/Theme.style';
-import AccordionButton from '@components/buttons/AccordionButton';
-import { useAuth } from '@routes/AppNavigator';
+import { ThemedColors } from '@constants/Theme.style';
+import { useAuth } from 'src/navigation/routes/AppNavigator';
+
+import styles from './HomeScreen.style';
 
 const HomeScreen = () => {
-    const {user} = useAuth();
+  const { user } = useAuth();
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -30,17 +30,20 @@ const HomeScreen = () => {
           <View style={styles.buttonContainer}>
             <HomeMenuButton
               text="Gráficos"
-              onPress={() => console.log('Gráficos')}>
+              onPress={() => console.log('Gráficos')}
+            >
               <IconGraph size={20} />
             </HomeMenuButton>
             <HomeMenuButton
               text="Cadastrar"
-              onPress={() => console.log('Cadastrar')}>
+              onPress={() => console.log('Cadastrar')}
+            >
               <IconRegister size={20} />
             </HomeMenuButton>
             <HomeMenuButton
               text="Nova medição"
-              onPress={() => console.log('Nova medição')}>
+              onPress={() => console.log('Nova medição')}
+            >
               <IconNewMeasure size={20} />
             </HomeMenuButton>
             <HomeMenuButton text="Perfil" onPress={() => console.log('Perfil')}>
@@ -53,7 +56,8 @@ const HomeScreen = () => {
               <LinearGradientWrapper
                 color1={ThemedColors.background_card}
                 color2={ThemedColors.background_card2}
-                style={styles.containerWapper}>
+                style={styles.containerWapper}
+              >
                 <LinearScale
                   value={10}
                   month="outubro"
@@ -72,8 +76,11 @@ const HomeScreen = () => {
               <LinearGradientWrapper
                 color1={ThemedColors.background_card}
                 color2={ThemedColors.background_card2}
-                style={[styles.containerWapper, {flexDirection: 'row'}]}>
-                <Text style={[styles.text, {flex: 1}]}>Consumo{'\n'}atual</Text>
+                style={[styles.containerWapper, { flexDirection: 'row' }]}
+              >
+                <Text style={[styles.text, { flex: 1 }]}>
+                  Consumo{'\n'}atual
+                </Text>
                 <Text style={styles.consumptionText}>R$67,34</Text>
               </LinearGradientWrapper>
             </View>
@@ -81,8 +88,9 @@ const HomeScreen = () => {
               <LinearGradientWrapper
                 color1={ThemedColors.background_card}
                 color2={ThemedColors.background_card2}
-                style={[styles.containerWapper, {flexDirection: 'row'}]}>
-                <Text style={[styles.text, {flex: 1}]}>
+                style={[styles.containerWapper, { flexDirection: 'row' }]}
+              >
+                <Text style={[styles.text, { flex: 1 }]}>
                   Consumo no{'\n'}último mês
                 </Text>
                 <Text style={styles.consumptionText}>R$132,21</Text>
@@ -92,10 +100,15 @@ const HomeScreen = () => {
               <LinearGradientWrapper
                 color1={ThemedColors.background_card}
                 color2={ThemedColors.background_card2}
-                style={[styles.containerWapper, {flexDirection: 'row'}]}>
-                <Text style={[styles.text, {flex: 1}]}>R$ kWh hoje</Text>
+                style={[styles.containerWapper, { flexDirection: 'row' }]}
+              >
+                <Text style={[styles.text, { flex: 1 }]}>R$ kWh hoje</Text>
                 <Text
-                  style={[styles.consumptionText, {color: ThemedColors.title}]}>
+                  style={[
+                    styles.consumptionText,
+                    { color: ThemedColors.title },
+                  ]}
+                >
                   R$0,57
                 </Text>
               </LinearGradientWrapper>
@@ -106,16 +119,18 @@ const HomeScreen = () => {
             <LinearGradientWrapper
               color1={ThemedColors.background_card}
               color2={ThemedColors.background_card2}
-              style={[styles.containerWapper, styles.consumptionContainer]}>
+              style={[styles.containerWapper, styles.consumptionContainer]}
+            >
               <AccordionButton title="Sala1">
                 <LinearGradientWrapper
                   color1={ThemedColors.background_submenu1}
                   color2={ThemedColors.background_submenu2}
-                  style={[styles.containerWapper, styles.consumptionContainer]}>
+                  style={[styles.containerWapper, styles.consumptionContainer]}
+                >
                   <Text style={styles.text}>Sala 1</Text>
                 </LinearGradientWrapper>
               </AccordionButton>
-              <AccordionButton title="Sala2"></AccordionButton>
+              <AccordionButton title="Sala2" />
             </LinearGradientWrapper>
           </View>
         </View>

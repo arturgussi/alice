@@ -1,16 +1,16 @@
-import {useState} from 'react';
-import {View, TouchableOpacity, Image, Alert} from 'react-native';
-import {NavigationProp} from '@react-navigation/native';
-
-import styles from './AccountRegisterScreen.style';
+import { NavigationProp } from '@react-navigation/native';
+import { useState } from 'react';
+import { View, TouchableOpacity, Image, Alert } from 'react-native';
 
 import images from '@assets/Images';
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/ThemedButton';
-import {AuthStackParamList} from '@routes/AuthNavigator';
-import {setDisplayName, signUp} from '@services/auth/Auth';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import { AuthStackParamList } from 'src/navigation/routes/AuthNavigator';
+import { setDisplayName, signUp } from '@services/auth/Auth';
+
+import styles from './AccountRegisterScreen.style';
 
 type AccountRegisterNavigationProp = NavigationProp<
   AuthStackParamList,
@@ -21,7 +21,7 @@ interface AccountRegisterProps {
   navigation: AccountRegisterNavigationProp;
 }
 
-const AccountRegisterScreen = ({navigation}: AccountRegisterProps) => {
+const AccountRegisterScreen = ({ navigation }: AccountRegisterProps) => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +45,7 @@ const AccountRegisterScreen = ({navigation}: AccountRegisterProps) => {
       Alert.alert('Sucesso', 'Conta criada com sucesso!');
 
       navigation.goBack(); // Volta para tela de login
-    } catch (error: any) {
+    } catch (error: unknown) {
       let message = 'Erro ao criar conta.';
 
       if (error.code === 'auth/email-already-in-use') {
@@ -108,8 +108,9 @@ const AccountRegisterScreen = ({navigation}: AccountRegisterProps) => {
         </View>
         <View>
           <TouchableOpacity
-            style={[styles.touchableOpacity, {marginTop: 20}]}
-            onPress={() => navigation.goBack()}>
+            style={[styles.touchableOpacity, { marginTop: 20 }]}
+            onPress={() => navigation.goBack()}
+          >
             <ThemedText style={styles.text}>Já possui uma conta?</ThemedText>
             <ThemedText style={styles.text}>Login</ThemedText>
           </TouchableOpacity>

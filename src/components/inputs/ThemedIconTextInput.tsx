@@ -9,7 +9,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {ThemedColors} from '@constants/Theme.style';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 interface ThemedIconTextInputProps extends TextInputProps {
   style?: StyleProp<TextStyle>;

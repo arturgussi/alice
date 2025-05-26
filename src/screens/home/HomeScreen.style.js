@@ -1,5 +1,6 @@
-import {ThemedColors} from '@constants/Theme.style';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 const styles = StyleSheet.create({
   container: {

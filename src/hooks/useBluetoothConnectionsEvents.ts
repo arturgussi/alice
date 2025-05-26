@@ -1,5 +1,5 @@
-import {sleep} from '@util';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
+import { EventSubscription } from 'react-native';
 import BleManager, {
   BleConnectPeripheralEvent,
   BleDisconnectPeripheralEvent,
@@ -7,10 +7,12 @@ import BleManager, {
   Peripheral,
 } from 'react-native-ble-manager';
 
+import { sleep } from '@util';
+
 interface BluetoothConnectionsHookResult {
   isConnecting: boolean;
   isConnected: boolean;
-  error: any;
+  error: unknown;
   wifiStatus: string;
   connectToDevice: () => Promise<void>;
   sendWifiCredentials: (
@@ -32,15 +34,15 @@ const useBluetoothConnectionsEvents = ({
   const WIFI_STATUS_CHARACTERISTIC_UUID =
     '8b7a3e5c-9d2a-4e6f-a1c3-f0e8d7b1a5c2';
 
-  const [isConnecting, setIsConnecting] = useState<any>(null);
-  const [isConnected, setIsConnected] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-  const [wifiStatus, setWifiStatus] = useState<any>('');
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [error, setError] = useState<unknown>(null);
+  const [wifiStatus, setWifiStatus] = useState<string>('');
 
   const atualizaConexao = (
     connecting: boolean,
     connected: boolean,
-    error: any,
+    error: unknown,
   ) => {
     peripheral.connecting = connecting;
     peripheral.connected = connected;
@@ -91,7 +93,7 @@ const useBluetoothConnectionsEvents = ({
       }
     };
 
-    const listeners: any[] = [
+    const listeners: EventSubscription[] = [
       BleManager.onConnectPeripheral(handleConnected),
       BleManager.onDidUpdateValueForCharacteristic(
         handleUpdateValueForCharacteristic,
@@ -141,7 +143,7 @@ const useBluetoothConnectionsEvents = ({
             if (characteristic.descriptors) {
               for (const descriptor of characteristic.descriptors) {
                 try {
-                  let data = await BleManager.readDescriptor(
+                  const data = await BleManager.readDescriptor(
                     peripheral.id,
                     characteristic.service,
                     characteristic.characteristic,
@@ -223,7 +225,6 @@ const useBluetoothConnectionsEvents = ({
           stringToBytes(btoa(wifiSSid)),
         );
         console.log('SSID enviado com sucesso!');
-        BleManager.write;
 
         // Envia PASSWORD
         await BleManager.writeWithoutResponse(

@@ -1,16 +1,16 @@
-import {useState} from 'react';
-import {View, TouchableOpacity, Image, Alert} from 'react-native';
-import {NavigationProp} from '@react-navigation/native';
-
-import styles from './AuthScreen.style';
+import { NavigationProp } from '@react-navigation/native';
+import { useState } from 'react';
+import { View, TouchableOpacity, Image, Alert } from 'react-native';
 
 import images from '@assets/Images';
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
-import PrimaryButton from '@components/buttons/ThemedButton';
-import {AuthStackParamList} from '@routes/AuthNavigator';
-import {signIn} from '@services/auth/Auth';
+import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
+import { AuthStackParamList } from 'src/navigation/routes/AuthNavigator';
+import { signIn } from '@services/auth/Auth';
+
+import styles from './AuthScreen.style';
 
 type AuthScreenNavigationProp = NavigationProp<AuthStackParamList, 'Login'>;
 
@@ -18,20 +18,25 @@ interface AuthScreenProps {
   navigation: AuthScreenNavigationProp;
 }
 
-const AuthScreen = ({navigation}: AuthScreenProps) => {
+const AuthScreen = ({ navigation }: AuthScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
       await signIn(email, password);
-    } catch (error: any) {
+    } catch (error: unknown) {
       let message = 'Erro ao autenticar.';
-      if (error.code === 'auth/user-not-found')
-        message = 'Usuário não encontrado.';
-      else if (error.code === 'auth/wrong-password')
-        message = 'Senha incorreta.';
-      else if (error.code === 'auth/invalid-email') message = 'Email inválido.';
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        const code = (error as { code: string }).code;
+        if (code === 'auth/user-not-found') {
+          message = 'Usuário não encontrado.';
+        } else if (code === 'auth/wrong-password') {
+          message = 'Senha incorreta.';
+        } else if (code === 'auth/invalid-email') {
+          message = 'Email inválido.';
+        }
+      }
       Alert.alert('Erro', message);
     }
   };
@@ -70,12 +75,14 @@ const AuthScreen = ({navigation}: AuthScreenProps) => {
         </View>
         <TouchableOpacity
           style={styles.touchableOpacity}
-          onPress={navigateRegisterPage}>
+          onPress={navigateRegisterPage}
+        >
           <ThemedText style={styles.text}>Novo usuário</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.touchableOpacity}
-          onPress={() => console.log('Navegar para recuperar senha')}>
+          onPress={() => console.log('Navegar para recuperar senha')}
+        >
           <ThemedText style={styles.text}>Esqueci minha senha</ThemedText>
         </TouchableOpacity>
       </View>

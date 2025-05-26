@@ -1,6 +1,6 @@
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {Platform} from 'react-native';
-import BleManager, {BleState} from 'react-native-ble-manager';
+import { Platform } from 'react-native';
+import BleManager, { BleState } from 'react-native-ble-manager';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 export const checkBluetoothPermissions = async () => {
   if (Platform.OS === 'android') {

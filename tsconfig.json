@@ -5,15 +5,15 @@
     "strict": true,
     "baseUrl": "./",
     "paths": {
-      "@assets/*": ["./assets/*"],
+      "@assets/*": ["./src/assets/*"],
       "@constants/*": ["./src/constants/*"],
       "@components/*": ["./src/components/*"],
       "@contexts/*": ["./src/contexts/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@routes/*": ["./src/routes/*"],
+      "@routes/*": ["src/navigation/routes/*"],
       "@screens/*": ["./src/screens/*"],
       "@services/*": ["./src/services/*"],
       "@util": ["./src/Util.ts"]
-    },
+    }
   }
 }

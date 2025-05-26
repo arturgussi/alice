@@ -1,8 +1,15 @@
-import {useRef} from 'react';
-import {Text, FlatList, TouchableOpacity, StyleSheet, View} from 'react-native';
-import {Modalize} from 'react-native-modalize';
-import {Portal} from 'react-native-portalize';
-import {ThemedColors} from '@constants/Theme.style';
+import { useRef } from 'react';
+import {
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 interface ThemedDropdownModalProps {
   value?: string;
@@ -29,10 +36,11 @@ const ThemedDropdownModal = ({
   };
 
   // Função para renderizar cada item da lista
-  const renderItem = ({item}: {item: string}) => (
+  const renderItem = ({ item }: { item: string }) => (
     <TouchableOpacity
       style={stylesModal.item}
-      onPress={() => handleSelectValue(item)}>
+      onPress={() => handleSelectValue(item)}
+    >
       <Text style={stylesModal.itemText}>{item}</Text>
     </TouchableOpacity>
   );

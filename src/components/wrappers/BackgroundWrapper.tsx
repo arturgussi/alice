@@ -1,12 +1,13 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {ThemedColors} from '@constants/Theme.style';
+import { ReactNode } from 'react';
+import { View, StyleSheet } from 'react-native';
+
+import { ThemedColors } from '@constants/Theme.style';
 
 interface BackgroundWrapperProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({children}) => {
+const BackgroundWrapper = ({ children }: BackgroundWrapperProps) => {
   return <View style={styles.container}>{children}</View>;
 };
 

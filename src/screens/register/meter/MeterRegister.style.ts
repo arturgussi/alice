@@ -1,14 +1,23 @@
-import { ThemedColors } from '@constants/Theme.style';
-import {StyleSheet} from 'react-native';
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
-const styles = StyleSheet.create({
+import { ThemedColors } from '@constants/Theme.style';
+
+type Style = {
+  container: ViewStyle;
+  flatListcontainer: ViewStyle;
+  meterContainer: ViewStyle;
+  buttonContainer: ViewStyle;
+  text: TextStyle;
+};
+
+const styles: Style = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'start',
+    justifyContent: 'flex-start',
   },
   flatListcontainer: {
     flex: 1,
-    justifyContent: 'start',
+    justifyContent: 'flex-start',
   },
   meterContainer: {
     padding: 12,

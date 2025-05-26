@@ -1,4 +1,22 @@
-export const ThemedColors = {
+type ThemedColorProps = {
+  lightPurple: string;
+  purple: string;
+  darkPurple: string;
+  lightPurple_icon: string;
+  darkPurple_icon: string;
+  background: string;
+  backgroundSubmenu: string;
+  background_card: string;
+  background_card2: string;
+  background_card3: string;
+  background_submenu1: string;
+  background_submenu2: string;
+  text: string;
+  placeholder: string;
+  title: string;
+};
+
+export const ThemedColors: ThemedColorProps = {
   lightPurple: 'rgba(184, 158, 255, 1)',
   purple: 'rgba(147, 84, 214, 1)',
   darkPurple: 'rgba(33, 23, 60, 1)',
@@ -15,7 +33,6 @@ export const ThemedColors = {
   placeholder: 'rgba(179, 179, 179, 0.8)',
   title: 'rgba(92, 92, 92, 1)',
 };
-
 
 // export const Spacings = {
 //   small: 8,

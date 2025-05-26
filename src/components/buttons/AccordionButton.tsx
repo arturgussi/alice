@@ -1,12 +1,10 @@
-import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
-import {ThemedColors} from '@constants/Theme.style';
 import React from 'react';
 import {
-  StyleSheet,
-  View,
   SafeAreaView,
-  TouchableOpacity,
+  StyleSheet,
   Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -18,6 +16,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+
+import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
+import { ThemedColors } from '@constants/Theme.style';
 
 type AccordionItemProps = {
   isExpanded: SharedValue<boolean>;
@@ -48,12 +49,14 @@ function AccordionItem({
   return (
     <Animated.View
       key={`accordionItem_${viewKey}`}
-      style={[styles.animatedView, bodyStyle, style]}>
+      style={[styles.animatedView, bodyStyle, style]}
+    >
       <View
         onLayout={e => {
           height.value = e.nativeEvent.layout.height;
         }}
-        style={styles.wrapper}>
+        style={styles.wrapper}
+      >
         {children}
       </View>
     </Animated.View>
@@ -65,7 +68,7 @@ type ParentProps = {
   children: React.ReactNode;
 };
 
-function Parent({open, children}: ParentProps) {
+function Parent({ open, children }: ParentProps) {
   return (
     <View style={styles.parent}>
       <AccordionItem isExpanded={open} viewKey="Accordion" style={undefined}>
@@ -80,16 +83,16 @@ type AccordionButtonProps = {
   children?: React.ReactNode;
 };
 
-const AccordionButton = ({title, children}: AccordionButtonProps) => {
+const AccordionButton = ({ title, children }: AccordionButtonProps) => {
   const open = useSharedValue(false);
 
   const onPress = () => {
     open.value = !open.value;
 
     if (open.value) {
-      rotation.value = withTiming(0, {duration: 300});
+      rotation.value = withTiming(0, { duration: 300 });
     } else {
-      rotation.value = withTiming(0.5, {duration: 300});
+      rotation.value = withTiming(0.5, { duration: 300 });
     }
   };
 
@@ -115,7 +118,8 @@ const AccordionButton = ({title, children}: AccordionButtonProps) => {
         <LinearGradientWrapper
           color1={ThemedColors.background_card3}
           color2={ThemedColors.background_card2}
-          style={styles.button}>
+          style={styles.button}
+        >
           <Text style={styles.text}>{title}</Text>
           <Animated.View style={animatedStyle}>
             <FontAwesomeIcon
