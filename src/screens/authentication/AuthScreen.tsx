@@ -7,8 +7,8 @@ import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
-import { AuthStackParamList } from 'src/navigation/routes/AuthNavigator';
 import { signIn } from '@services/auth/Auth';
+import { AuthStackParamList } from 'src/navigation/routes/AuthNavigator';
 
 import styles from './AuthScreen.style';
 

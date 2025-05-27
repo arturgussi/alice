@@ -8,10 +8,11 @@ import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import BackgroundWrapperTitle from '@components/wrappers/BackgroundWrapper';
-import { useAuth } from 'src/navigation/routes/AppNavigator';
 import { deleteAccount, updateAccountData } from '@services/auth/Auth';
 
 import styles from './UserProfileScreen.style';
+
+import { useAuth } from '@/navigation/routes/AppNavigator';
 
 type UserProfileNavigationProp = NavigationProp<'Profile'>;
 

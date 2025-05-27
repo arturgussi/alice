@@ -5,6 +5,8 @@
     "strict": true,
     "baseUrl": "./",
     "paths": {
+      "@/*": ["./src/*"],
+      "@api/*": ["./src/api/*"],
       "@assets/*": ["./src/assets/*"],
       "@constants/*": ["./src/constants/*"],
       "@components/*": ["./src/components/*"],
