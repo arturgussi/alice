@@ -5,6 +5,8 @@ type Style = {
   inputContainer: ViewStyle;
   buttonContainer: ViewStyle;
   text: TextStyle;
+  modalOverlay: ViewStyle;
+  centeredModalContentView: ViewStyle;
 };
 
 const styles: Style = StyleSheet.create({
@@ -24,6 +26,13 @@ const styles: Style = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  centeredModalContentView: {},
 });
 
 export default styles;

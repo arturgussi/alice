@@ -35,6 +35,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: ThemedColors.lightPuerple,
   },
+  fullScreenLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenLoadingText: {
+    marginTop: 20,
+    fontSize: 16,
+    color: ThemedColors.text,
+  },
+  screenTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
 });
 
 export default styles;

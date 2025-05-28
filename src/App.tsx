@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  DefaultOptions,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 import { useEffect } from 'react';
 import {
   SafeAreaView,
@@ -11,9 +15,21 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Host } from 'react-native-portalize';
 
 import { ThemedColors } from './constants/Theme.style';
-import { AppNavigator, AuthProvider } from './navigation/routes/AppNavigator';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppNavigator } from './navigation/routes/AppNavigator';
 
-const queryClient = new QueryClient();
+const queryClientDefaultOptions: DefaultOptions = {
+  queries: {
+    retry: 0,
+  },
+  mutations: {
+    retry: 0,
+  },
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: queryClientDefaultOptions,
+});
 
 const App = (): React.JSX.Element => {
   useEffect(() => {

@@ -1,18 +1,24 @@
 import { NavigationProp } from '@react-navigation/native';
 import { useState } from 'react';
-import { Alert, View } from 'react-native';
+import {
+  Alert,
+  Keyboard,
+  Modal,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
+import DeleteAccountModal from '@/components/modals/DeleteAccountModal';
+import { useAuth } from '@/hooks/useAuth';
 import PrimaryButton from '@components/buttons/ThemedButton';
 import ThemedDeleteButton from '@components/buttons/ThemedDeleteButton';
 import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import BackgroundWrapperTitle from '@components/wrappers/BackgroundWrapper';
-import { deleteAccount, updateAccountData } from '@services/auth/Auth';
+import { updateAccountData } from '@services/auth/Auth';
 
 import styles from './UserProfileScreen.style';
-
-import { useAuth } from '@/navigation/routes/AppNavigator';
 
 type UserProfileNavigationProp = NavigationProp<'Profile'>;
 
@@ -21,13 +27,15 @@ interface UserProfileProps {
 }
 
 const UserProfileScreen = ({ navigation }: UserProfileProps) => {
-  const { user } = useAuth();
+  const { appUser } = useAuth();
+
   const [nome, setNome] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleRegister = async () => {
     if (!password || !confirmPassword || !nome) {
@@ -67,6 +75,14 @@ const UserProfileScreen = ({ navigation }: UserProfileProps) => {
     }
   };
 
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleAccountDeleted = () => {
+    handleCloseModal();
+  };
+
   const handleDeleteAccount = () => {
     Alert.alert(
       'ATENÇÃO',
@@ -79,7 +95,7 @@ const UserProfileScreen = ({ navigation }: UserProfileProps) => {
         },
         {
           text: 'Deletar',
-          onPress: () => deleteAccount(),
+          onPress: () => setIsModalVisible(true),
           style: 'destructive',
         },
       ],
@@ -101,7 +117,7 @@ const UserProfileScreen = ({ navigation }: UserProfileProps) => {
         <View>
           <ThemedText style={styles.text}>Dados da conta</ThemedText>
         </View>
-        <ThemedText>email: {user?.email}</ThemedText>
+        <ThemedText>email: {appUser?.email}</ThemedText>
         <View style={[styles.inputContainer, { marginTop: 12 }]}>
           <ThemedTextInput
             placeholder="Digite seu nome"
@@ -142,6 +158,29 @@ const UserProfileScreen = ({ navigation }: UserProfileProps) => {
             onPress={handleDeleteAccount}
           />
         </View>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => {
+            handleCloseModal();
+          }}
+          statusBarTranslucent={true}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.modalOverlay}>
+              <View style={styles.centeredModalContentView}>
+                <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+                  <DeleteAccountModal
+                    onClose={handleCloseModal}
+                    onAccountDeletedSuccessfully={handleAccountDeleted}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </View>
     </BackgroundWrapperTitle>
   );

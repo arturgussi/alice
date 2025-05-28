@@ -1,61 +1,36 @@
-/* eslint-disable func-call-spacing */
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import {
   ActivityIndicator,
   Button,
+  RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
-import AccordionButton from '@components/buttons/AccordionButton';
-import LinearScale from '@components/display/LinearScale';
-import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
-import LinearGradientWrapper from '@components/wrappers/LinearGradientWrapper';
-import { ThemedColors } from '@constants/Theme.style';
-import { useAuth } from 'src/navigation/routes/AppNavigator';
+import AccordionButton from '@/components/buttons/AccordionButton';
+import LinearScale from '@/components/display/LinearScale';
+import BackgroundWrapper from '@/components/wrappers/BackgroundWrapper';
+import LinearGradientWrapper from '@/components/wrappers/LinearGradientWrapper';
+import { ThemedColors } from '@/constants/Theme.style';
+import { useAuth } from '@/hooks/useAuth';
+import { useEquipment } from '@/hooks/useEquipment';
+import { Equipment } from '@/types/models/AppModels';
 
 import styles from './HomeScreen.style';
 
-import ThemedText from '@/components/texts/ThemedText';
-import { fetchEquipments } from '@/services/api/EquipmentService';
-import { Equipment } from '@/types/ApiTypes';
-
 const HomeScreen = () => {
-  const { user } = useAuth();
-  const userId = user?.uid;
+  const { appUser } = useAuth();
+  const tariff = appUser?.tariff;
 
   const {
-    data: equipments,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  }: UseQueryResult<Equipment[], Error> = useQuery<
-    Equipment[],
-    Error,
-    Equipment[],
-    (string | undefined)[]
-  >({
-    // Tipagem explícita (opcional, pode ser inferida)
-    // queryKey, queryFn, enabled, etc., são todas propriedades deste objeto de opções:
-    queryKey: ['equipmentsHome', userId], // A chave da query
-    queryFn: async () => {
-      // A função que busca os dados
-      if (!userId) {
-        // Não deveria chegar aqui se 'enabled' estiver funcionando, mas é uma segurança
-        console.warn(
-          '[useQuery] queryFn chamada sem userId, retornando array vazio.',
-        );
-        return [];
-      }
-      return fetchEquipments(userId);
-    },
-    enabled: !!userId, // A query só será executada se userId for truthy
-    // Você pode adicionar outras opções do React Query aqui, como:
-    // staleTime: 5 * 60 * 1000, // 5 minutos
-    // cacheTime: 10 * 60 * 1000, // 10 minutos
-  });
+    equipments,
+    isLoading: isLoadingEquipments,
+    isError: isErrorEquipments,
+    error: errorEquipments,
+    refetchEquipments,
+    isFetching,
+  } = useEquipment();
 
   const renderGastoInfo = (equipamento: Equipment) => {
     const valorGastoPlaceholder = (Math.random() * 100)
@@ -71,16 +46,14 @@ const HomeScreen = () => {
         color2={
           ThemedColors.background_submenu2 || ThemedColors.background_card2
         }
-        // style={[screenStyles.containerWapper, localStyles.accordionContentContainer]}
+        style={styles.containerWapper}
       >
-        <View
-        // style={localStyles.gastoRow}
-        >
+        <View style={localStyles.gastoRow}>
           <Text
-          // style={localStyles.gastoValor}
+            style={localStyles.gastoValor}
           >{`R$${valorGastoPlaceholder}`}</Text>
           <Text
-          // style={localStyles.gastoConsumo}
+            style={localStyles.gastoConsumo}
           >{`${consumoKWhPlaceholder}kWh`}</Text>
         </View>
       </LinearGradientWrapper>
@@ -88,12 +61,20 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={isFetching} onRefresh={refetchEquipments} />
+      }
+    >
       <BackgroundWrapper>
         <View style={styles.container}>
           <View>
-            <Text style={styles.title}>Olá, {user?.displayName}</Text>
+            <Text style={styles.title}>
+              Olá, {appUser?.displayName || 'Usuário'}
+            </Text>
           </View>
+
           <View style={styles.consumptionContainer}>
             <View>
               <Text style={styles.text}>Consumo mensal</Text>
@@ -116,6 +97,7 @@ const HomeScreen = () => {
                 />
               </LinearGradientWrapper>
             </View>
+
             <View>
               <LinearGradientWrapper
                 color1={ThemedColors.background_card}
@@ -153,63 +135,99 @@ const HomeScreen = () => {
                     { color: ThemedColors.title },
                   ]}
                 >
-                  R$0,57
+                  {tariff === undefined ? 'Sem dados' : `R${tariff.toFixed(2)}`}
                 </Text>
               </LinearGradientWrapper>
             </View>
           </View>
 
-          <View style={styles.consumptionContainer}>
+          {/* Seção de Equipamentos com Accordions */}
+          <View style={localStyles.equipmentsSection}>
             <Text style={styles.text}>Equipamentos</Text>
-            <LinearGradientWrapper
-              color1={ThemedColors.background_card}
-              color2={ThemedColors.background_card2}
-              style={[styles.containerWapper, { flexDirection: 'row' }]}
-            >
-              {isLoading && (
-                <ActivityIndicator
-                  size="large"
-                  // color={ThemedColors.primary}
-                  style={{ marginTop: 20 }}
+            {isLoadingEquipments && (
+              <ActivityIndicator
+                size="large"
+                color={ThemedColors.text}
+                style={{ marginTop: 20 }}
+              />
+            )}
+            {isErrorEquipments && (
+              <View style={localStyles.errorContainer}>
+                <Text style={localStyles.errorText}>
+                  Erro ao carregar equipamentos: {errorEquipments?.message}
+                </Text>
+                <Button
+                  title="Tentar Novamente"
+                  onPress={() => refetchEquipments()}
+                  color={ThemedColors.text}
                 />
+              </View>
+            )}
+            {!isLoadingEquipments &&
+              !isErrorEquipments &&
+              (!equipments || equipments.length === 0) && (
+                <Text style={localStyles.noEquipmentText}>
+                  {appUser?.uid
+                    ? 'Nenhum equipamento cadastrado.'
+                    : 'Faça login para visualizar seus equipamentos.'}
+                </Text>
               )}
-              {isError && (
-                <View style={{ alignItems: 'center', marginTop: 20 }}>
-                  <Text style={{ color: 'red' }}>
-                    Erro ao carregar equipamentos: {error?.message}
-                  </Text>
-                  <Button
-                    title="Tentar Novamente"
-                    onPress={() => refetch()}
-                    // color={ThemedColors.primary}
-                  />
-                </View>
-              )}
-              {/* Verifica se 'equipments' não é undefined antes de checar o length e mapear */}
-              {!isLoading &&
-                !isError &&
-                equipments &&
-                equipments.length === 0 && (
-                  <ThemedText>Nenhum equipamento encontrado.</ThemedText>
-                )}
-              {!isLoading &&
-                !isError &&
-                equipments &&
-                equipments.length > 0 &&
-                equipments.map(equipamento => (
-                  <AccordionButton
-                    key={equipamento.id}
-                    title={equipamento.name}
-                  >
-                    {renderGastoInfo(equipamento)}
-                  </AccordionButton>
-                ))}
-            </LinearGradientWrapper>
+            {!isLoadingEquipments &&
+              !isErrorEquipments &&
+              equipments &&
+              equipments.length > 0 &&
+              equipments.map(equipamento => (
+                <AccordionButton key={equipamento.id} title={equipamento.name}>
+                  {renderGastoInfo(equipamento)}
+                </AccordionButton>
+              ))}
           </View>
         </View>
       </BackgroundWrapper>
     </ScrollView>
   );
 };
+
+const localStyles = StyleSheet.create({
+  equipmentsSection: {
+    marginTop: 20,
+    marginBottom: 20,
+    paddingHorizontal: 5,
+  },
+  gastoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
+  gastoValor: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: ThemedColors.text,
+  },
+  gastoConsumo: {
+    fontSize: 14,
+    color: ThemedColors.text,
+  },
+  noEquipmentText: {
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: ThemedColors.text,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    padding: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+});
 
 export default HomeScreen;

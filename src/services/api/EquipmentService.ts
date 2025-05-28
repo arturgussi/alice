@@ -1,11 +1,11 @@
-import apiClient from '@api/ApiClient';
 import axios, { AxiosError } from 'axios';
 
 import {
   CreateEquipmentPayload,
   Equipment,
   UpdateEquipmentPayload,
-} from '@/types/ApiTypes';
+} from '@/types/models/AppModels';
+import apiClient from '@api/ApiClient';
 
 const endpoint = '/equipamento';
 

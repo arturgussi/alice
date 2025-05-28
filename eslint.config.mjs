@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-plugin-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import jest from 'eslint-plugin-jest';
 import importPlugin from 'eslint-plugin-import';
 
@@ -19,7 +20,7 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      prettier,
+      prettier: prettierPlugin,
       jest,
       import: importPlugin,
     },
@@ -31,13 +32,12 @@ export default [
       },
     },
     rules: {
-      'func-call-spacing': ['error', 'never'],
       'prettier/prettier': [
         'error',
         { singleQuote: true, trailingComma: 'all' },
       ],
       '@typescript-eslint/no-unused-vars': ['warn'],
-      'react-native/no-inline-styles': 'off',
+      //'react-native/no-inline-styles': 'off',
       'import/order': [
         'error',
         {
@@ -55,4 +55,5 @@ export default [
       ],
     },
   },
+  eslintConfigPrettier,
 ];

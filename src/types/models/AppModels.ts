@@ -1,22 +1,3 @@
-import { Float } from 'react-native/Libraries/Types/CodegenTypes';
-
-// Usuario
-export interface UserProfile {
-  id: string;
-  email: string;
-  displayName: string;
-  tariff: Float;
-}
-
-export interface CreateUserPayload {
-  id: string; // id from Firebase
-  tariff: Float;
-}
-
-export interface UpdateUserPayload {
-  tariff: Float;
-}
-
 // Equipamento
 export interface Equipment {
   id: string;
@@ -56,5 +37,5 @@ export interface Measurement {
   value: number;
   startDatetime: string;
   endDatetime: string;
-  tariff: Float;
+  tariff: number;
 }

@@ -2,7 +2,7 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type StackHomeParamList = {
   Home: undefined;
-  EquipmentMeasure: undefined; // Verifique o componente para esta tela (veja próxima seção)
+  EquipmentMeasure: undefined;
   DeviceRegister: undefined;
 };
 
@@ -20,9 +20,6 @@ export type BottomTabParamList = {
   Perfil: NavigatorScreenParams<StackProfileParamList>;
 };
 
-// Atualize DrawerParamList
-// A tela 'App' do Drawer renderiza o BottomTabNavigator
 export type DrawerParamList = {
   App: NavigatorScreenParams<BottomTabParamList>;
-  // Adicione outras telas de nível superior do drawer aqui, se houver
 };

@@ -14,9 +14,9 @@
     "android:clean": "npm run start:cache && npm run gradlew:clean && npm run android",
     "android:fullclean": "npm run fullclean && timeout 5 && npm install && timeout 5 && npm run start:cache && timeout 5 && npm run gradlew:clean && timeout 5 && npm run android",
     "ios": "react-native run-ios",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint --fix .",
-    "prettier": "prettier --write .",
+    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier --write src/",
     "format": "npm run prettier && npm run lint:fix",
     "test": "jest"
   },

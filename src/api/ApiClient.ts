@@ -6,6 +6,7 @@ import axios, {
 } from 'axios';
 
 const API_BASE_URL = BE_API_URL;
+console.log('Endpoint', API_BASE_URL);
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -34,13 +35,9 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   response => response,
   (error: AxiosError) => {
-    // Ex: Tratar erros 401 (Não Autorizado) para deslogar o usuário
     if (error.response?.status === 401) {
-      // Lógica para deslogar o usuário ou redirecionar para login
       console.error('API Error 401: Unauthorized. Logging out.');
-      // Ex: auth.signOut();
     }
-    // Você pode adicionar mais tratamentos de erro aqui
     return Promise.reject(error);
   },
 );
