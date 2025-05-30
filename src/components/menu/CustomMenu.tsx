@@ -1,42 +1,57 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { IconAccount, IconAdd, IconHome } from '@assets/SVG';
+import { IconAccount, IconGraph, IconHome } from '@/assets/SVG';
 import { ThemedColors } from '@constants/Theme.style';
 
-export default function CustomMenu({
+type SvgComponentProps = { width: number; height: number; fill: string };
+type SvgIconComponent = (props: SvgComponentProps) => ReactNode;
+
+interface IconSet {
+  active: SvgIconComponent;
+  inactive: SvgIconComponent;
+}
+
+const IconesPorRota: Record<string, IconSet> = {
+  HomeTab: {
+    active: IconHome,
+    inactive: IconHome,
+  },
+  MeasurementsTab: {
+    active: IconGraph,
+    inactive: IconGraph,
+  },
+  ProfileTab: {
+    active: IconAccount,
+    inactive: IconAccount,
+  },
+};
+
+const ICON_SIZE = 24;
+const TAB_BAR_HEIGHT = 60;
+
+const CustomMenu: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
-}: BottomTabBarProps): ReactNode {
-  const SvgIconsForRoutes = {
-    Inicio: {
-      active: IconHome,
-      inactive: IconHome,
-    },
-    Cadastro: {
-      active: IconAdd,
-      inactive: IconAdd,
-    },
-    Perfil: {
-      active: IconAccount,
-      inactive: IconAccount,
-    },
-  };
-
+}) => {
   return (
     <View
       style={[
         styles.tabBarContainer,
         {
-          backgroundColor: ThemedColors.backgroundSubmenu,
-          height: 60,
+          backgroundColor:
+            ThemedColors.background_submenu1 ||
+            ThemedColors.background_card ||
+            'white',
+          height: TAB_BAR_HEIGHT,
         },
       ]}
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
+
         const isFocused = state.index === index;
 
         const onPress = () => {
@@ -58,13 +73,19 @@ export default function CustomMenu({
           });
         };
 
-        const routeNameKey = route.name as keyof typeof SvgIconsForRoutes;
-        const Icons = SvgIconsForRoutes[routeNameKey];
-        const IconComponent = Icons
-          ? isFocused
-            ? Icons.active
-            : Icons.inactive
-          : null;
+        const IconSetForRoute = IconesPorRota[route.name];
+        const IconComponent = isFocused
+          ? IconSetForRoute.active
+          : IconSetForRoute.inactive;
+
+        const iconColor = isFocused
+          ? ThemedColors.lightPurple_icon || 'blue'
+          : ThemedColors.darkPurple_icon || 'gray';
+
+        // Estilo condicional para o fundo da aba ativa
+        const tabItemBackground = isFocused
+          ? { backgroundColor: ThemedColors.darkPurple }
+          : {};
 
         return (
           <TouchableOpacity
@@ -72,78 +93,42 @@ export default function CustomMenu({
             accessibilityRole="button"
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
-            // testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={styles.tabItem}
+            style={[styles.tabItem, tabItemBackground]}
           >
-            {IconComponent ? (
-              // Se seus SVGs não aceitarem a prop 'fill' ou 'color' diretamente,
-              // você pode precisar de SVGs separados para active/inactive
-              // ou modificar os SVGs para aceitar 'currentColor' e passar a prop 'color'.
-              // Por padrão, react-native-svg-transformer tenta permitir que props como 'fill' funcionem.
-              <IconComponent />
-            ) : (
-              // Fallback se o ícone não for encontrado
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  backgroundColor: 'lightgrey',
-                }}
-              />
-            )}
+            <IconComponent
+              width={ICON_SIZE}
+              height={ICON_SIZE}
+              fill={iconColor}
+            />
           </TouchableOpacity>
         );
       })}
     </View>
   );
-}
+};
+
 const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    // Sombra (opcional, ajuste conforme UX/UI)
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2, // Sombra para cima
-    },
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 5, // Para Android
+    elevation: 5,
   },
   tabItem: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8, // Espaçamento vertical interno
+    paddingVertical: 8,
   },
   tabLabel: {
-    fontSize: 10, // Tamanho da fonte para o label
-    marginTop: 4, // Espaço entre o ícone e o label
-  },
-  container: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    elevation: 4,
-    paddingBottom: 10,
-    paddingTop: 10,
-    justifyContent: 'space-around',
-    borderTopColor: '#ccc',
-    borderTopWidth: 1,
-  },
-  tab: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  label: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: 10,
     marginTop: 4,
   },
-  labelFocused: {
-    color: '#6200ee',
-    fontWeight: 'bold',
-  },
 });
+
+export default CustomMenu;
