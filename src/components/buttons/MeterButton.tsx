@@ -30,7 +30,8 @@ const MeterButton = ({ peripheral }: MeterButtonProps) => {
   });
   const modalizeRef = useRef<Modalize>(null);
 
-  const handleSendWifiCredencials = async () => {
+  const handleSendWifiCredencials = () => {
+    console.log('Envindo credenciais');
     sendWifiCredentials(wifiSSID, wifiPassword).then(() => {
       modalizeRef.current?.close();
     });
@@ -119,6 +120,7 @@ const MeterButton = ({ peripheral }: MeterButtonProps) => {
                 onPress={handleSendWifiCredencials}
               />
             </View>
+            <View style={{ height: 40 }}></View>
           </View>
         </Modalize>
       </Portal>

@@ -10,14 +10,16 @@ const useBluetoothPeripherals = () => {
 
   //   Handlers
   const handleDiscoverPeripheral = (peripheral: Peripheral) => {
-    setPeripherals(map => {
-      if (!map.has(peripheral.id)) {
-        const newMap = new Map(map);
-        newMap.set(peripheral.id, peripheral);
-        return newMap;
-      }
-      return map;
-    });
+    if (peripheral.name?.startsWith('ALICE')) {
+      setPeripherals(map => {
+        if (!map.has(peripheral.id)) {
+          const newMap = new Map(map);
+          newMap.set(peripheral.id, peripheral);
+          return newMap;
+        }
+        return map;
+      });
+    }
   };
 
   const handleStopScan = () => {

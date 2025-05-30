@@ -1,37 +1,23 @@
 import {
-  createBottomTabNavigator,
   BottomTabNavigationProp,
+  createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import { NavigatorScreenParams, RouteProp } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 
-import CustomMenu from '@components/menu/CustomMenu'; // Seu menu de abas personalizado
+import { AppBottomTabParamList } from '@/types/navigation/NavigationTypes';
+import CustomMenu from '@components/menu/CustomMenu';
 
-// Importe as STACKS para cada aba
-import {
-  StackRegisterParamList,
-  TabRegisterStack,
-} from '../stacks/TabEquipmentRegisterStack';
-import { TabHomeStack, StackHomeParamList } from '../stacks/TabHomeStack';
-import {
-  TabProfileStack,
-  StackProfileParamList,
-} from '../stacks/TabProfileStack';
+import { BottomHomeStack } from '../stacks/BottomHomeStack';
+import { BottomMeasurementStack } from '../stacks/BottomMeasurementStack';
+import { BottomProfileStack } from '../stacks/BottomProfileStack';
 
-export type BottomTabParamList = {
-  Inicio: NavigatorScreenParams<StackHomeParamList>;
-  Cadastro: NavigatorScreenParams<StackRegisterParamList>;
-  Perfil: NavigatorScreenParams<StackProfileParamList>;
-};
+export type AppBottomTabNavigationProps<T extends keyof AppBottomTabParamList> =
+  BottomTabNavigationProp<AppBottomTabParamList, T>;
 
-// Props de navegação para uso nas telas dentro do BottomTab (menos comum de precisar)
-export type BottomTabNavigationProps<T extends keyof BottomTabParamList> =
-  BottomTabNavigationProp<BottomTabParamList, T>;
-export type BottomTabRouteProps<T extends keyof BottomTabParamList> = RouteProp<
-  BottomTabParamList,
-  T
->;
+export type AppBottomTabRouteProps<T extends keyof AppBottomTabParamList> =
+  RouteProp<AppBottomTabParamList, T>;
 
-const Tab = createBottomTabNavigator<BottomTabParamList>();
+const Tab = createBottomTabNavigator<AppBottomTabParamList>();
 
 export function BottomTabNavigator() {
   return (
@@ -41,9 +27,21 @@ export function BottomTabNavigator() {
       }}
       tabBar={props => <CustomMenu {...props} />}
     >
-      <Tab.Screen name="Inicio" component={TabHomeStack} />
-      <Tab.Screen name="Cadastro" component={TabRegisterStack} />
-      <Tab.Screen name="Perfil" component={TabProfileStack} />
+      <Tab.Screen
+        name="HomeTabRoute"
+        component={BottomHomeStack}
+        options={{}}
+      />
+      <Tab.Screen
+        name="MeasurementsTabRoute"
+        component={BottomMeasurementStack}
+        options={{}}
+      />
+      <Tab.Screen
+        name="ProfileTabRoute"
+        component={BottomProfileStack}
+        options={{}}
+      />
     </Tab.Navigator>
   );
 }

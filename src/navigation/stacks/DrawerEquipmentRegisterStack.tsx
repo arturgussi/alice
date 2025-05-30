@@ -4,20 +4,16 @@ import {
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 
-import { CustomHeader } from '@components/header/CustomHeader';
-import { ThemedColors } from '@constants/Theme.style';
-import EquipmentRegisterScreen from '@screens/register/equipment/EquipmentRegisterScreen';
-// Importe outras telas se este fluxo de cadastro for mais complexo (ex: Wizard)
+import { CustomHeader } from '@/components/header/CustomHeader';
+import { ThemedColors } from '@/constants/Theme.style';
+import EquipmentRegisterScreen from '@/screens/register/equipment/EquipmentRegisterScreen';
+import { DrawerEquipmentRegisterStackParamList } from '@/types/navigation/NavigationTypes';
 
-export type DrawerEquipmentRegisterStackParamList = {
-  MainEquipmentRegister: undefined;
-  // EquipmentRegisterStep2: undefined; // Exemplo
-};
-
-export type DrawerEqRegisterNavigationProps<
+export type DrawerEquipmentRegisterNavigationProps<
   T extends keyof DrawerEquipmentRegisterStackParamList,
 > = NativeStackNavigationProp<DrawerEquipmentRegisterStackParamList, T>;
-export type DrawerEqRegisterRouteProps<
+
+export type DrawerEquipmentRegisterRouteProps<
   T extends keyof DrawerEquipmentRegisterStackParamList,
 > = RouteProp<DrawerEquipmentRegisterStackParamList, T>;
 
@@ -35,11 +31,9 @@ export function DrawerEquipmentRegisterStack() {
       })}
     >
       <Stack.Screen
-        name="MainEquipmentRegister"
+        name="EquipmentRegisterForm"
         component={EquipmentRegisterScreen}
-        options={{ title: 'Cadastro de Equipamento' }}
       />
-      {/* Adicione mais telas ao fluxo de cadastro aqui, se necessário */}
     </Stack.Navigator>
   );
 }

@@ -3,54 +3,23 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { Button, Text, View } from 'react-native'; // Para tela placeholder
 
-import { CustomHeader } from '@components/header/CustomHeader';
-import { ThemedColors } from '@constants/Theme.style';
+import { CustomHeader } from '@/components/header/CustomHeader';
+import { ThemedColors } from '@/constants/Theme.style';
+import MeterRegisterScreen from '@/screens/register/meter/MeterRegisterScreen';
+import { DrawerMeterRegisterStackParamList } from '@/types/navigation/NavigationTypes';
 
-// Tela Placeholder para Lista de Medições (crie o arquivo real em @screens/measure/MeasurementsListScreen.tsx)
-const MeasurementsListScreen = ({
-  navigation,
-}: {
-  navigation: DrawerMeasurementsNavigationProps<'ViewMeasurementsList'>;
-}) => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    <Text>Lista de Medições</Text>
-    <Button
-      title="Ver Detalhes Medição X"
-      onPress={() =>
-        navigation.navigate('ViewMeasurementDetail', { measurementId: 'X' })
-      }
-    />
-  </View>
-);
+export type DrawerMeterRegisterNavigationProps<
+  T extends keyof DrawerMeterRegisterStackParamList,
+> = NativeStackNavigationProp<DrawerMeterRegisterStackParamList, T>;
 
-// Tela Placeholder para Detalhes da Medição (crie o arquivo real em @screens/measure/MeasurementDetailScreen.tsx)
-const MeasurementDetailScreen = ({
-  route,
-}: {
-  route: DrawerMeasurementsRouteProps<'ViewMeasurementDetail'>;
-}) => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    <Text>Detalhes da Medição: {route.params.measurementId}</Text>
-  </View>
-);
+export type DrawerMeterRegisterRouteProps<
+  T extends keyof DrawerMeterRegisterStackParamList,
+> = RouteProp<DrawerMeterRegisterStackParamList, T>;
 
-export type DrawerMeasurementsStackParamList = {
-  ViewMeasurementsList: undefined;
-  ViewMeasurementDetail: { measurementId: string };
-};
+const Stack = createNativeStackNavigator<DrawerMeterRegisterStackParamList>();
 
-export type DrawerMeasurementsNavigationProps<
-  T extends keyof DrawerMeasurementsStackParamList,
-> = NativeStackNavigationProp<DrawerMeasurementsStackParamList, T>;
-export type DrawerMeasurementsRouteProps<
-  T extends keyof DrawerMeasurementsStackParamList,
-> = RouteProp<DrawerMeasurementsStackParamList, T>;
-
-const Stack = createNativeStackNavigator<DrawerMeasurementsStackParamList>();
-
-export function DrawerMeasurementsStack() {
+export function DrawerMeterRegisterStack() {
   return (
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
@@ -60,16 +29,7 @@ export function DrawerMeasurementsStack() {
         },
       })}
     >
-      <Stack.Screen
-        name="ViewMeasurementsList"
-        component={MeasurementsListScreen}
-        options={{ title: 'Minhas Medições' }}
-      />
-      <Stack.Screen
-        name="ViewMeasurementDetail"
-        component={MeasurementDetailScreen}
-        options={{ title: 'Detalhe da Medição' }}
-      />
+      <Stack.Screen name="MeterRegisterForm" component={MeterRegisterScreen} />
     </Stack.Navigator>
   );
 }
