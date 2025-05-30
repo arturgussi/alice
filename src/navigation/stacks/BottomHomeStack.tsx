@@ -7,16 +7,18 @@ import {
 import { CustomHeader } from '@/components/header/CustomHeader';
 import { ThemedColors } from '@/constants/Theme.style';
 import HomeScreen from '@/screens/home/HomeScreen';
-import { BottomHomeStackParamList } from '@/types/navigation/NavigationTypes';
+import EquipmentRegisterScreen from '@/screens/register/equipment/EquipmentRegisterScreen';
+import MeterRegisterScreen from '@/screens/register/meter/MeterRegisterScreen';
+import { HomeStackParamList } from '@/types/navigation/NavigationTypes';
 
-export type BottomHomeNavigationProps<
-  T extends keyof BottomHomeStackParamList,
-> = NativeStackNavigationProp<BottomHomeStackParamList, T>;
+export type HomeNavigationProps<T extends keyof HomeStackParamList> =
+  NativeStackNavigationProp<HomeStackParamList, T>;
+export type HomeRouteProps<T extends keyof HomeStackParamList> = RouteProp<
+  HomeStackParamList,
+  T
+>;
 
-export type BottomHomeRouteProps<T extends keyof BottomHomeStackParamList> =
-  RouteProp<BottomHomeStackParamList, T>;
-
-const Stack = createNativeStackNavigator<BottomHomeStackParamList>();
+const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function BottomHomeStack() {
   return (
@@ -29,6 +31,16 @@ export function BottomHomeStack() {
       })}
     >
       <Stack.Screen name="HomeMain" component={HomeScreen} />
+      <Stack.Screen
+        name="EquipmentRegisterScreen"
+        component={EquipmentRegisterScreen}
+        options={{ title: 'Cadastrar Equipamento' }}
+      />
+      <Stack.Screen
+        name="MeterRegisterScreen"
+        component={MeterRegisterScreen}
+        options={{ title: 'Cadastrar Medidor' }}
+      />
     </Stack.Navigator>
   );
 }

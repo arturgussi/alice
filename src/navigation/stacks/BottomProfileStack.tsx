@@ -7,17 +7,16 @@ import {
 import { CustomHeader } from '@/components/header/CustomHeader';
 import { ThemedColors } from '@/constants/Theme.style';
 import UserProfileScreen from '@/screens/userProfile/UserProfileScreen';
-import { BottomProfileStackParamList } from '@/types/navigation/NavigationTypes';
+import { ProfileStackParamList } from '@/types/navigation/NavigationTypes';
 
 export type BottomProfileNavigationProps<
-  T extends keyof BottomProfileStackParamList,
-> = NativeStackNavigationProp<BottomProfileStackParamList, T>;
+  T extends keyof ProfileStackParamList,
+> = NativeStackNavigationProp<ProfileStackParamList, T>;
 
-export type BottomProfileRouteProps<
-  T extends keyof BottomProfileStackParamList,
-> = RouteProp<BottomProfileStackParamList, T>;
+export type BottomProfileRouteProps<T extends keyof ProfileStackParamList> =
+  RouteProp<ProfileStackParamList, T>;
 
-const Stack = createNativeStackNavigator<BottomProfileStackParamList>();
+const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export function BottomProfileStack() {
   return (

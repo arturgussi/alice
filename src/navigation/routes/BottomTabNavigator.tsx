@@ -1,8 +1,4 @@
-import {
-  BottomTabNavigationProp,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import { RouteProp } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { AppBottomTabParamList } from '@/types/navigation/NavigationTypes';
 import CustomMenu from '@components/menu/CustomMenu';
@@ -10,12 +6,6 @@ import CustomMenu from '@components/menu/CustomMenu';
 import { BottomHomeStack } from '../stacks/BottomHomeStack';
 import { BottomMeasurementStack } from '../stacks/BottomMeasurementStack';
 import { BottomProfileStack } from '../stacks/BottomProfileStack';
-
-export type AppBottomTabNavigationProps<T extends keyof AppBottomTabParamList> =
-  BottomTabNavigationProp<AppBottomTabParamList, T>;
-
-export type AppBottomTabRouteProps<T extends keyof AppBottomTabParamList> =
-  RouteProp<AppBottomTabParamList, T>;
 
 const Tab = createBottomTabNavigator<AppBottomTabParamList>();
 
@@ -27,18 +17,14 @@ export function BottomTabNavigator() {
       }}
       tabBar={props => <CustomMenu {...props} />}
     >
+      <Tab.Screen name="HomeTab" component={BottomHomeStack} options={{}} />
       <Tab.Screen
-        name="HomeTabRoute"
-        component={BottomHomeStack}
-        options={{}}
-      />
-      <Tab.Screen
-        name="MeasurementsTabRoute"
+        name="MeasurementsTab"
         component={BottomMeasurementStack}
         options={{}}
       />
       <Tab.Screen
-        name="ProfileTabRoute"
+        name="ProfileTab"
         component={BottomProfileStack}
         options={{}}
       />

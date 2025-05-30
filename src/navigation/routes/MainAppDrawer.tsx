@@ -4,17 +4,12 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Platform, StyleSheet, View } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-import { CustomHeader } from '@/components/header/CustomHeader';
 import { ThemedColors } from '@/constants/Theme.style';
 import { MainAppDrawerParamList } from '@/types/navigation/NavigationTypes';
 import { signOff } from '@services/auth/Auth';
-
-import { DrawerEquipmentRegisterStack } from '../stacks/DrawerEquipmentRegisterStack';
-import { DrawerMeterRegisterStack } from '../stacks/DrawerMeasurementsStack';
 
 import { BottomTabNavigator } from './BottomTabNavigator';
 
@@ -25,15 +20,11 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
     await signOff();
   };
 
-  const focusedRoute = getFocusedRouteNameFromRoute(
-    props.state.routes[props.state.index],
-  );
-
   return (
     <View style={drawerStyles.container}>
       <DrawerContentScrollView
         {...props}
-        contentContainerStyle={{ paddingTop: 0 }}
+        contentContainerStyle={{ paddingTop: 20 }}
       >
         <DrawerItem
           label="Início"
@@ -42,16 +33,14 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <FontAwesomeIcon name="home" size={size} color={color} />
           )}
           onPress={() =>
-            props.navigation.navigate('AppBottomTabRouteGroup', {
-              screen: 'HomeTabRoute',
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'HomeTab',
+              params: {
+                screen: 'HomeMain',
+              },
             })
           }
-          focused={
-            props.state.routes[props.state.index].name ===
-              'AppBottomTabRouteGroup' && focusedRoute === 'HomeTabRoute'
-          }
         />
-
         <DrawerItem
           label="Medições"
           labelStyle={{ color: ThemedColors.text }}
@@ -59,52 +48,44 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <FontAwesomeIcon name="line-chart" size={size} color={color} />
           )}
           onPress={() =>
-            props.navigation.navigate('AppBottomTabRouteGroup', {
-              screen: 'MeasurementsTabRoute',
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'MeasurementsTab',
+              params: {
+                screen: 'MeasurementsList',
+              },
             })
           }
-          focused={
-            props.state.routes[props.state.index].name ===
-              'AppBottomTabRouteGroup' &&
-            focusedRoute === 'MeasurementsTabRoute'
-          }
         />
-
         <DrawerItem
           label="Cadastrar Equipamento"
           labelStyle={{ color: ThemedColors.text }}
           icon={({ size, color }) => (
-            <FontAwesomeIcon
-              name="cogs"
-              /* Ícone diferente? 'shower' era o anterior */
-              size={size}
-              color={color}
-            />
+            <FontAwesomeIcon name="cogs" size={size} color={color} />
           )}
-          onPress={() => props.navigation.navigate('EquipmentRegisterRoute')}
-          focused={
-            props.state.routes[props.state.index].name ===
-            'EquipmentRegisterRoute'
+          onPress={() =>
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'HomeTab',
+              params: {
+                screen: 'EquipmentRegisterScreen',
+              },
+            })
           }
         />
-
         <DrawerItem
           label="Cadastrar Medidor"
           labelStyle={{ color: ThemedColors.text }}
           icon={({ size, color }) => (
-            <FontAwesomeIcon
-              name="tachometer"
-              /* Ícone diferente? 'tablet' era o anterior */
-              size={size}
-              color={color}
-            />
+            <FontAwesomeIcon name="tachometer" size={size} color={color} />
           )}
-          onPress={() => props.navigation.navigate('MeterRegisterRoute')}
-          focused={
-            props.state.routes[props.state.index].name === 'MeterRegisterRoute'
+          onPress={() =>
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'HomeTab',
+              params: {
+                screen: 'MeterRegisterScreen',
+              },
+            })
           }
         />
-
         <DrawerItem
           label="Perfil"
           labelStyle={{ color: ThemedColors.text }}
@@ -112,17 +93,15 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             <FontAwesomeIcon name="user" size={size} color={color} />
           )}
           onPress={() =>
-            props.navigation.navigate('AppBottomTabRouteGroup', {
-              screen: 'ProfileTabRoute',
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'ProfileTab',
+              params: {
+                screen: 'UserProfileView',
+              },
             })
-          }
-          focused={
-            props.state.routes[props.state.index].name ===
-              'AppBottomTabRouteGroup' && focusedRoute === 'ProfileTabRoute'
           }
         />
       </DrawerContentScrollView>
-
       <View style={drawerStyles.footer}>
         <DrawerItem
           label="Logout"
@@ -142,7 +121,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 const drawerStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ThemedColors.backgroundSubmenu,
+    backgroundColor: ThemedColors.background,
   },
   footer: {
     paddingBottom: Platform.OS === 'ios' ? 20 : 10,
@@ -155,36 +134,15 @@ export function MainAppDrawer() {
       drawerContent={props => <CustomDrawerContent {...props} />}
       screenOptions={{
         drawerPosition: 'right',
-        header: navProps => <CustomHeader navigation={navProps.navigation} />,
-
+        headerShown: false,
         drawerActiveTintColor: ThemedColors.lightPurple,
         drawerInactiveTintColor: ThemedColors.text,
-        drawerActiveBackgroundColor: ThemedColors.background_card2,
       }}
     >
       <Drawer.Screen
-        name="AppBottomTabRouteGroup"
+        name="AppTabsContainer"
         component={BottomTabNavigator}
-        options={{
-          title: 'Principal', // Título para o header, se mostrado para esta rota do Drawer
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="EquipmentRegisterRoute"
-        component={DrawerEquipmentRegisterStack}
-        options={{
-          title: 'Cadastrar Equipamento',
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="MeterRegisterRoute"
-        component={DrawerMeterRegisterStack}
-        options={{
-          title: 'Cadastrar Medidor',
-          headerShown: false,
-        }}
+        options={{}}
       />
     </Drawer.Navigator>
   );
