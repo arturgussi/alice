@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { IconAccount, IconGraph, IconHome } from '@/assets/SVG';
+import { AppBottomTabParamList } from '@/types/navigation/NavigationTypes';
 import { ThemedColors } from '@constants/Theme.style';
 
 type SvgComponentProps = { width: number; height: number; fill: string };
@@ -26,6 +27,12 @@ const IconesPorRota: Record<string, IconSet> = {
     active: IconAccount,
     inactive: IconAccount,
   },
+};
+
+const INITIAL_SCREENS_FOR_TABS: Record<keyof AppBottomTabParamList, string> = {
+  HomeTab: 'HomeMain', // Tela inicial da HomeStack
+  MeasurementsTab: 'MeasurementsList', // Tela inicial da MeasurementsStack
+  ProfileTab: 'UserProfileView', // Tela inicial da ProfileStack
 };
 
 const ICON_SIZE = 24;
@@ -62,7 +69,13 @@ const CustomMenu: React.FC<BottomTabBarProps> = ({
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
+            navigation.navigate(route.name, {
+              screen:
+                INITIAL_SCREENS_FOR_TABS[
+                  route.name as keyof AppBottomTabParamList
+                ],
+              params: { screen: route.params },
+            });
           }
         };
 
