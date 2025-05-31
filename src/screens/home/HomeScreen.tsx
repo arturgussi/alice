@@ -15,7 +15,7 @@ import LinearGradientWrapper from '@/components/wrappers/LinearGradientWrapper';
 import { ThemedColors } from '@/constants/Theme.style';
 import { useAuth } from '@/hooks/useAuth';
 import { useEquipment } from '@/hooks/useEquipment';
-import { Equipment } from '@/types/models/AppModels';
+import { AppEquipment } from '@/types/models/EquipmentModel';
 
 import styles from './HomeScreen.style';
 
@@ -32,7 +32,7 @@ const HomeScreen = () => {
     isFetching,
   } = useEquipment();
 
-  const renderGastoInfo = (equipamento: Equipment) => {
+  const renderGastoInfo = (equipamento: AppEquipment) => {
     const valorGastoPlaceholder = (Math.random() * 100)
       .toFixed(2)
       .replace('.', ',');

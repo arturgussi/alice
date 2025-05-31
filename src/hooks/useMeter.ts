@@ -1,50 +1,50 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
-import { fetchEquipments } from '@/services/api/EquipmentService';
-import { AppEquipment } from '@/types/models/EquipmentModel';
+import { fetchMeters } from '@/services/api/MeterService';
+import { AppMeter } from '@/types/models/MeterModel';
 
 import { useAuth } from './useAuth';
 
-export interface UseEquipmentReturn {
-  equipments: AppEquipment[] | undefined;
+export interface UseMeterReturn {
+  meters: AppMeter[] | undefined;
   isLoading: boolean;
   isFetching: boolean;
   isError: boolean;
   error: Error | null;
-  refetchEquipments: () => Promise<UseQueryResult<AppEquipment[], Error>>;
+  refetchMeters: () => Promise<UseQueryResult<AppMeter[], Error>>;
 }
 
-export const useEquipment = (): UseEquipmentReturn => {
+export const useMeter = (): UseMeterReturn => {
   const { appUser } = useAuth();
   const currentUserId = appUser?.uid;
 
   const queryResult = useQuery<
-    AppEquipment[],
+    AppMeter[],
     Error,
-    AppEquipment[],
+    AppMeter[],
     (string | undefined)[]
   >({
-    queryKey: ['equipments', currentUserId],
+    queryKey: ['meters', currentUserId],
 
     queryFn: async () => {
       if (!currentUserId) {
         console.warn(
-          '[useEquipment] queryFn chamada sem currentUserId. Retornando array vazio.',
+          '[useMeter] queryFn chamada sem currentUserId. Retornando array vazio.',
         );
         return [];
       }
-      return fetchEquipments(currentUserId);
+      return fetchMeters(currentUserId);
     },
 
     enabled: !!currentUserId,
   });
 
   return {
-    equipments: queryResult.data,
+    meters: queryResult.data,
     isLoading: queryResult.isLoading,
     isFetching: queryResult.isFetching,
     isError: queryResult.isError,
     error: queryResult.error,
-    refetchEquipments: queryResult.refetch,
+    refetchMeters: queryResult.refetch,
   };
 };
