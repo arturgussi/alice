@@ -41,10 +41,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const _fetchAndSetUserProfile = useCallback(
     async (firebaseUser: FirebaseUserSDK | null) => {
+      console.log(
+        '1Fetching user profile for:',
+        firebaseUser ? firebaseUser.uid : 'no Firebase user',
+      );
       setAuthError(null);
 
       if (firebaseUser) {
         try {
+          console.log('Fetch user');
           const backendProfile: BackendUserProfileResponse =
             await fetchUserById(firebaseUser.uid);
           const combinedUser = mapToAppUser(firebaseUser, backendProfile);
@@ -98,6 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     setIsLoadingAuth(true);
     const unsubscribe = subscribeToAuthChanges(async fbUser => {
+      console.log('2Firebase User Change:', fbUser ? fbUser.uid : 'Logged Out');
       await _fetchAndSetUserProfile(fbUser);
     });
     return () => {
@@ -110,6 +116,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const currentFirebaseUser = getAuth().currentUser;
     await _fetchAndSetUserProfile(currentFirebaseUser);
+    console.log(
+      '3Firebase User Change:',
+      currentFirebaseUser ? currentFirebaseUser.uid : 'Logged Out',
+    );
   }, [_fetchAndSetUserProfile]);
 
   return (

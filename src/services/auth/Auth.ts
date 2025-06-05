@@ -13,7 +13,8 @@ import {
 } from '@react-native-firebase/auth';
 import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
-const authInstance = getAuth(getApp());
+// const authInstance = getAuth(getApp());
+const authInstance = getAuth();
 
 /**
  * Realiza o login do usuário com e-mail e senha.

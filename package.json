@@ -11,7 +11,7 @@
     "start:cache": "start \"\" npx react-native start --reset-cache",
     "gradlew:clean": "cd android && gradlew clean",
     "android": "npx react-native run-android",
-    "android:clean": "npm run start:cache && npm run gradlew:clean && npm run android",
+    "android:clean": "npm run gradlew:clean && npm run android",
     "android:fullclean": "npm run fullclean && timeout 5 && npm install && timeout 5 && npm run start:cache && timeout 5 && npm run gradlew:clean && timeout 5 && npm run android",
     "ios": "react-native run-ios",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
