@@ -16,11 +16,11 @@ export const fetchUserById = async (
   id: string,
 ): Promise<BackendUserProfileResponse> => {
   const operation = `fetchUserById (ID: ${id})`;
-  const endpoint = `/usuario?id=${id}`;
   console.log(`[UserService] Iniciando: ${operation} em ${endpoint}`);
   try {
-    const response =
-      await apiClient.get<BackendUserProfileResponse[]>(endpoint);
+    const response = await apiClient.get<BackendUserProfileResponse[]>(
+      `${endpoint}/${id}`,
+    );
     const userProfilesArray = response.data;
 
     console.log(
@@ -130,7 +130,7 @@ export const updateExistingUser = async (
   console.log(`[UserService] Iniciando: ${operation}`, payload);
   try {
     const response = await apiClient.put<BackendUserProfileResponse>(
-      `${endpoint}/${id}`,
+      `${endpoint}`,
       payload,
     );
     console.log(`[UserService] Sucesso: ${operation}`, response.data);
@@ -138,36 +138,6 @@ export const updateExistingUser = async (
   } catch (e: unknown) {
     console.error(`[UserService] Erro em ${operation}:`, e);
     let errorMessage = `Falha ao atualizar usuário ${id}.`;
-    if (axios.isAxiosError(e)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const axiosError = e as AxiosError<any>;
-      errorMessage =
-        axiosError.response?.data?.message ||
-        axiosError.response?.data?.error ||
-        axiosError.message ||
-        errorMessage;
-      console.error(
-        `  Status: ${axiosError.response?.status}, Detalhes: ${JSON.stringify(axiosError.response?.data)}`,
-      );
-    } else if (e instanceof Error) {
-      errorMessage = e.message;
-    }
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Deleta um registro de usuário do backend.
- */
-export const deleteExistingUser = async (id: string): Promise<void> => {
-  const operation = `deleteExistingUser (ID: ${id})`;
-  console.log(`[UserService] Iniciando: ${operation}`);
-  try {
-    await apiClient.delete(`${endpoint}/${id}`);
-    console.log(`[UserService] Sucesso: ${operation}`);
-  } catch (e: unknown) {
-    console.error(`[UserService] Erro em ${operation}:`, e);
-    let errorMessage = `Falha ao deletar usuário ${id}.`;
     if (axios.isAxiosError(e)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const axiosError = e as AxiosError<any>;

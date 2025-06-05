@@ -4,7 +4,7 @@ export interface BackendUserProfileResponse {
 }
 
 export interface CreateUserApiPayload {
-  id: string;
+  idUsuario: string;
   tarifa: number;
 }
 
