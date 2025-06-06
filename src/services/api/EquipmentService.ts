@@ -20,11 +20,12 @@ export const fetchEquipments = async (
   }
 
   try {
-    const response = await apiClient.get<AppEquipment[]>(endpoint, {
-      params: {
-        idUsuario: userId,
-      },
-    });
+    const response = await apiClient.get<AppEquipment[]>(
+      `${endpoint}?idUsuario=${userId}`,
+    );
+
+    console.log(userId);
+    console.log(response);
 
     return response.data;
   } catch (error) {

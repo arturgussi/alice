@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 
+import { useAuth } from '@/hooks/useAuth';
+import { createNewEquipment } from '@/services/api/EquipmentService';
+import { CreateEquipmentApiPayload } from '@/types/api/EquipmentApi';
+import { mapToCreateEquipmentApiPayload } from '@/types/mappers/EquipmentMapper';
+import { AppEquipment } from '@/types/models/EquipmentModel';
 import PrimaryButton from '@components/buttons/ThemedButton';
-import ThemedDropdownModal from '@components/inputs/ThemedDropdownModal';
-import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
 import ThemedTextInput from '@components/inputs/ThemedTextInput';
 import ThemedText from '@components/texts/ThemedText';
 import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
@@ -11,30 +14,37 @@ import BackgroundWrapper from '@components/wrappers/BackgroundWrapper';
 import styles from './EquipmentRegisterScreen.style';
 
 const EquipmentRegisterScreen = () => {
+  const { appUser } = useAuth();
+
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentModel, setEquipmentModel] = useState('');
   const [equipmentBrand, setEquipmentBrand] = useState('');
-  const [equipmentCode, setEquipmentCode] = useState('');
-  const [equipmentVoltage, setEquipmentVoltage] = useState('');
 
-  const handleValueSelected = (value: string) => {
-    setEquipmentVoltage(value);
-    console.log('Selected value:', value);
-  };
+  const handleRegister = async () => {
+    // Verifica se usuário está logado
+    if (!appUser) {
+      throw Error('Usuário não logado');
+    }
 
-  const handleRegister = () => {
-    console.log(
-      'Register',
-      equipmentName,
-      equipmentModel,
-      equipmentBrand,
-      equipmentCode,
-      equipmentVoltage,
-    );
-  };
+    if (!equipmentName) {
+      Alert.alert('Atenção', 'Nome é obrigatório.');
+      return;
+    }
 
-  const handleTooltip = () => {
-    console.log('Tooltip clicked!');
+    // Cria o objeto AppEquipment e transforma para a API
+    const appEquipment: AppEquipment = {
+      id: '',
+      userUid: appUser?.uid,
+      name: equipmentName,
+      model: equipmentModel,
+      brand: equipmentBrand,
+    };
+
+    const equipmentPayload: CreateEquipmentApiPayload =
+      mapToCreateEquipmentApiPayload(appEquipment);
+
+    // Cria novo equipamento no backend
+    await createNewEquipment(equipmentPayload);
   };
 
   return (
@@ -52,15 +62,6 @@ const EquipmentRegisterScreen = () => {
         </View>
         <View style={styles.inputContainer}>
           <ThemedTextInput
-            placeholder="Modelo"
-            autoCapitalize="none"
-            keyboardType="default"
-            value={equipmentModel}
-            onChangeText={setEquipmentModel}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <ThemedTextInput
             placeholder="Marca"
             autoCapitalize="none"
             keyboardType="default"
@@ -69,24 +70,16 @@ const EquipmentRegisterScreen = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <ThemedIconTextInput
-            placeholder="Código do equipamento"
-            onIconPress={handleTooltip}
-            value={equipmentCode}
-            onChangeText={setEquipmentCode}
-            iconName="info-circle"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <ThemedDropdownModal
-            value={equipmentVoltage}
-            placeholder="Tensão"
-            onValueSelected={handleValueSelected}
-            options={['110V', '220V']}
+          <ThemedTextInput
+            placeholder="Modelo"
+            autoCapitalize="none"
+            keyboardType="default"
+            value={equipmentModel}
+            onChangeText={setEquipmentModel}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <PrimaryButton title="Criar conta" onPress={handleRegister} />
+          <PrimaryButton title="Criar equipamento" onPress={handleRegister} />
         </View>
       </View>
     </BackgroundWrapper>
