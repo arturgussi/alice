@@ -123,20 +123,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             })
           }
         />
-        {/* <DrawerItem
-          label="Gerenciar Equipamentos"
-          onPress={() =>
-            props.navigation.navigate('AppTabsContainer', {
-              screen: 'HomeTab',
-              params: {
-                screen: 'EquipmentFlow',
-                params: {
-                  screen: 'EquipmentManagementScreen',
-                },
-              },
-            })
-          }
-        /> */}
         <DrawerItem
           label="Equipamentos"
           labelStyle={{
@@ -171,7 +157,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           }
         />
         <DrawerItem
-          label="Cadastrar Medidor"
+          label="Medidores"
           labelStyle={{
             color:
               activeTabName === 'HomeTab' &&
