@@ -1,86 +1,115 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import { Picker } from '@react-native-picker/picker';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Keyboard,
   Modal,
+  ScrollView,
+  Switch,
   TouchableWithoutFeedback,
   View,
-  ActivityIndicator,
-  StyleSheet,
 } from 'react-native';
 
-import DeleteAccountModal from '@/components/modals/DeleteAccountModal';
+import ThemedTextInput from '@/components/inputs/ThemedTextInput';
+import ThemedText from '@/components/texts/ThemedText';
+import BackgroundWrapper from '@/components/wrappers/BackgroundWrapper';
 import { ThemedColors } from '@/constants/Theme.style';
 import { useAuth } from '@/hooks/useAuth';
-import { ProfileStackParamList } from '@/types/navigation/NavigationTypes';
+import { useTariffs } from '@/hooks/useTariffs';
+import { updateExistingUser } from '@/services/api/UserService';
+import { UpdateUserApiPayload } from '@/types/api/UserApi';
 import PrimaryButton from '@components/buttons/ThemedButton';
-import ThemedDeleteButton from '@components/buttons/ThemedDeleteButton';
-import ThemedIconTextInput from '@components/inputs/ThemedIconTextInput';
-import ThemedTextInput from '@components/inputs/ThemedTextInput';
-import ThemedText from '@components/texts/ThemedText';
-import BackgroundWrapperTitle from '@components/wrappers/BackgroundWrapper';
-import { updateAccountData } from '@services/auth/Auth';
 
-import originalStyles from './UserProfileScreen.style';
-
-// Tipagem para a prop de navegação
-type UserProfileNavigationProp = NavigationProp<
-  ProfileStackParamList,
-  'UserProfileView'
->;
+import ThemedDeleteButton from '@/components/buttons/ThemedDeleteButton';
+import DeleteAccountModal from '@/components/modals/DeleteAccountModal';
+import styles from './UserProfileScreen.style';
 
 const UserProfileScreen: React.FC = () => {
-  const navigation = useNavigation<UserProfileNavigationProp>();
   const { appUser, refreshAppUserProfile } = useAuth();
 
-  const [nome, setNome] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  // Estados do formulário
+  const [nome, setNome] = useState(appUser?.displayName || '');
+  const [isAneelTariffActive, setIsAneelTariffActive] = useState(
+    !!appUser?.idTariff,
+  ); // Começa ativo se já tiver idTariff
+  const [manualTariff, setManualTariff] = useState(
+    String(appUser?.tariff || ''),
+  ); // Para o input de tarifa manual
+  const [selectedUf, setSelectedUf] = useState<string | undefined>(appUser?.UF);
+  const [selectedDistributorId, setSelectedDistributorId] = useState<
+    number | undefined
+  >(appUser?.idTariff);
 
+  // Hook para buscar os dados dos pickers
+  const { ufs, isLoadingUfs, distributors, isLoadingDistributors } =
+    useTariffs(selectedUf);
+
+  // Estado de loading para o botão Salvar
   const [isUpdating, setIsUpdating] = useState(false);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  // Efeito para preencher o formulário quando o appUser do contexto carregar/mudar
   useEffect(() => {
     if (appUser) {
       setNome(appUser.displayName || '');
+      const hasAneelTariff = !!appUser.idTariff; // Verifica se o usuário usa tarifa ANEEL
+      setIsAneelTariffActive(hasAneelTariff);
+      if (hasAneelTariff) {
+        setSelectedUf(appUser.UF);
+        setSelectedDistributorId(appUser.idTariff);
+        setManualTariff('');
+      } else {
+        setManualTariff(String(appUser.tariff || ''));
+        setSelectedUf(undefined);
+        setSelectedDistributorId(undefined);
+      }
     }
   }, [appUser]);
 
-  const handleUpdate = async () => {
-    // Validações
-    if (!nome.trim()) {
-      Alert.alert('Atenção', 'O nome é obrigatório.');
+  const handleSaveChanges = async () => {
+    if (!appUser) {
+      Alert.alert('Erro', 'Você precisa estar logado.');
       return;
     }
-    if (password && password !== confirmPassword) {
-      Alert.alert('Atenção', 'As novas senhas não coincidem.');
-      return;
+
+    let tariff = null;
+    let idTariff = null;
+
+    if (isAneelTariffActive) {
+      // Modo Tarifa ANEEL
+      if (!selectedDistributorId) {
+        Alert.alert(
+          'Atenção',
+          'Por favor, selecione uma UF e uma distribuidora.',
+        );
+        return;
+      }
+      idTariff = selectedDistributorId;
+    } else {
+      // Modo Tarifa Manual
+      const tariffValue = parseFloat(manualTariff.replace(',', '.'));
+      if (isNaN(tariffValue)) {
+        Alert.alert('Atenção', 'Por favor, insira um valor de tarifa válido.');
+        return;
+      }
+      tariff = tariffValue;
     }
-    if (password && password.length < 6) {
-      Alert.alert('Atenção', 'A nova senha deve ter pelo menos 6 caracteres.');
-      return;
-    }
+
+    const payload: UpdateUserApiPayload = {
+      tarifa: tariff,
+      idTarifa: idTariff,
+    };
 
     setIsUpdating(true);
-
     try {
-      await updateAccountData(nome, password);
-
-      await refreshAppUserProfile();
-
-      Alert.alert('Sucesso', 'Seus dados foram alterados com sucesso!');
-      setPassword('');
-      setConfirmPassword('');
+      await updateExistingUser(appUser.uid, payload);
+      await refreshAppUserProfile(); // Atualiza o appUser no contexto com os novos dados
+      Alert.alert('Sucesso!', 'Seu perfil foi atualizado.');
     } catch (e: unknown) {
-      let message = 'Erro ao alterar dados da conta.';
-      if (e instanceof Error) {
-        message = e.message;
-      }
-      Alert.alert('Erro', message);
+      const message = e instanceof Error ? e.message : 'Erro desconhecido';
+      Alert.alert('Erro ao Salvar', message);
     } finally {
       setIsUpdating(false);
     }
@@ -106,93 +135,128 @@ const UserProfileScreen: React.FC = () => {
   };
 
   return (
-    <BackgroundWrapperTitle>
-      <View style={originalStyles.container}>
-        <View>
-          <ThemedText style={originalStyles.text}>Dados da conta</ThemedText>
-        </View>
-        <ThemedText>E-mail: {appUser?.email}</ThemedText>
+    <BackgroundWrapper>
+      <ScrollView style={styles.scrollView}>
+        <ThemedText style={styles.pageTitle}>Meu Perfil e Tarifa</ThemedText>
 
-        <View style={[originalStyles.inputContainer, { marginTop: 20 }]}>
-          <ThemedTextInput
-            placeholder="Digite seu nome"
-            autoCapitalize="words"
-            value={nome}
-            onChangeText={setNome}
+        {/* Campo de Nome */}
+        <ThemedTextInput
+          placeholder="Seu nome"
+          value={nome}
+          onChangeText={setNome}
+        />
+
+        {/* Toggle para Tarifa */}
+        <View style={styles.toggleContainer}>
+          <Switch
+            value={isAneelTariffActive}
+            onValueChange={setIsAneelTariffActive}
+            thumbColor={ThemedColors.text}
+            trackColor={{ false: '#767577', true: ThemedColors.lightPurple }}
           />
+          <ThemedText>Usar tarifa da ANEEL</ThemedText>
         </View>
 
-        <View style={originalStyles.inputContainer}>
-          <ThemedIconTextInput
-            placeholder="Nova Senha"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-            iconName={showPassword ? 'eye-slash' : 'eye'}
-            onIconPress={() => setShowPassword(!showPassword)}
-          />
-        </View>
-        <View style={originalStyles.inputContainer}>
-          <ThemedIconTextInput
-            placeholder="Confirmar nova senha"
-            secureTextEntry={!showConfirmPassword}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            iconName={showConfirmPassword ? 'eye-slash' : 'eye'}
-            onIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          />
-        </View>
-
-        <View style={originalStyles.buttonContainer}>
-          {isUpdating ? (
-            <ActivityIndicator size="large" color={ThemedColors.text} />
-          ) : (
-            <PrimaryButton title="Salvar Alterações" onPress={handleUpdate} />
-          )}
-        </View>
-
-        <View style={localStyles.spacer} />
-
-        <View style={originalStyles.buttonContainer}>
-          <ThemedDeleteButton
-            title="Deletar conta"
-            onPress={handleDeleteAccount}
-          />
-        </View>
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={handleCloseModal}
-          statusBarTranslucent={true}
-        >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={originalStyles.modalOverlay}>
-              <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
-                <DeleteAccountModal
-                  onClose={handleCloseModal}
-                  onAccountDeletedSuccessfully={handleAccountDeleted}
-                />
-              </TouchableWithoutFeedback>
+        {isAneelTariffActive ? (
+          // --- Campos para Tarifa ANEEL ---
+          <>
+            <View style={styles.pickerContainer}>
+              {isLoadingUfs ? (
+                <ActivityIndicator />
+              ) : (
+                <Picker
+                  selectedValue={selectedUf}
+                  onValueChange={itemValue => setSelectedUf(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item
+                    label="Selecione um Estado (UF)..."
+                    value={undefined}
+                  />
+                  {ufs.map(uf => (
+                    <Picker.Item key={uf.uf} label={uf.uf} value={uf.uf} />
+                  ))}
+                </Picker>
+              )}
             </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      </View>
-    </BackgroundWrapperTitle>
+            <View style={styles.pickerContainer}>
+              {isLoadingDistributors ? (
+                <ActivityIndicator />
+              ) : (
+                <Picker
+                  selectedValue={selectedDistributorId}
+                  onValueChange={itemValue =>
+                    setSelectedDistributorId(itemValue)
+                  }
+                  //enabled={!!selectedUf} // Habilita apenas após selecionar uma UF
+                  style={styles.picker}
+                >
+                  <Picker.Item
+                    label="Selecione uma Distribuidora..."
+                    value={undefined}
+                  />
+                  {distributors.map(d => (
+                    <Picker.Item
+                      key={d.id}
+                      label={d.distribuidora}
+                      value={d.id}
+                    />
+                  ))}
+                </Picker>
+              )}
+            </View>
+          </>
+        ) : (
+          // --- Campo para Tarifa Manual ---
+          <ThemedTextInput
+            placeholder="Digite sua tarifa (ex: 0,75)"
+            value={manualTariff}
+            onChangeText={setManualTariff}
+            keyboardType="numeric"
+          />
+        )}
+
+        <View style={styles.buttonContainer}>
+          {isUpdating ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <PrimaryButton
+              title="Salvar Alterações"
+              onPress={handleSaveChanges}
+            />
+          )}
+
+          <View style={styles.spacer} />
+
+          <View style={styles.buttonContainer}>
+            <ThemedDeleteButton
+              title="Deletar conta"
+              onPress={handleDeleteAccount}
+            />
+          </View>
+
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={handleCloseModal}
+            statusBarTranslucent={true}
+          >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+                  <DeleteAccountModal
+                    onClose={handleCloseModal}
+                    onAccountDeletedSuccessfully={handleAccountDeleted}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </View>
+      </ScrollView>
+    </BackgroundWrapper>
   );
 };
-
-const localStyles = StyleSheet.create({
-  passwordInstruction: {
-    fontSize: 12,
-    color: ThemedColors.text,
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  spacer: {
-    flex: 1,
-  },
-});
 
 export default UserProfileScreen;

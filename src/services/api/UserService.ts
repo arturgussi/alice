@@ -97,7 +97,7 @@ export const updateExistingUser = async (
   console.log(`[UserService] Iniciando: ${operation}`, payload);
   try {
     const response = await apiClient.put<BackendUserProfileResponse>(
-      `${endpoint}`,
+      `${endpoint}/${id}`,
       payload,
     );
     console.log(`[UserService] Sucesso: ${operation}`, response.data);

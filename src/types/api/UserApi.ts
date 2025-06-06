@@ -12,6 +12,6 @@ export interface CreateUserApiPayload {
 }
 
 export interface UpdateUserApiPayload {
-  tarifa: number;
-  idTarifa: number;
+  tarifa: number | null;
+  idTarifa: number | null;
 }

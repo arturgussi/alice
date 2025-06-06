@@ -45,7 +45,7 @@ export const mapToAppUser = (
     email: firebaseUser.email,
     displayName: firebaseUser.displayName || null,
     tariff: backendProfile.tarifa,
-    idTariff: backendProfile.tarifa,
+    idTariff: backendProfile.idTarifa,
     UF: backendProfile.UF,
     distributor: backendProfile.distribuidora,
     actualFlag: backendProfile.bandeiraAtual,
