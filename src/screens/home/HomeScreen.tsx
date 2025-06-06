@@ -10,6 +10,7 @@ import {
 
 import AccordionButton from '@/components/buttons/AccordionButton';
 import LinearScale from '@/components/display/LinearScale';
+import ThemedText from '@/components/texts/ThemedText';
 import BackgroundWrapper from '@/components/wrappers/BackgroundWrapper';
 import LinearGradientWrapper from '@/components/wrappers/LinearGradientWrapper';
 import { ThemedColors } from '@/constants/Theme.style';
@@ -25,11 +26,11 @@ const HomeScreen = () => {
 
   const {
     equipments,
-    isLoading: isLoadingEquipments,
-    isError: isErrorEquipments,
-    error: errorEquipments,
+    isLoadingEquipments,
+    isErrorEquipments,
+    errorEquipments,
     refetchEquipments,
-    isFetching,
+    isFetchingEquipments,
   } = useEquipment();
 
   console.log(equipments);
@@ -50,13 +51,19 @@ const HomeScreen = () => {
         }
         style={styles.containerWapper}
       >
-        <View style={localStyles.gastoRow}>
-          <Text
-            style={localStyles.gastoValor}
-          >{`R$${valorGastoPlaceholder}`}</Text>
-          <Text
-            style={localStyles.gastoConsumo}
-          >{`${consumoKWhPlaceholder}kWh`}</Text>
+        <View style={localStyles.column}>
+          <View style={localStyles.row}>
+            <ThemedText>{equipamento.brand}</ThemedText>
+            <ThemedText
+              style={localStyles.gastoValor}
+            >{`R$${valorGastoPlaceholder}`}</ThemedText>
+          </View>
+          <View style={localStyles.row}>
+            <ThemedText>{equipamento.model}</ThemedText>
+            <ThemedText
+              style={localStyles.gastoConsumo}
+            >{`${consumoKWhPlaceholder}kWh`}</ThemedText>
+          </View>
         </View>
       </LinearGradientWrapper>
     );
@@ -66,7 +73,10 @@ const HomeScreen = () => {
     <ScrollView
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={isFetching} onRefresh={refetchEquipments} />
+        <RefreshControl
+          refreshing={isFetchingEquipments}
+          onRefresh={refetchEquipments}
+        />
       }
     >
       <BackgroundWrapper>
@@ -196,7 +206,12 @@ const localStyles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 5,
   },
-  gastoRow: {
+  column: {
+    flex: 1,
+    width: '100%',
+  },
+  row: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

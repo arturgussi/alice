@@ -62,13 +62,9 @@ export const fetchEquipmentById = async (
 
 export const createNewEquipment = async (
   payload: CreateEquipmentApiPayload,
-): Promise<BackendEquipmentResponse> => {
+): Promise<void> => {
   try {
-    const response = await apiClient.post<BackendEquipmentResponse>(
-      endpoint,
-      payload,
-    );
-    return response.data;
+    await apiClient.post<BackendEquipmentResponse>(endpoint, payload);
   } catch (error) {
     console.error('Error creating equipment:', error);
     throw error;
@@ -78,13 +74,9 @@ export const createNewEquipment = async (
 export const updateExistingEquipment = async (
   id: string,
   payload: UpdateEquipmentApiPayload,
-): Promise<BackendEquipmentResponse> => {
+): Promise<void> => {
   try {
-    const response = await apiClient.put<BackendEquipmentResponse>(
-      `${endpoint}/${id}`,
-      payload,
-    );
-    return response.data;
+    await apiClient.put<BackendEquipmentResponse>(`${endpoint}/${id}`, payload);
   } catch (error) {
     console.error(`Error updating equipment ${id}:`, error);
     throw error;
