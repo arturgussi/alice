@@ -10,4 +10,8 @@ export interface AppUser {
 
   // Propriedades customizadas do backend
   tariff: number;
+  idTariff: number;
+  UF: string;
+  distributor: string;
+  actualFlag: string;
 }

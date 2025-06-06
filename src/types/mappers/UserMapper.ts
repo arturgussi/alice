@@ -16,11 +16,9 @@ import { AppUser } from '../models/UserModel';
  */
 export const mapToCreateUserApiPayload = (
   firebaseUser: FirebaseAuthTypes.User,
-  initialTariff: number = 0,
 ): CreateUserApiPayload => {
   return {
-    id: firebaseUser.uid,
-    tarifa: initialTariff,
+    idUsuario: firebaseUser.uid,
   };
 };
 
@@ -47,5 +45,9 @@ export const mapToAppUser = (
     email: firebaseUser.email,
     displayName: firebaseUser.displayName || null,
     tariff: backendProfile.tarifa,
+    idTariff: backendProfile.tarifa,
+    UF: backendProfile.UF,
+    distributor: backendProfile.distribuidora,
+    actualFlag: backendProfile.bandeiraAtual,
   };
 };

@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import AccordionButton from '@/components/buttons/AccordionButton';
 import LinearScale from '@/components/display/LinearScale';
@@ -23,6 +24,24 @@ import styles from './HomeScreen.style';
 const HomeScreen = () => {
   const { appUser } = useAuth();
   const tariff = appUser?.tariff;
+  let actualFlagColor = 'transparent';
+
+  switch (appUser?.actualFlag) {
+    case 'Vermelha2':
+      actualFlagColor = 'red';
+      break;
+    case 'Vermelha1':
+      actualFlagColor = 'red';
+      break;
+    case 'Amarela':
+      actualFlagColor = 'yellow';
+      break;
+    case 'Branca':
+      actualFlagColor = 'white';
+      break;
+    default:
+      actualFlagColor = 'transparent';
+  }
 
   const {
     equipments,
@@ -141,14 +160,23 @@ const HomeScreen = () => {
                 style={[styles.containerWapper, { flexDirection: 'row' }]}
               >
                 <Text style={[styles.text, { flex: 1 }]}>R$ kWh hoje</Text>
-                <Text
-                  style={[
-                    styles.consumptionText,
-                    { color: ThemedColors.title },
-                  ]}
-                >
-                  {tariff === undefined ? 'Sem dados' : `R${tariff.toFixed(2)}`}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <FontAwesomeIcon
+                    name={'flag'}
+                    size={12}
+                    color={actualFlagColor}
+                  />
+                  <Text
+                    style={[
+                      styles.consumptionText,
+                      { color: ThemedColors.title, marginLeft: 8 },
+                    ]}
+                  >
+                    {tariff === undefined || tariff === null
+                      ? 'Sem dados'
+                      : `R${tariff.toFixed(2)}`}
+                  </Text>
+                </View>
               </LinearGradientWrapper>
             </View>
           </View>

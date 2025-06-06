@@ -75,10 +75,8 @@ const AccountRegisterScreen: React.FC<AccountRegisterProps> = ({
 
       await setDisplayName(nome);
 
-      const backendPayload: CreateUserApiPayload = mapToCreateUserApiPayload(
-        firebaseUser,
-        0,
-      );
+      const backendPayload: CreateUserApiPayload =
+        mapToCreateUserApiPayload(firebaseUser);
       await createNewUser(backendPayload);
       await refreshAppUserProfile();
     } catch (e: unknown) {
