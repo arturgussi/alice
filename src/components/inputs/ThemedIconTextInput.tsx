@@ -26,14 +26,19 @@ const ThemedIconTextInput = ({
   iconName,
   iconStyle,
   onIconPress,
+  editable,
   ...rest
 }: ThemedIconTextInputProps) => {
+  const isEditable = editable ?? true;
+  const containerOpacity = isEditable ? 1.0 : 0.5;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { opacity: containerOpacity }]}>
       <TextInput
         placeholder={placeholder}
         placeholderTextColor={ThemedColors.placeholder}
         style={[styles.textInput, style]}
+        editable={isEditable}
         {...rest}
       />
       {iconName && (
@@ -42,7 +47,7 @@ const ThemedIconTextInput = ({
           size={20}
           color={ThemedColors.placeholder}
           style={[styles.icon, iconStyle]}
-          onPress={onIconPress}
+          onPress={isEditable ? onIconPress : undefined}
         />
       )}
     </View>

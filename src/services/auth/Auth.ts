@@ -169,13 +169,13 @@ export const setDisplayName = async (name: string): Promise<void> => {
  */
 export const updateAccountData = async (
   name: string,
-  newPassword: string,
+  newPassword?: string,
 ): Promise<void> => {
   // 1. Validação dos inputs no início
   if (!name.trim()) {
     throw new Error('O nome de exibição não pode estar em branco.');
   }
-  if (!newPassword || newPassword.length < 6) {
+  if (newPassword && newPassword.length < 6) {
     throw new Error(
       'A nova senha é obrigatória e deve ter pelo menos 6 caracteres.',
     );
@@ -190,15 +190,18 @@ export const updateAccountData = async (
   // 2. Envolve ambas as operações em um único try...catch
   try {
     // Passo A: Atualizar o nome
-    console.log(`[AuthService] Tentando atualizar displayName para: ${name}`);
-
     await setDisplayName(name);
     console.log('[AuthService] DisplayName atualizado com sucesso.');
 
-    // Passo B: Atualizar a senha
-    console.log('[AuthService] Tentando atualizar a senha...');
-    await firebaseUpdatePassword(user, newPassword);
-    console.log('[AuthService] Senha atualizada com sucesso.');
+    // 2. Só atualiza a senha se uma nova e válida for fornecida
+    if (newPassword && newPassword.length > 0) {
+      if (newPassword.length < 6) {
+        throw new Error('A nova senha precisa ter no mínimo 6 caracteres.');
+      }
+      const user = authInstance.currentUser;
+      if (!user) throw new Error('Usuário não autenticado.');
+      await firebaseUpdatePassword(user, newPassword);
+    }
   } catch (e: unknown) {
     // 3. O catch agora captura erros de QUALQUER uma das operações
     console.error('[AuthService] Falha ao atualizar dados da conta:', e);
