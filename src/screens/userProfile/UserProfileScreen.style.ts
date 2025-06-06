@@ -29,7 +29,8 @@ const styles: Style = StyleSheet.create({
     marginVertical: 8,
   },
   buttonContainer: {
-    marginVertical: 14,
+    flex: 1,
+    marginTop: 14,
   },
   text: {
     marginTop: 10,

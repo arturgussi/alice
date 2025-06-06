@@ -136,8 +136,8 @@ const UserProfileScreen: React.FC = () => {
 
   return (
     <BackgroundWrapper>
-      <ScrollView style={styles.scrollView}>
-        <ThemedText style={styles.pageTitle}>Meu Perfil e Tarifa</ThemedText>
+      <View style={styles.scrollView}>
+        <ThemedText style={styles.pageTitle}>Meu Perfil</ThemedText>
 
         {/* Campo de Nome */}
         <ThemedTextInput
@@ -254,7 +254,7 @@ const UserProfileScreen: React.FC = () => {
             </TouchableWithoutFeedback>
           </Modal>
         </View>
-      </ScrollView>
+      </View>
     </BackgroundWrapper>
   );
 };
