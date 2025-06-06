@@ -1,17 +1,16 @@
-import { getApp } from '@react-native-firebase/app';
+import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import {
-  deleteUser as firebaseDeleteUser,
+  createUserWithEmailAndPassword,
   EmailAuthProvider,
+  deleteUser as firebaseDeleteUser,
+  signOut as firebaseSignOut,
+  updatePassword as firebaseUpdatePassword,
+  updateProfile as firebaseUpdateProfile,
   getAuth,
+  onAuthStateChanged,
   reauthenticateWithCredential,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  updateProfile as firebaseUpdateProfile,
-  updatePassword as firebaseUpdatePassword,
-  onAuthStateChanged,
 } from '@react-native-firebase/auth';
-import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 // const authInstance = getAuth(getApp());
 const authInstance = getAuth();
@@ -162,34 +161,54 @@ export const setDisplayName = async (name: string): Promise<void> => {
 };
 
 /**
- * Atualiza o nome de exibição e a senha do usuário logado.
- * As operações são sequenciais; se uma falhar, a seguinte não é tentada (no caso da senha).
+ * Atualiza o nome de exibição E a senha do usuário logado.
+ * As operações são sequenciais; se a atualização do nome falhar, a da senha não é tentada.
+ * Lança um erro em caso de falha.
  * @param name O novo nome de exibição.
- * @param newPassword A nova senha.
+ * @param newPassword A nova senha (deve ter no mínimo 6 caracteres).
  */
 export const updateAccountData = async (
   name: string,
   newPassword: string,
 ): Promise<void> => {
-  await setDisplayName(name);
+  // 1. Validação dos inputs no início
+  if (!name.trim()) {
+    throw new Error('O nome de exibição não pode estar em branco.');
+  }
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error(
+      'A nova senha é obrigatória e deve ter pelo menos 6 caracteres.',
+    );
+  }
 
+  // Pega o usuário uma vez
   const user = authInstance.currentUser;
   if (!user) {
-    console.error('[AuthService] Nenhum usuário logado para atualizar senha.');
     throw new Error('Usuário não autenticado para atualização de dados.');
   }
 
-  if (!newPassword || newPassword.length < 6) {
-    throw new Error('A nova senha deve ter pelo menos 6 caracteres.');
-  }
-
-  console.log('[AuthService] Tentando atualizar a senha...');
+  // 2. Envolve ambas as operações em um único try...catch
   try {
+    // Passo A: Atualizar o nome
+    console.log(`[AuthService] Tentando atualizar displayName para: ${name}`);
+
+    await setDisplayName(name);
+    console.log('[AuthService] DisplayName atualizado com sucesso.');
+
+    // Passo B: Atualizar a senha
+    console.log('[AuthService] Tentando atualizar a senha...');
     await firebaseUpdatePassword(user, newPassword);
     console.log('[AuthService] Senha atualizada com sucesso.');
   } catch (e: unknown) {
-    console.error('[AuthService] Falha ao atualizar senha:', e);
-    let errorMessage = 'Falha ao atualizar a senha.';
+    // 3. O catch agora captura erros de QUALQUER uma das operações
+    console.error('[AuthService] Falha ao atualizar dados da conta:', e);
+
+    let errorMessage = 'Falha ao atualizar os dados da conta.';
+    if (e instanceof Error) {
+      errorMessage = e.message;
+    }
+
+    // Se o erro tem um 'code' (típico do Firebase), podemos ser mais específicos
     if (typeof e === 'object' && e !== null && 'code' in e) {
       const firebaseError = e as { code: string; message: string };
       switch (firebaseError.code) {
@@ -200,13 +219,10 @@ export const updateAccountData = async (
         case 'auth/weak-password':
           errorMessage = 'A nova senha é muito fraca.';
           break;
-        default:
-          errorMessage = firebaseError.message || errorMessage;
-          break;
       }
-    } else if (e instanceof Error) {
-      errorMessage = e.message;
     }
+
+    // Lança um novo erro com a mensagem final tratada
     throw new Error(errorMessage);
   }
 };
