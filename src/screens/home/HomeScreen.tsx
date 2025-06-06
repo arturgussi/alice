@@ -20,10 +20,16 @@ import { useEquipment } from '@/hooks/useEquipment';
 import { AppEquipment } from '@/types/models/EquipmentModel';
 
 import styles from './HomeScreen.style';
+import { formatCurrency } from '@/Util';
 
 const HomeScreen = () => {
   const { appUser } = useAuth();
-  const tariff = appUser?.tariff;
+  let tariff: any = appUser?.tariff;
+  if (tariff === undefined || tariff === null) {
+    tariff = 'Sem dados';
+  } else {
+    tariff = formatCurrency(tariff);
+  }
   let actualFlagColor = 'transparent';
 
   switch (appUser?.actualFlag) {
@@ -138,7 +144,7 @@ const HomeScreen = () => {
                 <Text style={[styles.text, { flex: 1 }]}>
                   Consumo{'\n'}atual
                 </Text>
-                <Text style={styles.consumptionText}>R$67,34</Text>
+                <Text style={styles.consumptionText}>R$ 67,34</Text>
               </LinearGradientWrapper>
             </View>
             <View>
@@ -150,7 +156,7 @@ const HomeScreen = () => {
                 <Text style={[styles.text, { flex: 1 }]}>
                   Consumo no{'\n'}último mês
                 </Text>
-                <Text style={styles.consumptionText}>R$132,21</Text>
+                <Text style={styles.consumptionText}>R$ 132,21</Text>
               </LinearGradientWrapper>
             </View>
             <View>
@@ -174,7 +180,7 @@ const HomeScreen = () => {
                   >
                     {tariff === undefined || tariff === null
                       ? 'Sem dados'
-                      : `R${tariff.toFixed(2)}`}
+                      : `${tariff}`}
                   </Text>
                 </View>
               </LinearGradientWrapper>

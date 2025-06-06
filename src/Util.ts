@@ -90,3 +90,58 @@ export const extractApiErrorMessage = (
   // 4. Como último recurso, retorna a mensagem padrão
   return defaultMessage;
 };
+
+
+/**
+ * O locale 'pt-BR' define o padrão brasileiro:
+ * - Símbolo da moeda: R$
+ * - Separador decimal: vírgula (,)
+ * - Separador de milhar: ponto (.)
+ */
+const LOCALE = 'pt-BR';
+
+/**
+ * Formata um número como moeda brasileira (Real - BRL).
+ * * @param value O número a ser formatado.
+ * @returns Uma string formatada como moeda, ex: R$ 1.234,56
+ */
+export const formatCurrency = (value: number): string => {
+  // Verifica se o valor é um número válido, retorna um fallback se não for
+  if (typeof value !== 'number' || isNaN(value)) {
+    return 'R$ 0,00';
+  }
+
+  const formatter = new Intl.NumberFormat(LOCALE, {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return formatter.format(value);
+};
+
+/**
+ * Formata um número genérico seguindo o padrão brasileiro (vírgula como decimal).
+ * * @param value O número a ser formatado.
+ * @param options Opções de formatação adicionais (ex: { minimumFractionDigits: 1 }).
+ * @returns Uma string formatada, ex: 1.234,56
+ */
+export const formatNumber = (
+  value: number,
+  options?: Intl.NumberFormatOptions
+): string => {
+  if (typeof value !== 'number' || isNaN(value)) {
+    return '0';
+  }
+
+  const defaultOptions: Intl.NumberFormatOptions = {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    ...options,
+  };
+
+  const formatter = new Intl.NumberFormat(LOCALE, defaultOptions);
+
+  return formatter.format(value);
+};
