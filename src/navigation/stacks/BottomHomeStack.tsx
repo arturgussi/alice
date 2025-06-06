@@ -7,9 +7,10 @@ import {
 import { CustomHeader } from '@/components/header/CustomHeader';
 import { ThemedColors } from '@/constants/Theme.style';
 import HomeScreen from '@/screens/home/HomeScreen';
-import EquipmentRegisterScreen from '@/screens/register/equipment/EquipmentRegisterScreen';
 import MeterRegisterScreen from '@/screens/register/meter/MeterRegisterScreen';
 import { HomeStackParamList } from '@/types/navigation/NavigationTypes';
+
+import { EquipmentStack } from './EquipmentStack';
 
 export type HomeNavigationProps<T extends keyof HomeStackParamList> =
   NativeStackNavigationProp<HomeStackParamList, T>;
@@ -32,9 +33,9 @@ export function BottomHomeStack() {
     >
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen
-        name="EquipmentRegisterScreen"
-        component={EquipmentRegisterScreen}
-        options={{ title: 'Cadastrar Equipamento' }}
+        name="EquipmentRoute"
+        component={EquipmentStack}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="MeterRegisterScreen"

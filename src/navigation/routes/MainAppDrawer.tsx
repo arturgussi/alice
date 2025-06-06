@@ -9,14 +9,13 @@ import {
   NavigationState,
   PartialState,
 } from '@react-navigation/native';
-import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import { ThemedColors } from '@/constants/Theme.style';
 import {
-  MainAppDrawerParamList,
   AppBottomTabParamList,
+  MainAppDrawerParamList,
 } from '@/types/navigation/NavigationTypes';
 import { signOff } from '@services/auth/Auth';
 
@@ -124,18 +123,32 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             })
           }
         />
+        {/* <DrawerItem
+          label="Gerenciar Equipamentos"
+          onPress={() =>
+            props.navigation.navigate('AppTabsContainer', {
+              screen: 'HomeTab',
+              params: {
+                screen: 'EquipmentFlow',
+                params: {
+                  screen: 'EquipmentManagementScreen',
+                },
+              },
+            })
+          }
+        /> */}
         <DrawerItem
-          label="Cadastrar Equipamento"
+          label="Equipamentos"
           labelStyle={{
             color:
               activeTabName === 'HomeTab' &&
-              activeScreenInTab === 'EquipmentRegisterScreen'
+              activeScreenInTab === 'EquipmentManagementScreen'
                 ? 'white'
                 : ThemedColors.text,
           }}
           focused={
             activeTabName === 'HomeTab' &&
-            activeScreenInTab === 'EquipmentRegisterScreen'
+            activeScreenInTab === 'EquipmentManagementScreen'
           }
           icon={({ focused, size }) => (
             <FontAwesomeIcon
@@ -148,7 +161,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           onPress={() =>
             props.navigation.navigate('AppTabsContainer', {
               screen: 'HomeTab',
-              params: { screen: 'EquipmentRegisterScreen' },
+              params: {
+                screen: 'EquipmentRoute',
+                params: {
+                  screen: 'EquipmentManagementScreen',
+                },
+              },
             })
           }
         />
