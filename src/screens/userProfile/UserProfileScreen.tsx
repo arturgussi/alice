@@ -252,13 +252,12 @@ const UserProfileScreen: React.FC = () => {
                 ) : (
                   <Picker
                     selectedValue={selectedUf}
-                    onValueChange={itemValue => setSelectedUf(itemValue)}
+                    onValueChange={itemValue => {
+                      setSelectedUf(itemValue);
+                    }}
                     style={styles.picker}
                   >
-                    <Picker.Item
-                      label="Selecione uma UF..."
-                      value={undefined}
-                    />
+                    <Picker.Item label="Selecione uma UF..." value={null} />
                     {(ufs || []).map(uf => (
                       <Picker.Item key={uf.uf} label={uf.uf} value={uf.uf} />
                     ))}
@@ -274,12 +273,12 @@ const UserProfileScreen: React.FC = () => {
                     onValueChange={itemValue =>
                       setSelectedDistributorId(itemValue)
                     }
-                    enabled={!!selectedUf}
+                    // enabled={!!selectedUf}
                     style={styles.picker}
                   >
                     <Picker.Item
                       label="Selecione uma Distribuidora..."
-                      value={undefined}
+                      value={null}
                     />
                     {(distributors || []).map(d => (
                       <Picker.Item

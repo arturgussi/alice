@@ -26,11 +26,11 @@ export const useTariffs = (selectedUf: string | undefined) => {
     queryKey: ['distributors', selectedUf], // Chave inclui selectedUf para refazer a busca quando mudar
     queryFn: () => {
       // A verificação 'enabled' abaixo torna este 'if' uma segurança extra
-      if (!selectedUf) return [];
+      // if (!selectedUf) return [];
       return fetchDistributorsByUf(selectedUf);
     },
     // A query só é habilitada (enabled) se uma UF for selecionada
-    enabled: !!selectedUf,
+    // enabled: !!selectedUf,
   });
 
   return {

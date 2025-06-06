@@ -23,9 +23,12 @@ export const fetchAvailableUfs = async (): Promise<UFApiResponse[]> => {
  * @returns Uma Promise com um array de objetos de distribuidora.
  */
 export const fetchDistributorsByUf = async (
-  uf: string,
+  uf?: string | undefined,
 ): Promise<DistributorApiResponse[]> => {
-  const endpoint = `/tarifa/distribuidoras?uf=${uf}`;
+  let endpoint = `/tarifa/distribuidoras`;
+  if (uf) {
+    endpoint += `?uf=${uf}`;
+  }
   try {
     const response = await apiClient.get<DistributorApiResponse[]>(endpoint);
     return response.data;
