@@ -40,3 +40,18 @@ export const mapToAppEquipment = (
     model: backendProfile.modelo,
   };
 };
+
+/**
+ * Mapeia uma lista da resposta do perfil do backend
+ * para criar uma lista de objetos AppEquipment completo usado no frontend.
+ *
+ * @param backendProfile A resposta da sua API contendo dados.
+ * @returns Um objeto AppEquipment completo.
+ */
+
+export const mapApiResponseListToAppEquipmentList = (
+  apiList: BackendEquipmentResponse[],
+): AppEquipment[] => {
+  if (!Array.isArray(apiList)) return [];
+  return apiList.map(mapToAppEquipment);
+};

@@ -1,6 +1,8 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { fetchEquipments } from '@/services/api/EquipmentService';
+import { BackendEquipmentResponse } from '@/types/api/EquipmentApi';
+import { mapApiResponseListToAppEquipmentList } from '@/types/mappers/EquipmentMapper';
 import { AppEquipment } from '@/types/models/EquipmentModel';
 
 import { useAuth } from './useAuth';
@@ -19,21 +21,23 @@ export const useEquipment = (): UseEquipmentReturn => {
   const currentUserId = appUser?.uid;
 
   const queryResult = useQuery<
-    AppEquipment[],
+    BackendEquipmentResponse[],
     Error,
     AppEquipment[],
     (string | undefined)[]
   >({
     queryKey: ['equipments', currentUserId],
 
-    queryFn: async () => {
-      if (!currentUserId) {
-        console.warn(
-          '[useEquipment] queryFn chamada sem currentUserId. Retornando array vazio.',
-        );
-        return [];
-      }
+    queryFn: () => {
+      if (!currentUserId) return [];
       return fetchEquipments(currentUserId);
+    },
+
+    select: (apiData: BackendEquipmentResponse[]) => {
+      console.log(
+        '[useEquipment] Mapeando dados da API para o modelo do App...',
+      );
+      return mapApiResponseListToAppEquipmentList(apiData);
     },
 
     enabled: !!currentUserId,

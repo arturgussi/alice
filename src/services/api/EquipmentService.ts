@@ -1,17 +1,17 @@
 import axios, { AxiosError } from 'axios';
 
 import {
+  BackendEquipmentResponse,
   CreateEquipmentApiPayload,
   UpdateEquipmentApiPayload,
 } from '@/types/api/EquipmentApi';
-import { AppEquipment } from '@/types/models/EquipmentModel';
 import apiClient from '@api/ApiClient';
 
 const endpoint = '/equipamento';
 
 export const fetchEquipments = async (
   userId: string,
-): Promise<AppEquipment[]> => {
+): Promise<BackendEquipmentResponse[]> => {
   if (!userId) {
     console.warn(
       '[EquipmentService] fetchEquipments chamado sem userId. Retornando array vazio.',
@@ -20,12 +20,9 @@ export const fetchEquipments = async (
   }
 
   try {
-    const response = await apiClient.get<AppEquipment[]>(
+    const response = await apiClient.get<BackendEquipmentResponse[]>(
       `${endpoint}?idUsuario=${userId}`,
     );
-
-    console.log(userId);
-    console.log(response);
 
     return response.data;
   } catch (error) {
@@ -49,9 +46,13 @@ export const fetchEquipments = async (
   }
 };
 
-export const fetchEquipmentById = async (id: string): Promise<AppEquipment> => {
+export const fetchEquipmentById = async (
+  id: string,
+): Promise<BackendEquipmentResponse> => {
   try {
-    const response = await apiClient.get<AppEquipment>(`${endpoint}/${id}`);
+    const response = await apiClient.get<BackendEquipmentResponse>(
+      `${endpoint}/${id}`,
+    );
     return response.data;
   } catch (error) {
     console.error(`Error fetching equipment ${id}:`, error);
@@ -61,9 +62,12 @@ export const fetchEquipmentById = async (id: string): Promise<AppEquipment> => {
 
 export const createNewEquipment = async (
   payload: CreateEquipmentApiPayload,
-): Promise<AppEquipment> => {
+): Promise<BackendEquipmentResponse> => {
   try {
-    const response = await apiClient.post<AppEquipment>(endpoint, payload);
+    const response = await apiClient.post<BackendEquipmentResponse>(
+      endpoint,
+      payload,
+    );
     return response.data;
   } catch (error) {
     console.error('Error creating equipment:', error);
@@ -74,9 +78,9 @@ export const createNewEquipment = async (
 export const updateExistingEquipment = async (
   id: string,
   payload: UpdateEquipmentApiPayload,
-): Promise<AppEquipment> => {
+): Promise<BackendEquipmentResponse> => {
   try {
-    const response = await apiClient.put<AppEquipment>(
+    const response = await apiClient.put<BackendEquipmentResponse>(
       `${endpoint}/${id}`,
       payload,
     );

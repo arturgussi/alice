@@ -32,6 +32,8 @@ const HomeScreen = () => {
     isFetching,
   } = useEquipment();
 
+  console.log(equipments);
+
   const renderGastoInfo = (equipamento: AppEquipment) => {
     const valorGastoPlaceholder = (Math.random() * 100)
       .toFixed(2)
