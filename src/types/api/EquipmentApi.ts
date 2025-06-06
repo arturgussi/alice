@@ -13,7 +13,8 @@ export interface CreateEquipmentApiPayload {
 }
 
 export interface UpdateEquipmentApiPayload {
-  nome?: string;
-  marca?: string;
-  modelo?: string;
+  idUsuario: string;
+  nome: string;
+  marca: string;
+  modelo: string;
 }

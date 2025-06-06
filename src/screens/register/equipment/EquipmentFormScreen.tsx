@@ -65,6 +65,7 @@ const EquipmentFormScreen: React.FC = () => {
 
     if (isEditMode) {
       const updatePayload: UpdateEquipmentApiPayload = {
+        idUsuario: appUser.uid,
         nome: equipmentName,
         marca: equipmentBrand,
         modelo: equipmentModel,
