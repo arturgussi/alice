@@ -1,10 +1,9 @@
-import axios, { AxiosError } from 'axios';
-
 import {
   BackendUserProfileResponse,
   CreateUserApiPayload,
   UpdateUserApiPayload,
 } from '@/types/api/UserApi';
+import { extractApiErrorMessage } from '@/Util';
 import apiClient from '@api/ApiClient';
 
 const endpoint = '/usuario';
@@ -56,28 +55,10 @@ export const fetchUserById = async (
     }
   } catch (e: unknown) {
     console.error(`[UserService] Erro em ${operation}:`, e);
-    let errorMessage = `Falha ao buscar usuário ${id}.`;
-
-    if (axios.isAxiosError(e)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const axiosError = e as AxiosError<any>;
-      if (axiosError.response?.status === 404) {
-        errorMessage = `Usuário com ID ${id} não encontrado no backend (API retornou 404).`;
-      } else {
-        errorMessage =
-          axiosError.response?.data?.message ||
-          axiosError.response?.data?.error ||
-          axiosError.message ||
-          errorMessage;
-      }
-      console.error(
-        `  Status: ${axiosError.response?.status}, Detalhes: ${JSON.stringify(axiosError.response?.data)}`,
-      );
-    } else if (e instanceof Error) {
-      errorMessage = e.message;
-    } else if (typeof e === 'string') {
-      errorMessage = e;
-    }
+    const errorMessage = extractApiErrorMessage(
+      e,
+      `Falha ao buscar usuário ${id}.`,
+    );
 
     throw new Error(errorMessage);
   }
@@ -100,21 +81,7 @@ export const createNewUser = async (
     return response.data;
   } catch (e: unknown) {
     console.error(`[UserService] Erro em ${operation}:`, e);
-    let errorMessage = 'Falha ao criar novo usuário.';
-    if (axios.isAxiosError(e)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const axiosError = e as AxiosError<any>;
-      errorMessage =
-        axiosError.response?.data?.message ||
-        axiosError.response?.data?.error ||
-        axiosError.message ||
-        errorMessage;
-      console.error(
-        `  Status: ${axiosError.response?.status}, Detalhes: ${JSON.stringify(axiosError.response?.data)}`,
-      );
-    } else if (e instanceof Error) {
-      errorMessage = e.message;
-    }
+    const errorMessage = extractApiErrorMessage(e, `Falha ao criar usuário.`);
     throw new Error(errorMessage);
   }
 };
@@ -137,21 +104,10 @@ export const updateExistingUser = async (
     return response.data;
   } catch (e: unknown) {
     console.error(`[UserService] Erro em ${operation}:`, e);
-    let errorMessage = `Falha ao atualizar usuário ${id}.`;
-    if (axios.isAxiosError(e)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const axiosError = e as AxiosError<any>;
-      errorMessage =
-        axiosError.response?.data?.message ||
-        axiosError.response?.data?.error ||
-        axiosError.message ||
-        errorMessage;
-      console.error(
-        `  Status: ${axiosError.response?.status}, Detalhes: ${JSON.stringify(axiosError.response?.data)}`,
-      );
-    } else if (e instanceof Error) {
-      errorMessage = e.message;
-    }
+    const errorMessage = extractApiErrorMessage(
+      e,
+      `Falha ao atualizar usuário ${id}.`,
+    );
     throw new Error(errorMessage);
   }
 };

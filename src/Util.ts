@@ -20,15 +20,15 @@ import axios, { AxiosError } from 'axios';
 
 // Interface para descrever a estrutura comum de respostas de erro da sua API
 interface BackendErrorData {
+  erro?: string;
   message?: string;
   error?: string;
-  // Muitas APIs de validação retornam um objeto 'errors'
   errors?: Record<string, string[] | string>;
 }
 
 /**
  * Extrai de forma segura uma mensagem de erro de um valor 'unknown'.
- * Prioriza mensagens de erro da sua API de backend vindas de um AxiosError.
+ * Prioriza o campo 'erro' da resposta da API, conforme especificado.
  *
  * @param e O erro capturado, tipado como unknown.
  * @param defaultMessage Uma mensagem padrão caso nenhuma mensagem específica seja encontrada.
@@ -38,47 +38,46 @@ export const extractApiErrorMessage = (
   e: unknown,
   defaultMessage = 'Ocorreu um erro inesperado. Por favor, tente novamente.',
 ): string => {
-  // 1. Verifica se é um erro do Axios, que é o mais comum para chamadas de API
+  // 1. Verifica se é um erro do Axios (erro de API)
   if (axios.isAxiosError(e)) {
-    const axiosError = e as AxiosError<BackendErrorData>; // Tipamos o 'data' da resposta
+    // Tipamos a 'data' da resposta de erro com nossa interface BackendErrorData
+    const axiosError = e as AxiosError<BackendErrorData>;
     const responseData = axiosError.response?.data;
 
-    // Se a resposta do backend tiver um corpo (data) e for um objeto, tentamos extrair a mensagem dele
+    // Se a resposta do backend tiver um corpo (data) e for um objeto,
+    // tentamos extrair a mensagem dele
     if (responseData && typeof responseData === 'object') {
-      // Tenta pegar a mensagem de campos comuns como 'message', 'error' ou um objeto 'errors'
-      if (typeof responseData.message === 'string' && responseData.message) {
+      // PRIORIDADE 1: Verifica o campo "erro" que sua API envia
+      if (
+        typeof responseData.erro === 'string' &&
+        responseData.erro.trim() !== ''
+      ) {
+        return responseData.erro;
+      }
+
+      // Fallbacks para outros formatos de erro comuns (se sua API os usar em outros endpoints)
+      if (
+        typeof responseData.message === 'string' &&
+        responseData.message.trim() !== ''
+      ) {
         return responseData.message;
       }
-      if (typeof responseData.error === 'string' && responseData.error) {
+      if (
+        typeof responseData.error === 'string' &&
+        responseData.error.trim() !== ''
+      ) {
         return responseData.error;
       }
-      // Se houver um objeto de erros de validação, pega a primeira mensagem
-      if (
-        typeof responseData.errors === 'object' &&
-        responseData.errors !== null
-      ) {
-        const firstErrorKey = Object.keys(responseData.errors)[0];
-        if (firstErrorKey) {
-          const firstErrorValue = responseData.errors[firstErrorKey];
-          if (
-            Array.isArray(firstErrorValue) &&
-            typeof firstErrorValue[0] === 'string'
-          ) {
-            return firstErrorValue[0];
-          }
-          if (typeof firstErrorValue === 'string') {
-            return firstErrorValue;
-          }
-        }
-      }
     }
-    // Se não encontrou uma mensagem específica no corpo da resposta, usa a mensagem do próprio AxiosError
+
+    // Se não encontrou uma mensagem específica no corpo da resposta,
+    // usa a mensagem do próprio objeto de erro do Axios
     if (axiosError.message) {
       return axiosError.message;
     }
   }
 
-  // 2. Se não for um erro do Axios, verifica se é uma instância de Error padrão do JavaScript
+  // 2. Se não for um erro do Axios, verifica se é um erro padrão do JavaScript
   if (e instanceof Error) {
     return e.message;
   }
