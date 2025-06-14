@@ -94,12 +94,12 @@ export const EquipmentDetailScreen: React.FC = () => {
     queryFn: () => fetchEquipmentAnalytics(equipmentId, period),
   });
 
-  // Define o título do header dinamicamente com o nome do equipamento
-  useEffect(() => {
-    if (equipmentName) {
-      navigation.setOptions({ title: equipmentName });
-    }
-  }, [equipmentName, navigation]);
+  // // Define o título do header dinamicamente com o nome do equipamento
+  // useEffect(() => {
+  //   if (equipmentName) {
+  //     navigation.setOptions({ title: equipmentName });
+  //   }
+  // }, [equipmentName, navigation]);
 
   // --- Lógica de Preparação do Gráfico ---
   const barData =
