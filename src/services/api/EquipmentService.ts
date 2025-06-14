@@ -3,6 +3,7 @@ import {
   CreateEquipmentApiPayload,
   UpdateEquipmentApiPayload,
 } from '@/types/api/EquipmentApi';
+import { DataPoint, EquipmentAnalytics } from '@/types/components/chart';
 import { extractApiErrorMessage } from '@/Util';
 import apiClient from '@api/ApiClient';
 
@@ -32,6 +33,47 @@ export const fetchEquipments = async (
 
     throw new Error(errorMessage);
   }
+};
+
+export const fetchEquipmentAnalytics = async (
+  equipmentId: string,
+  period: string,
+): Promise<EquipmentAnalytics> => {
+  console.log(
+    `[Service] Buscando dados FALSOS para ${equipmentId} no período ${period}`,
+  );
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const labels =
+    period === '7d'
+      ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom']
+      : ['S1', 'S2', 'S3', 'S4'];
+
+  // Cria os dados para as barras (consumo por intervalo)
+  const barData: DataPoint[] = labels.map(label => ({
+    label,
+    value: Math.random() * 20,
+  }));
+
+  // Cria os dados para a linha (consumo acumulado)
+  let accumulatedValue = 0;
+  const lineData: DataPoint[] = barData.map(item => {
+    accumulatedValue += item.value;
+    return { label: item.label, value: accumulatedValue };
+  });
+
+  return {
+    kpis: {
+      totalConsumption: accumulatedValue,
+      totalCost: accumulatedValue * 0.95, // Exemplo de cálculo de custo
+      avgDailyCost: (accumulatedValue * 0.95) / labels.length,
+      monthlyProjection: ((accumulatedValue * 0.95) / labels.length) * 30,
+    },
+    chartData: {
+      barData, // Array simples para as barras
+      lineData, // Array simples para a linha
+    },
+  };
 };
 
 export const fetchEquipmentById = async (

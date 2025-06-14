@@ -7,6 +7,7 @@ export type HomeStackParamList = {
   // Telas que não estão no BottomTabNavigator mas devem mostrar ele devem ficar aqui
   EquipmentRoute: NavigatorScreenParams<EquipmentStackParamList>;
   MeterRegisterScreen: undefined;
+  EquipmentDetailScreen: { equipmentId: string; equipmentName: string };
 };
 
 export type MeasurementStackParamList = {

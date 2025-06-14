@@ -6,7 +6,7 @@ import {
 
 import { CustomHeader } from '@/components/header/CustomHeader';
 import { ThemedColors } from '@/constants/Theme.style';
-import { MeasurementDetailScreen } from '@/screens/measurements/MeasurementDetailScreen';
+import { EquipmentDetailScreen } from '@/screens/measurements/MeasurementDetailScreen';
 import { MeasurementListScreen } from '@/screens/measurements/MeasurementListScreen';
 import { MeasurementStackParamList } from '@/types/navigation/NavigationTypes';
 
@@ -33,7 +33,7 @@ export function BottomMeasurementStack() {
       <Stack.Screen name="MeasurementList" component={MeasurementListScreen} />
       <Stack.Screen
         name="MeasurementDetail"
-        component={MeasurementDetailScreen}
+        component={EquipmentDetailScreen}
       />
     </Stack.Navigator>
   );
