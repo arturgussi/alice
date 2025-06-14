@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
-import BleManager, { Peripheral } from 'react-native-ble-manager';
+import BleManager from 'react-native-ble-manager';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import MeterButton from '@/components/buttons/MeterButton';
@@ -19,7 +19,7 @@ import { AppMeter, MeterListItemType } from '@/types/models/MeterModel';
 import { getErrorMessage } from '@/Util';
 import PrimaryButton from '@components/buttons/ThemedButton';
 
-import styles from './MeterRegister.style';
+import screenStyles from './MeterRegister.style';
 
 declare module 'react-native-ble-manager' {
   interface Peripheral {
@@ -29,13 +29,12 @@ declare module 'react-native-ble-manager' {
 }
 
 const MeterRegisterScreen: React.FC = () => {
-  const { meters, isLoading: isLoadingMeters, refetchMeters } = useMeter();
+  const { meters, isLoadingMeters, refetchMeters } = useMeter();
   const { isScanning, setIsScanning, peripherals, setPeripherals } =
     useBluetoothPeripherals();
 
   const handleScanDevices = async () => {
     if (isScanning) return;
-
     try {
       if (!(await checkBluetoothPermissions())) {
         const permissionsGranted = await requestBluetoothPermissions();
@@ -48,11 +47,10 @@ const MeterRegisterScreen: React.FC = () => {
         }
       }
       await enableBluetooth();
-
       setPeripherals(new Map());
       setIsScanning(true);
       console.log('[MeterRegisterScreen] Iniciando scan...');
-      await scanDevices();
+      await scanDevices(); // Exemplo: scan por 5 segundos
     } catch (error: unknown) {
       console.error('[MeterRegisterScreen] Erro ao iniciar scan:', error);
       const errorMessage = getErrorMessage(
@@ -79,40 +77,35 @@ const MeterRegisterScreen: React.FC = () => {
     bleManagerStart().catch(console.error);
   }, []);
 
-  const handleRegistrationSuccess = (
-    registeredDevice: AppMeter | Peripheral,
-  ) => {
+  const handleRegistrationSuccess = (registeredDeviceId: string) => {
     console.log(
-      `[MeterRegisterScreen] Dispositivo ${registeredDevice.id} registrado com sucesso. Atualizando listas.`,
+      `[MeterRegisterScreen] Dispositivo ${registeredDeviceId} registrado. Atualizando listas.`,
     );
     refetchMeters();
-
     setPeripherals(prev => {
       const newMap = new Map(prev);
-      newMap.delete(registeredDevice.id);
+      newMap.delete(registeredDeviceId);
       return newMap;
     });
-    // Opcional: parar o scan se um dispositivo foi registrado com sucesso
     if (isScanning) {
       BleManager.stopScan().then(() => setIsScanning(false));
     }
   };
 
-  // Prepara a lista de dispositivos descobertos para o FlatList
   const discoveredItems = useMemo((): MeterListItemType[] => {
-    const metersMap = new Map((meters || []).map(m => [m.id, m]));
+    const registeredIds = new Set((meters || []).map(m => m.id));
     return Array.from(peripherals.values()).map(p => ({
       ...p,
       name: p.name || 'Dispositivo Desconhecido',
       itemType: 'discovered',
-      isRegistered: metersMap.has(p.id),
+      isRegistered: registeredIds.has(p.id),
     }));
   }, [peripherals, meters]);
 
   const registeredItems = useMemo((): MeterListItemType[] => {
     return (meters || []).map((meter: AppMeter) => ({
       ...meter,
-      id: meter.id,
+      id: meter.id, // Garante que o ID aqui é o ID do BLE (ex: MAC Address)
       name: meter.name || `Medidor ${meter.macAddress || meter.id.slice(-4)}`,
       itemType: 'registered',
     }));
@@ -121,24 +114,20 @@ const MeterRegisterScreen: React.FC = () => {
   return (
     <BackgroundWrapper>
       <ScrollView
-        // style={styles.scrollView}
-        // contentContainerStyle={styles.scrollViewContent}
+        contentContainerStyle={screenStyles.container}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.container}>
-          <ThemedText>Cadastro de Medidores</ThemedText>
+        <View style={screenStyles.container}>
+          <ThemedText style={screenStyles.text}>
+            Cadastro de Medidores
+          </ThemedText>
 
-          {/* Lista de dispositivos JÁ CADASTRADOS no backend */}
           <View style={localStyles.listSection}>
             <ThemedText style={localStyles.listHeader}>
               Meus Medidores
             </ThemedText>
             {isLoadingMeters ? (
-              <ActivityIndicator
-                size="small"
-                color={ThemedColors.text}
-                style={localStyles.centeredMessage}
-              />
+              <ActivityIndicator style={localStyles.centeredMessage} />
             ) : registeredItems.length === 0 ? (
               <ThemedText style={localStyles.emptyListText}>
                 Nenhum medidor registrado.
@@ -146,33 +135,30 @@ const MeterRegisterScreen: React.FC = () => {
             ) : (
               <View style={{ rowGap: 12 }}>
                 {registeredItems.map(item => (
-                  <MeterButton
-                    key={item.id}
-                    item={item}
-                    onRegistrationSuccess={handleRegistrationSuccess}
-                  />
+                  <MeterButton key={item.id} item={item} />
                 ))}
               </View>
             )}
           </View>
 
-          {/* Botão e Lista para SCAN de dispositivos Bluetooth */}
+          <View style={screenStyles.container} />
+
           <View style={localStyles.listSection}>
             <ThemedText style={localStyles.listHeader}>
               Procurar Novos Medidores
             </ThemedText>
-            <View style={styles.buttonContainer}>
+            <View style={screenStyles.buttonContainer}>
               <PrimaryButton
                 title={
                   isScanning ? 'Procurando...' : 'Iniciar Procura Bluetooth'
                 }
                 onPress={handleScanDevices}
+                disabled={isScanning}
               />
             </View>
-
             {isScanning && discoveredItems.length === 0 && (
               <View style={localStyles.centeredMessage}>
-                <ActivityIndicator size="small" color={ThemedColors.text} />
+                <ActivityIndicator />
                 <ThemedText style={{ marginLeft: 10 }}>
                   Procurando dispositivos...
                 </ThemedText>
@@ -184,7 +170,6 @@ const MeterRegisterScreen: React.FC = () => {
               </ThemedText>
             )}
             {discoveredItems.length > 0 && (
-              // Usar View em vez de FlatList se não for scrollável
               <View style={{ rowGap: 12 }}>
                 {discoveredItems.map(item => (
                   <MeterButton
@@ -202,17 +187,13 @@ const MeterRegisterScreen: React.FC = () => {
   );
 };
 
-// Adicione estes estilos ao seu MeterRegister.style.ts ou defina-os aqui
 const localStyles = StyleSheet.create({
-  listSection: {
-    marginBottom: 30, // Mais espaço entre seções
-    width: '100%',
-  },
+  listSection: { marginBottom: 30, width: '100%' },
   listHeader: {
     fontSize: 18,
-    fontWeight: '600', // Um pouco mais de destaque
+    fontWeight: '600',
     marginBottom: 15,
-    color: ThemedColors.text, // Usar cores do tema
+    color: ThemedColors.text,
   },
   emptyListText: {
     textAlign: 'center',
@@ -222,7 +203,6 @@ const localStyles = StyleSheet.create({
     fontSize: 15,
   },
   centeredMessage: {
-    // Para alinhar ActivityIndicator e texto
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

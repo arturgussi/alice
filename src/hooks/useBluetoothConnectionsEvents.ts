@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { EventSubscription } from 'react-native';
+import { EventSubscription, InteractionManager } from 'react-native';
 import BleManager, {
   BleConnectPeripheralEvent,
   BleDisconnectPeripheralEvent,
@@ -104,7 +104,12 @@ const useBluetoothConnectionsEvents = ({
         let response = '';
         if (event.value) {
           response = String.fromCharCode(...new Uint8Array(event.value));
-          setWifiStatus(response);
+          InteractionManager.runAfterInteractions(() => {
+            console.log(
+              `[BLEHook] InteractionManager: Atualizando wifiStatus para '${response}'`,
+            );
+            setWifiStatus(response);
+          });
         }
       }
     };

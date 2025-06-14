@@ -11,6 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 type ThemedButtonProps = {
   title: string;
   onPress: (event: GestureResponderEvent) => void;
+  disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
 };
@@ -19,11 +20,13 @@ const ThemedButton = ({
   title,
   onPress,
   style,
+  disabled,
   textStyle,
 }: ThemedButtonProps) => {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       style={({ pressed }) => [styles.button, style, pressed && styles.pressed]}
     >
       <LinearGradient

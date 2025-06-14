@@ -12,8 +12,12 @@ type ThemedColorProps = {
   background_submenu1: string;
   background_submenu2: string;
   text: string;
+  text_primary: string;
+  text_secondary: string;
   placeholder: string;
+  border: string;
   title: string;
+  danger: string;
 };
 
 export const ThemedColors: ThemedColorProps = {
@@ -30,8 +34,12 @@ export const ThemedColors: ThemedColorProps = {
   background_submenu1: 'rgba(27, 29, 38, 1)',
   background_submenu2: 'rgba(32, 33, 43, 1)',
   text: 'rgba(132, 132, 132, 1)',
+  text_primary: 'rgba(132, 132, 132, 1)',
+  text_secondary: 'rgba(132, 132, 132, 1)',
   placeholder: 'rgba(179, 179, 179, 0.8)',
+  border: 'rgba(179, 179, 179, 0.8)',
   title: 'rgba(92, 92, 92, 1)',
+  danger: 'red',
 };
 
 // export const Spacings = {

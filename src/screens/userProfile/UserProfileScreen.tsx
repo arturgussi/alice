@@ -154,7 +154,7 @@ const UserProfileScreen: React.FC = () => {
   };
 
   const handleCloseModal = () => setIsModalVisible(false);
-  const handleAccountDeleted = () => setIsModalVisible(false);
+  const handleAccountDeleted = () => handleCloseModal();
 
   const handleDeleteAccount = () => {
     Alert.alert(

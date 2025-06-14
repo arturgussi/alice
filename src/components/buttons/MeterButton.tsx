@@ -1,196 +1,199 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
+  Modal,
   StyleSheet,
+  Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Peripheral } from 'react-native-ble-manager';
-import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-import {
-  AppMeter,
-  ConnectableDevice,
-  MeterListItemType,
-} from '@/types/models/MeterModel';
+import PrimaryButton from '@/components/buttons/ThemedButton';
+import ThemedTextInput from '@/components/inputs/ThemedTextInput';
+import ThemedText from '@/components/texts/ThemedText';
+import { ThemedColors } from '@/constants/Theme.style';
+import { useAuth } from '@/hooks/useAuth';
+import useBluetoothConnectionsEvents from '@/hooks/useBluetoothConnectionsEvents';
+import { useEquipment } from '@/hooks/useEquipment';
+import { useMeter } from '@/hooks/useMeter';
+import { CreateMeterApiPayload } from '@/types/api/MeterApi';
+import { MeterListItemType } from '@/types/models/MeterModel';
 import { getErrorMessage } from '@/Util';
-import PrimaryButton from '@components/buttons/ThemedButton';
-import ThemedTextInput from '@components/inputs/ThemedTextInput';
-import ThemedText from '@components/texts/ThemedText';
-import { ThemedColors } from '@constants/Theme.style';
-import useBluetoothConnectionsEvent from '@hooks/useBluetoothConnectionsEvents';
 
 export interface MeterButtonProps {
   item: MeterListItemType;
-  onRegistrationSuccess?: (meter: AppMeter | Peripheral) => void;
+  onRegistrationSuccess?: (meterId: string) => void;
 }
-
-// Placeholder para a função de salvar no backend - Você precisará implementar isso!
-// import { registerNewMeter } from '@/services/api/MeterService'; // Exemplo
-const registerNewMeterInBackend = async (deviceData: {
-  id: string;
-  name?: string;
-  serialNumber?: string /* outros campos */;
-}) => {
-  console.log('[MeterButton] Simulating backend registration for:', deviceData);
-  // return registerNewMeter({ bleId: deviceData.id, friendlyName: deviceData.name, ... });
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simula chamada de API
-  // throw new Error("Falha simulada ao registrar no backend"); // Para testar erro
-  return { ...deviceData, registeredDate: new Date().toISOString() }; // Simula resposta
-};
 
 const MeterButton: React.FC<MeterButtonProps> = ({
   item,
   onRegistrationSuccess,
 }) => {
-  const [wifiSSID, setWifiSSID] = useState<string>('');
-  const [wifiPassword, setWifiPassword] = useState<string>('');
-  const [isRegisteringOnBackend, setIsRegisteringOnBackend] = useState(false);
-
-  const deviceToConnect: ConnectableDevice = {
-    id: item.id,
-    name: item.name || 'Dispositivo',
-  };
-
+  const { appUser } = useAuth();
+  const { equipments, isLoadingEquipments } = useEquipment();
+  const { createMeter, isCreatingMeter } = useMeter();
   const {
     isConnecting,
     isConnected,
-    error: connectionError,
-    wifiStatus, // "", "0" (pending), "true" (success), "false" (fail)
+    wifiStatus,
     connectToDevice,
     disconnectFromDevice,
     sendWifiCredentials,
-  } = useBluetoothConnectionsEvent({
-    device: deviceToConnect,
-  });
-  const modalizeRef = useRef<Modalize>(null);
+  } = useBluetoothConnectionsEvents({ device: item });
 
-  // Efeito para registrar no backend após sucesso do Wi-Fi para um NOVO dispositivo
+  // --- Estados Locais ---
+  const [isWifiModalVisible, setIsWifiModalVisible] = useState(false);
+  const [isEquipmentModalVisible, setIsEquipmentModalVisible] = useState(false);
+  const [wifiSSID, setWifiSSID] = useState('');
+  const [wifiPassword, setWifiPassword] = useState('');
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<
+    number | undefined
+  >();
+  const [isSendingWifi, setIsSendingWifi] = useState(false);
+  const [wifiErrorMessage, setWifiErrorMessage] = useState<string | null>(null);
+
+  // --- Orquestrador de Fluxo ---
   useEffect(() => {
-    if (
-      item.itemType === 'discovered' &&
-      isConnected &&
-      !item.isRegistered &&
-      !isRegisteringOnBackend &&
-      wifiStatus === 'true'
-    ) {
-      const registerAsync = async () => {
-        console.log(
-          `[MeterButton] Wi-Fi conectado para novo dispositivo ${item.id}. Registrando no backend...`,
-        );
-        setIsRegisteringOnBackend(true);
-        try {
-          // Adapte os dados que você envia para o backend aqui
-          const meterDataToRegister = {
-            id: item.id, // MAC Address / BLE ID
-            name: item.name || `Medidor ${item.id.slice(-4)}`,
-            // Você pode querer adicionar mais campos aqui, ex: equipamentoId se selecionado antes
-          };
-          await registerNewMeterInBackend(meterDataToRegister);
-          Alert.alert(
-            'Sucesso',
-            `${meterDataToRegister.name} configurado e registrado com sucesso!`,
-          );
-          onRegistrationSuccess?.(item); // Notifica o pai que o registro foi bem-sucedido
-          modalizeRef.current?.close();
-        } catch (regError: unknown) {
-          const errorMsg =
-            regError instanceof Error
-              ? regError.message
-              : 'Erro desconhecido ao registrar medidor.';
-          Alert.alert('Falha no Registro Backend', errorMsg);
-          console.error(
-            '[MeterButton] Erro ao registrar medidor no backend:',
-            regError,
-          );
-          // Opcional: Tentar desconectar ou limpar o estado do Wi-Fi se o registro no backend falhar
-          // setWifiStatus('false'); // Indica que o processo geral falhou
-        } finally {
-          setIsRegisteringOnBackend(false);
-        }
-      };
-      registerAsync();
+    if (item.itemType !== 'discovered' || !isConnected) return;
+
+    if (wifiStatus === 'true') {
+      setIsWifiModalVisible(false);
+      setIsEquipmentModalVisible(true);
+    } else if (wifiStatus === 'false') {
+      setWifiErrorMessage(
+        'A conexão Wi-Fi falhou. Verifique os dados e tente novamente.',
+      );
+      setIsWifiModalVisible(true); // Reabre o modal de Wi-Fi para mostrar o erro
     }
-  }, [wifiStatus]);
+  }, [wifiStatus, isConnected, item.itemType]);
+
+  // --- Funções de Ação ---
+
+  const handleConnectAndOpenWifiModal = async () => {
+    try {
+      if (!isConnected) {
+        await connectToDevice();
+      }
+      setWifiErrorMessage(null); // Limpa erros antigos ao abrir
+      setIsWifiModalVisible(true);
+    } catch (connectErr: unknown) {
+      Alert.alert(
+        'Falha na Conexão',
+        getErrorMessage(
+          connectErr,
+          'Não foi possível conectar ao dispositivo.',
+        ),
+      );
+    }
+  };
 
   const handleItemPress = async () => {
-    if (item.itemType === 'discovered' && item.isRegistered) {
+    if (item.itemType === 'registered') {
+      Alert.alert('Medidor Registrado', 'Reconfigurar o Wi-Fi?', [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Reconfigurar', onPress: handleConnectAndOpenWifiModal },
+      ]);
+      return;
+    }
+
+    if (item.isRegistered) {
       Alert.alert(
         'Dispositivo Encontrado',
-        `"${item.name || item.id}" já está registrado.`,
+        `"${item.name}" já está registrado no seu sistema.`,
       );
       return;
     }
 
-    if (
-      item.itemType === 'registered' ||
-      (item.itemType === 'discovered' && !isConnected && !isConnecting)
-    ) {
-      Alert.alert(
-        item.itemType === 'registered'
-          ? 'Medidor Registrado'
-          : 'Novo Dispositivo',
-        `Conectar a "${item.name || item.id}" para configurar o Wi-Fi?`,
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text:
-              item.itemType === 'registered'
-                ? 'Reconfigurar Wi-Fi'
-                : 'Conectar e Configurar',
-            onPress: async () => {
-              try {
-                await connectToDevice();
-                modalizeRef.current?.open();
-              } catch (connectErr: unknown) {
-                const errorMessage = getErrorMessage(
-                  connectErr,
-                  'Não foi possível conectar ao dispositivo.',
-                );
-                Alert.alert('Falha na Conexão', errorMessage);
-              }
-            },
-          },
-        ],
-      );
-    } else if (item.itemType === 'discovered' && isConnected) {
-      modalizeRef.current?.open();
-    }
+    // Se for um item novo, inicia o fluxo de conexão e abre o modal de Wi-Fi
+    handleConnectAndOpenWifiModal();
   };
 
-  const handleSendWifiCredentialsWithLoading = async () => {
+  const handleSendWifi = async () => {
     if (!wifiSSID || !wifiPassword) {
-      Alert.alert('Atenção', 'Preencha o nome da rede e a senha do Wi-Fi.');
+      Alert.alert('Atenção', 'Preencha o nome e a senha do Wi-Fi.');
       return;
     }
+    setIsSendingWifi(true);
+    setWifiErrorMessage(null);
     try {
       await sendWifiCredentials(wifiSSID, wifiPassword);
+      // Fecha o modal e aguarda o useEffect reagir ao status do Wi-Fi
+      setIsWifiModalVisible(false);
     } catch (sendError: unknown) {
-      const errorMessage = getErrorMessage(
-        sendError,
-        'Falha ao enviar credenciais.',
-      );
-      Alert.alert('Erro ao Enviar Wi-Fi', errorMessage);
+      Alert.alert('Erro ao Enviar', getErrorMessage(sendError, 'Erro'));
+    } finally {
+      setIsSendingWifi(false);
     }
   };
 
-  // Lógica de cores dos status (como antes, mas usando ThemedColors)
-  let bluetoothStatusColor = ThemedColors.text;
-  let wifiStatusDisplayColor = ThemedColors.text;
+  // Salva o medidor no backend
+  const handleRegisterAndSave = () => {
+    if (!selectedEquipmentId) {
+      Alert.alert(
+        'Atenção',
+        'Por favor, selecione a qual equipamento este medidor pertence.',
+      );
+      return;
+    }
+    if (!appUser?.uid) {
+      Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
+      return;
+    }
+
+    const payload: CreateMeterApiPayload = {
+      macAddress: item.id, // O ID/MAC do dispositivo BLE
+      nome: item.name || `Medidor ${item.id.slice(-4)}`,
+      idEquipamento: selectedEquipmentId,
+      idUsuario: appUser.uid, // Enviando o id do usuário logado
+    };
+
+    createMeter(
+      { payload },
+      {
+        onSuccess: () => {
+          Alert.alert('Sucesso!', 'O novo medidor foi registrado.');
+          onRegistrationSuccess?.(item.id);
+          setIsEquipmentModalVisible(false); // Fecha o modal de equipamento
+          disconnectFromDevice(); // Desconecta após o sucesso
+        },
+        onError: error => {
+          Alert.alert('Erro no Registro', error.message);
+        },
+      },
+    );
+  };
+
+  const closeModalAndDisconnect = () => {
+    setIsWifiModalVisible(false);
+    setIsEquipmentModalVisible(false);
+    if (isConnected) {
+      disconnectFromDevice();
+    }
+  };
+
+  // --- Lógica de UI ---
+  const isButtonDisabled =
+    (isConnecting || isCreatingMeter) &&
+    item.itemType === 'discovered' &&
+    !item.isRegistered;
+
+  let bluetoothStatusColor = ThemedColors.text || 'grey';
+  let wifiStatusDisplayColor = ThemedColors.text || 'grey';
 
   if (item.itemType === 'discovered') {
     if (isConnecting) bluetoothStatusColor = 'orange';
     else if (isConnected) bluetoothStatusColor = 'green';
-    else if (connectionError) bluetoothStatusColor = 'red';
+    // else if (connectionError) bluetoothStatusColor = 'red';
   } else if (item.itemType === 'registered') {
-    bluetoothStatusColor = 'blue';
+    bluetoothStatusColor = ThemedColors.text;
   }
 
-  // Status do Wi-Fi (mais complexo porque vem de notificação)
-  if (isConnected || item.itemType === 'registered') {
+  if (isConnected) {
     if (wifiStatus === 'true') wifiStatusDisplayColor = 'green';
     else if (wifiStatus === '0') wifiStatusDisplayColor = 'orange';
     else if (wifiStatus === 'false') wifiStatusDisplayColor = 'red';
@@ -200,11 +203,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     <TouchableOpacity
       style={styles.meterContainer}
       onPress={handleItemPress}
-      disabled={
-        (isConnecting || isRegisteringOnBackend) &&
-        item.itemType === 'discovered' &&
-        !item.isRegistered
-      }
+      disabled={isButtonDisabled}
     >
       <ThemedText style={styles.meterName}>
         {item.name || 'Dispositivo Sem Nome'}
@@ -229,86 +228,161 @@ const MeterButton: React.FC<MeterButtonProps> = ({
         />
       </View>
 
-      {/* Modal para credenciais Wi-Fi */}
-      <Portal>
-        <Modalize
-          ref={modalizeRef}
-          adjustToContentHeight
-          onClosed={() => {
-            // Se fechar o modal e estava conectado a um dispositivo descoberto, desconecta
-            if (
-              item.itemType === 'discovered' &&
-              isConnected &&
-              !isRegisteringOnBackend
-            ) {
-              disconnectFromDevice();
-            }
-            setIsRegisteringOnBackend(false);
-          }}
-        >
-          <View style={styles.portalView}>
-            <ThemedText style={styles.modalTitle}>
-              Conectar {item.name || 'Dispositivo'} na Rede Wi-Fi
-            </ThemedText>
-            <View style={styles.inputModalContainer}>
-              <ThemedTextInput
-                placeholder="Nome da rede Wi-Fi (SSID)"
-                value={wifiSSID}
-                onChangeText={setWifiSSID}
-                autoCapitalize="none"
-              />
-            </View>
-            <View style={styles.inputModalContainer}>
-              <ThemedTextInput
-                placeholder="Senha da rede Wi-Fi"
-                secureTextEntry
-                value={wifiPassword}
-                onChangeText={setWifiPassword}
-                autoCapitalize="none"
-              />
-            </View>
-            <View style={styles.buttonModalContainer}>
-              {isRegisteringOnBackend || wifiStatus === '0' ? (
-                <ActivityIndicator size="small" color={ThemedColors.text} />
-              ) : (
-                <PrimaryButton
-                  title="Enviar Credenciais Wi-Fi"
-                  onPress={handleSendWifiCredentialsWithLoading}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isWifiModalVisible}
+        onRequestClose={closeModalAndDisconnect}
+        statusBarTranslucent={true}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+              <View style={styles.modalView}>
+                <ThemedText style={styles.modalTitle}>
+                  Configurar Wi-Fi do Medidor
+                </ThemedText>
+                {wifiErrorMessage && (
+                  <Text style={styles.statusTextError}>{wifiErrorMessage}</Text>
+                )}
+                <ThemedTextInput
+                  placeholder="Nome da rede Wi-Fi (SSID)"
+                  value={wifiSSID}
+                  onChangeText={setWifiSSID}
+                  autoCapitalize="none"
                 />
-              )}
-            </View>
-            {/* Feedback do status do Wi-Fi no modal */}
-            {wifiStatus === '0' && (
-              <ThemedText style={styles.statusText}>
-                Enviando/Conectando Wi-Fi...
-              </ThemedText>
-            )}
-            {wifiStatus === 'true' && (
-              <ThemedText style={[styles.statusText, { color: 'green' }]}>
-                Wi-Fi Configurado! Registrando...
-              </ThemedText>
-            )}
-            {wifiStatus === 'false' && (
-              <ThemedText style={[styles.statusText, { color: 'red' }]}>
-                Falha na conexão Wi-Fi.
-              </ThemedText>
-            )}
-            <View style={{ height: 40 }} />
+                <ThemedTextInput
+                  placeholder="Senha da rede Wi-Fi"
+                  secureTextEntry
+                  value={wifiPassword}
+                  onChangeText={setWifiPassword}
+                  autoCapitalize="none"
+                  style={{ marginTop: 10 }}
+                />
+                <View>
+                  {isSendingWifi ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={[styles.buttonBase, styles.cancelButton]}
+                        onPress={closeModalAndDisconnect}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.buttonTextBase,
+                            styles.cancelButtonText,
+                          ]}
+                        >
+                          Cancelar
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 10 }} />
+                      <PrimaryButton
+                        title="Conectar Wi-Fi"
+                        onPress={handleSendWifi}
+                        disabled={!isConnected}
+                      />
+                    </View>
+                  )}
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </Modalize>
-      </Portal>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isEquipmentModalVisible}
+        onRequestClose={closeModalAndDisconnect}
+        statusBarTranslucent={true}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+              <View style={styles.modalView}>
+                <ThemedText style={styles.modalTitle}>
+                  Associar Medidor
+                </ThemedText>
+                <ThemedText style={styles.statusText}>
+                  Wi-Fi configurado! Agora, selecione a qual equipamento este
+                  medidor pertence.
+                </ThemedText>
+                {isLoadingEquipments ? (
+                  <ActivityIndicator />
+                ) : (
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={selectedEquipmentId}
+                      onValueChange={id => setSelectedEquipmentId(id)}
+                    >
+                      <Picker.Item
+                        label="Selecione um equipamento..."
+                        value={undefined}
+                      />
+                      {(equipments || []).map(eq => (
+                        <Picker.Item
+                          key={eq.id}
+                          label={eq.name}
+                          value={eq.id}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+                <View>
+                  {isCreatingMeter ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={[styles.buttonBase, styles.cancelButton]}
+                        onPress={closeModalAndDisconnect}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.buttonTextBase,
+                            styles.cancelButtonText,
+                          ]}
+                        >
+                          Cancelar
+                        </Text>
+                      </TouchableOpacity>
+                      <View style={{ width: 10 }} />
+                      <PrimaryButton
+                        title="Finalizar Registro"
+                        onPress={handleRegisterAndSave}
+                        disabled={!selectedEquipmentId}
+                      />
+                    </View>
+                  )}
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </TouchableOpacity>
   );
 };
 
-// Seus estilos (adicione os novos se necessário)
+// Estilos para o MeterButton e seu modal
 const styles = StyleSheet.create({
   meterContainer: {
     padding: 16,
     borderWidth: 1,
     borderRadius: 12,
-    borderColor: ThemedColors.text || ThemedColors.placeholder,
-    backgroundColor: ThemedColors.background_card || 'white',
+    borderColor: ThemedColors.placeholder,
+    backgroundColor: ThemedColors.background_card,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   meterName: {
     fontSize: 16,
@@ -332,22 +406,92 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: ThemedColors.placeholder,
   },
   portalView: {
     padding: 20,
-    backgroundColor:
-      ThemedColors.background_submenu1 || ThemedColors.background,
+    paddingTop: 30,
+    backgroundColor: ThemedColors.background || ThemedColors.background,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
     color: ThemedColors.text,
   },
-  inputModalContainer: { marginVertical: 10 },
-  buttonModalContainer: { marginVertical: 20 },
-  statusText: { marginTop: 10, textAlign: 'center', fontSize: 14 },
+  modalSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: ThemedColors.text,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: ThemedColors.placeholder,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  statusText: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  statusTextSuccess: { color: 'green' },
+  statusTextError: { color: 'red' },
+  divider: {
+    height: 1,
+    backgroundColor: ThemedColors.placeholder,
+    marginVertical: 25,
+  },
+  modalOverlay: {
+    // Estilo para o fundo opaco
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  modalView: {
+    // Estilo para o card/caixa do popup
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: ThemedColors.background || 'white',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'stretch',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  buttonBase: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  buttonTextBase: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  cancelButton: {
+    backgroundColor: '#EFEFF4',
+  },
+  cancelButtonText: {
+    color: ThemedColors.text || '#007AFF',
+  },
 });
 
 export default MeterButton;

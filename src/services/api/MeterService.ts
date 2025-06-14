@@ -68,7 +68,7 @@ export const createNewMeter = async (
   }
 };
 
-export const updateExistingEquipment = async (
+export const updateExistingEquipmentForMeter = async (
   id: string,
   payload: UpdateMeterApiPayload,
 ): Promise<AppMeter> => {
@@ -84,7 +84,7 @@ export const updateExistingEquipment = async (
   }
 };
 
-export const deleteExistingEquipment = async (id: string): Promise<void> => {
+export const deleteExistingMeter = async (id: string): Promise<void> => {
   try {
     await apiClient.delete(`${endpoint}/${id}`);
   } catch (error) {

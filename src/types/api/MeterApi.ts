@@ -10,7 +10,7 @@ export interface CreateMeterApiPayload {
   idUsuario: string;
   nome: string;
   macAddress: string;
-  idEquipamento: number;
+  idEquipamento: number | null;
 }
 
 export interface UpdateMeterApiPayload {

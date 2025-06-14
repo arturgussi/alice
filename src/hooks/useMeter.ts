@@ -1,50 +1,76 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  MutateOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { fetchMeters } from '@/services/api/MeterService';
+import { createNewMeter, fetchMeters } from '@/services/api/MeterService';
+import { CreateMeterApiPayload } from '@/types/api/MeterApi';
 import { AppMeter } from '@/types/models/MeterModel';
 
 import { useAuth } from './useAuth';
 
+type CreateVariables = { payload: CreateMeterApiPayload };
+
 export interface UseMeterReturn {
   meters: AppMeter[] | undefined;
-  isLoading: boolean;
-  isFetching: boolean;
-  isError: boolean;
-  error: Error | null;
-  refetchMeters: () => Promise<UseQueryResult<AppMeter[], Error>>;
+  isLoadingMeters: boolean;
+  isFetchingMeters: boolean;
+  isErrorMeters: boolean;
+  errorMeters: Error | null;
+  refetchMeters: () => void;
+  createMeter: (
+    variables: CreateVariables,
+    options?: MutateOptions<AppMeter, Error, CreateVariables, unknown>,
+  ) => void;
+  isCreatingMeter: boolean;
 }
 
 export const useMeter = (): UseMeterReturn => {
   const { appUser } = useAuth();
   const currentUserId = appUser?.uid;
+  const queryClient = useQueryClient();
 
-  const queryResult = useQuery<
-    AppMeter[],
-    Error,
-    AppMeter[],
-    (string | undefined)[]
-  >({
-    queryKey: ['meters', currentUserId],
-
-    queryFn: async () => {
-      if (!currentUserId) {
-        console.warn(
-          '[useMeter] queryFn chamada sem currentUserId. Retornando array vazio.',
-        );
-        return [];
-      }
+  const {
+    data: meters,
+    isLoading: isLoadingMeters,
+    isFetching: isFetchingMeters,
+    isError: isErrorMeters,
+    error: errorMeters,
+    refetch,
+  } = useQuery<AppMeter[], Error>({
+    queryKey: ['meters', currentUserId], // Chave de cache
+    queryFn: () => {
+      if (!currentUserId) return [];
       return fetchMeters(currentUserId);
     },
-
     enabled: !!currentUserId,
   });
 
+  // --- MUTATION: Criar um novo medidor ---
+  const { mutate: createMeter, isPending: isCreatingMeter } = useMutation<
+    AppMeter,
+    Error,
+    CreateVariables
+  >({
+    mutationFn: variables => createNewMeter(variables.payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meters', currentUserId] });
+    },
+    onError: error => {
+      console.error('[useMeter] Erro ao criar medidor:', error.message);
+    },
+  });
+
   return {
-    meters: queryResult.data,
-    isLoading: queryResult.isLoading,
-    isFetching: queryResult.isFetching,
-    isError: queryResult.isError,
-    error: queryResult.error,
-    refetchMeters: queryResult.refetch,
+    meters,
+    isLoadingMeters,
+    isFetchingMeters,
+    isErrorMeters,
+    errorMeters,
+    refetchMeters: refetch,
+    createMeter,
+    isCreatingMeter,
   };
 };

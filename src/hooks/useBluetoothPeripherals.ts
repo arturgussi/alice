@@ -3,7 +3,7 @@ import { EventSubscription } from 'react-native';
 import BleManager, { Peripheral } from 'react-native-ble-manager';
 
 const useBluetoothPeripherals = () => {
-  const [isScanning, setIsScanning] = useState(Boolean);
+  const [isScanning, setIsScanning] = useState(false);
   const [peripherals, setPeripherals] = useState(
     new Map<Peripheral['id'], Peripheral>(),
   );
