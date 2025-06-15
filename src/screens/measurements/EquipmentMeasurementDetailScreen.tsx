@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -14,9 +14,8 @@ import { BarChart, lineDataItem } from 'react-native-gifted-charts';
 
 import ThemedText from '@/components/texts/ThemedText';
 import { ThemedColors } from '@/constants/Theme.style';
-import { HomeNavigationProps } from '@/navigation/stacks/BottomHomeStack';
 import { fetchEquipmentAnalytics } from '@/services/api/EquipmentService';
-import { HomeStackParamList } from '@/types/navigation/NavigationTypes';
+import { EquipmentMeasureStackParamList } from '@/types/navigation/NavigationTypes';
 import {
   DateRangePeriod,
   formatCurrency,
@@ -24,14 +23,27 @@ import {
   formatNumber,
   getDateRangeForPeriod,
 } from '@/Util';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { add, sub } from 'date-fns';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-// Tipagem para a prop 'route' desta tela
-type EquipmentDetailRouteProp = RouteProp<
-  HomeStackParamList,
+// 1. Define o tipo para a prop 'navigation' específica desta tela
+type EquipmentDetailListNavigationProp = NativeStackNavigationProp<
+  EquipmentMeasureStackParamList,
   'EquipmentDetailScreen'
 >;
+
+// 2. Define o tipo para a prop 'route' específica desta tela
+type EquipmentDetailListRouteProp = RouteProp<
+  EquipmentMeasureStackParamList,
+  'EquipmentDetailScreen'
+>;
+
+// 3. Define as props completas para o componente da tela
+type EquipmentDetailListScreenProps = {
+  navigation: EquipmentDetailListNavigationProp;
+  route: EquipmentDetailListRouteProp;
+};
 
 type periodsProps = {
   key: DateRangePeriod;
@@ -53,10 +65,9 @@ const MIN_BAR_CHART_HEIGHT_ABSOLUTE = 220; // Altura mínima absoluta para o gr�
 const PORTRAIT_CHART_HEIGHT_RATIO = 0.4; // 40% da altura da tela em retrato
 const LANDSCAPE_CHART_HEIGHT_RATIO = 0.75;
 
-export const EquipmentDetailScreen: React.FC = () => {
-  const navigation =
-    useNavigation<HomeNavigationProps<'EquipmentDetailScreen'>>();
-  const route = useRoute<EquipmentDetailRouteProp>();
+export const EquipmentMeasurementDetailScreen: React.FC<
+  EquipmentDetailListScreenProps
+> = ({ navigation, route }) => {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const { equipmentId, equipmentName } = route.params;
@@ -163,7 +174,7 @@ export const EquipmentDetailScreen: React.FC = () => {
     >
       <View style={{ marginBottom: 20 }}>
         <ThemedText style={styles.pageTitle}>
-          EQUIPAMENTO{equipmentName}
+          {equipmentName}
         </ThemedText>
         <ThemedText style={{ textAlign: 'center' }}>
           Análise de Consumo
@@ -366,6 +377,7 @@ export const EquipmentDetailScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   pageTitle: {
+    textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 12,

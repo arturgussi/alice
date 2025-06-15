@@ -4,8 +4,8 @@ import { AppBottomTabParamList } from '@/types/navigation/NavigationTypes';
 import CustomMenu from '@components/menu/CustomMenu';
 
 import { BottomHomeStack } from '../stacks/BottomHomeStack';
-import { BottomMeasurementStack } from '../stacks/BottomMeasurementStack';
 import { BottomProfileStack } from '../stacks/BottomProfileStack';
+import { BottomEquipmentMeasureStack } from '../stacks/BottomEquipmentMeasurementStack';
 
 const Tab = createBottomTabNavigator<AppBottomTabParamList>();
 
@@ -20,7 +20,7 @@ export function BottomTabNavigator() {
       <Tab.Screen name="HomeTab" component={BottomHomeStack} options={{}} />
       <Tab.Screen
         name="MeasurementsTab"
-        component={BottomMeasurementStack}
+        component={BottomEquipmentMeasureStack}
         options={{}}
       />
       <Tab.Screen

@@ -18,6 +18,7 @@ type ThemedColorProps = {
   border: string;
   title: string;
   danger: string;
+  success: string;
 };
 
 export const ThemedColors: ThemedColorProps = {
@@ -40,6 +41,7 @@ export const ThemedColors: ThemedColorProps = {
   border: 'rgba(179, 179, 179, 0.8)',
   title: 'rgba(92, 92, 92, 1)',
   danger: 'red',
+  success: 'green',
 };
 
 // export const Spacings = {
