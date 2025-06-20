@@ -6,17 +6,11 @@ import { ThemedColors } from '@constants/Theme.style';
 
 type LinearScaleProps = {
   value: number;
-  month: string;
-  year: string;
+  label: string;
   widthPercentage: number;
 };
 
-const LinearScale = ({
-  value,
-  month,
-  year,
-  widthPercentage,
-}: LinearScaleProps) => {
+const LinearScale = ({ value, label, widthPercentage }: LinearScaleProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
   const containerRef = useRef<View>(null);
 
@@ -39,9 +33,7 @@ const LinearScale = ({
 
   return (
     <View style={styles.container} ref={containerRef}>
-      <Text style={styles.text}>
-        {month}/{year}
-      </Text>
+      <Text style={styles.text}>{label}</Text>
       <View style={styles.linearScaleBackground}>
         <LinearGradientWrapper
           color1={ThemedColors.darkPurple_icon}
@@ -63,7 +55,7 @@ const LinearScale = ({
             ),
           }}
         >
-          <Text style={styles.textConsumptionValue}>{value} </Text>
+          <Text style={styles.textConsumptionValue}>{value.toFixed(1)} </Text>
           <Text style={[styles.textConsumption]}>kWh</Text>
         </View>
       </View>
@@ -74,6 +66,7 @@ const LinearScale = ({
 const styles = StyleSheet.create({
   container: {
     gap: 8,
+    width: '100%',
   },
   linearScaleBackground: {
     backgroundColor: ThemedColors.background,

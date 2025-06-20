@@ -33,7 +33,7 @@ export const mapToAppEquipment = (
   backendProfile: BackendEquipmentResponse,
 ): AppEquipment => {
   return {
-    id: backendProfile.id,
+    id: parseInt(backendProfile.id),
     userUid: backendProfile.idUsuario,
     name: backendProfile.nome,
     brand: backendProfile.marca,

@@ -1,5 +1,5 @@
 export interface AppEquipment {
-  id: string;
+  id: number;
   userUid: string;
   name: string;
   brand: string;
