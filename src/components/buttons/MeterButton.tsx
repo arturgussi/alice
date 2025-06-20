@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -22,6 +22,7 @@ import useBluetoothConnectionsEvents from '@/hooks/useBluetoothConnectionsEvents
 import { useEquipment } from '@/hooks/useEquipment';
 import { useMeter } from '@/hooks/useMeter';
 import { CreateMeterApiPayload } from '@/types/api/MeterApi';
+import { toUnifiedMeterDevice } from '@/types/mappers/MeterMapper';
 import { MeterListItemType } from '@/types/models/MeterModel';
 import { getErrorMessage } from '@/Util';
 
@@ -34,6 +35,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
   item,
   onRegistrationSuccess,
 }) => {
+  const device = useMemo(() => toUnifiedMeterDevice(item), [item]);
   const { appUser } = useAuth();
   const { equipments, isLoadingEquipments } = useEquipment();
   const { createMeter, isCreatingMeter } = useMeter();
@@ -44,7 +46,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     connectToDevice,
     disconnectFromDevice,
     sendWifiCredentials,
-  } = useBluetoothConnectionsEvents({ device: item });
+  } = useBluetoothConnectionsEvents({ device: device.originalItem });
 
   // --- Estados Locais ---
   const [isWifiModalVisible, setIsWifiModalVisible] = useState(false);
@@ -59,7 +61,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
 
   // --- Orquestrador de Fluxo ---
   useEffect(() => {
-    if (item.itemType !== 'discovered' || !isConnected) return;
+    if (device.itemType !== 'discovered' || !isConnected) return;
 
     if (wifiStatus === 'true') {
       setIsWifiModalVisible(false);
@@ -68,9 +70,9 @@ const MeterButton: React.FC<MeterButtonProps> = ({
       setWifiErrorMessage(
         'A conexão Wi-Fi falhou. Verifique os dados e tente novamente.',
       );
-      setIsWifiModalVisible(true); // Reabre o modal de Wi-Fi para mostrar o erro
+      setIsWifiModalVisible(true);
     }
-  }, [wifiStatus, isConnected, item.itemType]);
+  }, [wifiStatus, isConnected, device]);
 
   // --- Funções de Ação ---
 
@@ -84,32 +86,22 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     } catch (connectErr: unknown) {
       Alert.alert(
         'Falha na Conexão',
-        getErrorMessage(
-          connectErr,
-          'Não foi possível conectar ao dispositivo.',
-        ),
+        'Não foi possível conectar ao dispositivo.',
       );
+
+      console.error(getErrorMessage(connectErr, 'Erro desconhecido'));
     }
   };
 
   const handleItemPress = async () => {
-    if (item.itemType === 'registered') {
-      Alert.alert('Medidor Registrado', 'Reconfigurar o Wi-Fi?', [
+    if (device.isRegistered) {
+      Alert.alert('Medidor Registrado', 'Deseja reconfigurar o Wi-Fi?', [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Reconfigurar', onPress: handleConnectAndOpenWifiModal },
       ]);
       return;
     }
-
-    if (item.isRegistered) {
-      Alert.alert(
-        'Dispositivo Encontrado',
-        `"${item.name}" já está registrado no seu sistema.`,
-      );
-      return;
-    }
-
-    // Se for um item novo, inicia o fluxo de conexão e abre o modal de Wi-Fi
+    // Se for um item novo, inicia o fluxo
     handleConnectAndOpenWifiModal();
   };
 
@@ -146,10 +138,10 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     }
 
     const payload: CreateMeterApiPayload = {
-      macAddress: item.id, // O ID/MAC do dispositivo BLE
-      nome: item.name || `Medidor ${item.id.slice(-4)}`,
+      macAddress: device.macAddress,
+      nome: device.name || `Medidor ${device.macAddress.slice(-4)}`,
       idEquipamento: selectedEquipmentId,
-      idUsuario: appUser.uid, // Enviando o id do usuário logado
+      idUsuario: appUser.uid,
     };
 
     createMeter(
@@ -157,7 +149,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
       {
         onSuccess: () => {
           Alert.alert('Sucesso!', 'O novo medidor foi registrado.');
-          onRegistrationSuccess?.(item.id);
+          onRegistrationSuccess?.(device.macAddress);
           setIsEquipmentModalVisible(false); // Fecha o modal de equipamento
           disconnectFromDevice(); // Desconecta após o sucesso
         },
@@ -178,18 +170,16 @@ const MeterButton: React.FC<MeterButtonProps> = ({
 
   // --- Lógica de UI ---
   const isButtonDisabled =
-    (isConnecting || isCreatingMeter) &&
-    item.itemType === 'discovered' &&
-    !item.isRegistered;
+    (isConnecting || isCreatingMeter) && !device.isRegistered;
 
   let bluetoothStatusColor = ThemedColors.text || 'grey';
   let wifiStatusDisplayColor = ThemedColors.text || 'grey';
 
-  if (item.itemType === 'discovered') {
+  if (device.itemType === 'discovered') {
     if (isConnecting) bluetoothStatusColor = 'orange';
     else if (isConnected) bluetoothStatusColor = 'green';
     // else if (connectionError) bluetoothStatusColor = 'red';
-  } else if (item.itemType === 'registered') {
+  } else if (device.isRegistered) {
     bluetoothStatusColor = ThemedColors.text;
   }
 
@@ -206,13 +196,9 @@ const MeterButton: React.FC<MeterButtonProps> = ({
       disabled={isButtonDisabled}
     >
       <ThemedText style={styles.meterName}>
-        {item.name || 'Dispositivo Sem Nome'}
+        {device.name || 'Dispositivo Sem Nome'}
       </ThemedText>
-      <ThemedText style={styles.meterId}>ID: {item.id}</ThemedText>
-
-      {item.itemType === 'discovered' && typeof item.rssi === 'number' && (
-        <ThemedText style={styles.meterRssi}>RSSI: {item.rssi}</ThemedText>
-      )}
+      <ThemedText style={styles.meterId}>MAC: {device.macAddress}</ThemedText>
 
       <View style={styles.statusIconsContainer}>
         <FontAwesomeIcon

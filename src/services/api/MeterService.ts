@@ -1,9 +1,11 @@
 import axios, { AxiosError } from 'axios';
 
 import {
+  BackendMeterResponse,
   CreateMeterApiPayload,
   UpdateMeterApiPayload,
 } from '@/types/api/MeterApi';
+import { mapToAppMeter } from '@/types/mappers/MeterMapper';
 import { AppMeter } from '@/types/models/MeterModel';
 import apiClient from '@api/ApiClient';
 
@@ -18,13 +20,13 @@ export const fetchMeters = async (userId: string): Promise<AppMeter[]> => {
   }
 
   try {
-    const response = await apiClient.get<AppMeter[]>(endpoint, {
+    const response = await apiClient.get<BackendMeterResponse[]>(endpoint, {
       params: {
         idUsuario: userId,
       },
     });
 
-    return response.data;
+    return response.data.map(apiMeter => mapToAppMeter(apiMeter));
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
@@ -48,8 +50,10 @@ export const fetchMeters = async (userId: string): Promise<AppMeter[]> => {
 
 export const fetchMeterById = async (id: string): Promise<AppMeter> => {
   try {
-    const response = await apiClient.get<AppMeter>(`${endpoint}/${id}`);
-    return response.data;
+    const response = await apiClient.get<BackendMeterResponse>(
+      `${endpoint}/${id}`,
+    );
+    return mapToAppMeter(response.data);
   } catch (error) {
     console.error(`Error fetching meter ${id}:`, error);
     throw error;

@@ -50,7 +50,7 @@ const MeterRegisterScreen: React.FC = () => {
       setPeripherals(new Map());
       setIsScanning(true);
       console.log('[MeterRegisterScreen] Iniciando scan...');
-      await scanDevices(); // Exemplo: scan por 5 segundos
+      await scanDevices();
     } catch (error: unknown) {
       console.error('[MeterRegisterScreen] Erro ao iniciar scan:', error);
       const errorMessage = getErrorMessage(
@@ -77,14 +77,14 @@ const MeterRegisterScreen: React.FC = () => {
     bleManagerStart().catch(console.error);
   }, []);
 
-  const handleRegistrationSuccess = (registeredDeviceId: string) => {
+  const handleRegistrationSuccess = (registeredMacAddress: string) => {
     console.log(
-      `[MeterRegisterScreen] Dispositivo ${registeredDeviceId} registrado. Atualizando listas.`,
+      `[MeterRegisterScreen] Dispositivo ${registeredMacAddress} registrado. Atualizando listas.`,
     );
     refetchMeters();
     setPeripherals(prev => {
       const newMap = new Map(prev);
-      newMap.delete(registeredDeviceId);
+      newMap.delete(registeredMacAddress);
       return newMap;
     });
     if (isScanning) {
@@ -93,23 +93,28 @@ const MeterRegisterScreen: React.FC = () => {
   };
 
   const discoveredItems = useMemo((): MeterListItemType[] => {
-    const registeredIds = new Set((meters || []).map(m => m.id));
+    const registeredMacAddresses = new Set(
+      (meters || []).map(m => m.macAddress),
+    );
+
     return Array.from(peripherals.values()).map(p => ({
       ...p,
       name: p.name || 'Dispositivo Desconhecido',
       itemType: 'discovered',
-      isRegistered: registeredIds.has(p.id),
+      isRegistered: registeredMacAddresses.has(p.id),
     }));
   }, [peripherals, meters]);
 
-  const registeredItems = useMemo((): MeterListItemType[] => {
+  const registeredItems = useMemo((): (AppMeter & {
+    itemType: 'registered';
+  })[] => {
     return (meters || []).map((meter: AppMeter) => ({
       ...meter,
-      id: meter.id, // Garante que o ID aqui é o ID do BLE (ex: MAC Address)
-      name: meter.name || `Medidor ${meter.macAddress || meter.id.slice(-4)}`,
       itemType: 'registered',
     }));
   }, [meters]);
+
+  console.log(registeredItems);
 
   return (
     <BackgroundWrapper>
