@@ -13,7 +13,8 @@ export interface DetalheEquipamentoResumo {
   idEquipamento: number;
   nome: string;
   gastoMesAtual: number;
-  consumoKwhMesAtual: number; // IMPORTANTE: Backend precisa calculá-lo.
+  consumoKwhMesAtual: number;
+  online: 0 | 1;
 }
 
 export interface ResumoEquipamentosResponse {

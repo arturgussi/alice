@@ -15,6 +15,7 @@ import PrimaryButton from '@/components/buttons/ThemedButton';
 import ThemedText from '@/components/texts/ThemedText';
 import BackgroundWrapper from '@/components/wrappers/BackgroundWrapper';
 import { ThemedColors } from '@/constants/Theme.style';
+import { useDashboard } from '@/hooks/useDashboard';
 import { useEquipment } from '@/hooks/useEquipment';
 import { AppEquipment } from '@/types/models/EquipmentModel';
 import { EquipmentMeasureStackParamList } from '@/types/navigation/NavigationTypes';
@@ -33,7 +34,7 @@ const MonthlySummaryCard: React.FC<{
   totalCost: number;
   totalConsumption: number;
   change: number;
-}> = ({ totalCost, totalConsumption, change }) => {
+}> = ({ totalCost, change }) => {
   const changeColor = change < 0 ? ThemedColors.success : ThemedColors.danger;
   const changeIcon = change < 0 ? 'arrow-down' : 'arrow-up';
   const changeText = `${(Math.abs(change) * 100).toFixed(0)}%`;
@@ -133,38 +134,94 @@ export const EquipmentMeasurementListScreen: React.FC = () => {
     refetchEquipments,
   } = useEquipment();
 
-  // DADOS MOCKADOS para o resumo do mês. No futuro, isso viria do backend,
-  // talvez através de um novo hook `useDashboardData()`.
-  const mockSummaryData = {
-    totalCost: 287.5,
-    totalConsumption: 310,
-    change: -0.08,
-  };
+  const actualDay = new Date();
+  const {
+    resumoGeral,
+    resumoEquipamentos,
+    isFetching: isFetchingDashboard,
+    refetchAllDashboard,
+    isError: isErrorDashboard,
+    error: errorDashboard,
+    statusResumoGeral,
+  } = useDashboard({
+    year: actualDay.getFullYear(),
+    month: actualDay.getMonth() + 1,
+  });
 
+  const isLoading = isLoadingEquipments || statusResumoGeral === 'pending';
+  const isFetching = isFetchingEquipments || isFetchingDashboard;
+  const isError = isErrorEquipments || isErrorDashboard;
+  const error = isErrorEquipments ? errorEquipments : errorDashboard;
+  const combinedRefetch = () => {
+    refetchEquipments();
+    refetchAllDashboard();
+  };
   type SortOption = 'name_asc' | 'cost_desc';
   const [sortOption, setSortOption] = useState<SortOption>('cost_desc');
 
-  const sortedEquipments = useMemo(() => {
-    // Adicionamos os dados mockados de 'hasMeterAttached' e 'monthlyCost'
-    // aos equipamentos que vêm do hook, apenas para a UI funcionar.
-    // No futuro, esses dados virão do backend junto com os 'equipments'.
-    const equipmentsWithMockData = (equipments || []).map(eq => ({
-      ...eq,
-      hasMeterAttached: Math.random() > 0.3, // 70% de chance de ter medidor
-      monthlyCost: Math.random() * 150,
-    }));
+  const enrichedAndSortedEquipments = useMemo(() => {
+    // Para buscas rápidas, criamos um mapa dos resumos por ID
+    const summaryMap = new Map(
+      (resumoEquipamentos?.detalhesPorEquipamento || []).map(d => [
+        d.idEquipamento,
+        d,
+      ]),
+    );
 
-    const sortableList = [...equipmentsWithMockData];
+    // Agora, enriquecemos a lista de equipamentos com os dados de resumo
+    const enrichedList = (equipments || []).map(eq => {
+      const summary = summaryMap.get(eq.id);
+      return {
+        ...eq,
+        hasMeterAttached: summary ? summary.online === 1 : false,
+        monthlyCost: summary ? summary.gastoMesAtual : 0,
+      };
+    });
+
+    // Finalmente, ordenamos a lista enriquecida
     switch (sortOption) {
       case 'cost_desc':
-        return sortableList.sort(
-          (a, b) => (b.monthlyCost || 0) - (a.monthlyCost || 0),
-        );
+        return enrichedList.sort((a, b) => b.monthlyCost - a.monthlyCost);
       case 'name_asc':
       default:
-        return sortableList.sort((a, b) => a.name.localeCompare(b.name));
+        return enrichedList.sort((a, b) => a.name.localeCompare(b.name));
     }
-  }, [equipments, sortOption]);
+  }, [equipments, resumoEquipamentos, sortOption]);
+
+  const summaryCardData = useMemo(() => {
+    const gastoAtual = resumoGeral?.mesAtual?.gastoReais ?? 0;
+    const gastoAnterior = resumoGeral?.mesAnterior?.gastoReais ?? 0;
+
+    // Evita divisão por zero
+    const change =
+      gastoAnterior > 0 ? (gastoAtual - gastoAnterior) / gastoAnterior : 0;
+
+    return {
+      totalCost: gastoAtual,
+      totalConsumption: resumoGeral?.mesAtual?.consumoKwh ?? 0,
+      change: change,
+    };
+  }, [resumoGeral]);
+
+  // A lógica de renderização agora usa os estados unificados
+  if (isLoading) {
+    return (
+      <View style={styles.centeredView}>
+        <ActivityIndicator size="large" color={ThemedColors.text_primary} />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.centeredView}>
+        <ThemedText style={styles.errorText}>
+          Erro ao carregar dados: {error?.message}
+        </ThemedText>
+        <PrimaryButton title="Tentar Novamente" onPress={combinedRefetch} />
+      </View>
+    );
+  }
 
   if (isLoadingEquipments) {
     return (
@@ -191,21 +248,21 @@ export const EquipmentMeasurementListScreen: React.FC = () => {
   return (
     <BackgroundWrapper>
       <FlatList
-        data={sortedEquipments}
-        keyExtractor={item => item.id}
+        data={enrichedAndSortedEquipments}
+        keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        onRefresh={refetchEquipments} // Habilita "puxar para atualizar"
-        refreshing={isFetchingEquipments} // Mostra o indicador de loading do refresh
+        onRefresh={combinedRefetch} // Habilita "puxar para atualizar"
+        refreshing={isFetching} // Mostra o indicador de loading do refresh
         ListHeaderComponent={
           <>
             <ThemedText style={styles.pageTitle}>
               Visão Geral de Consumo
             </ThemedText>
             <MonthlySummaryCard
-              totalCost={mockSummaryData.totalCost}
-              totalConsumption={mockSummaryData.totalConsumption}
-              change={mockSummaryData.change}
+              totalCost={summaryCardData.totalCost}
+              totalConsumption={summaryCardData.totalConsumption}
+              change={summaryCardData.change}
             />
             <View style={styles.listHeaderContainer}>
               <ThemedText style={styles.listHeader}>
@@ -255,7 +312,7 @@ export const EquipmentMeasurementListScreen: React.FC = () => {
             item={item}
             onPress={() =>
               navigation.navigate('EquipmentDetailScreen', {
-                equipmentId: item.id,
+                equipmentId: item.id.toString(),
                 equipmentName: item.name,
               })
             }
