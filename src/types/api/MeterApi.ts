@@ -14,6 +14,6 @@ export interface CreateMeterApiPayload {
 }
 
 export interface UpdateMeterApiPayload {
-  name: string;
+  // name: string;
   idEquipamento: number;
 }

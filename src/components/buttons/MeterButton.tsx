@@ -38,7 +38,8 @@ const MeterButton: React.FC<MeterButtonProps> = ({
   const device = useMemo(() => toUnifiedMeterDevice(item), [item]);
   const { appUser } = useAuth();
   const { equipments, isLoadingEquipments } = useEquipment();
-  const { createMeter, isCreatingMeter } = useMeter();
+  const { createMeter, isCreatingMeter, updateMeter, isUpdatingMeter } =
+    useMeter();
   const {
     isConnecting,
     isConnected,
@@ -93,15 +94,22 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     }
   };
 
+  const handleChangeEquipment = () => {
+    // Apenas abre o modal de seleção de equipamento
+    setIsEquipmentModalVisible(true);
+  };
+
   const handleItemPress = async () => {
     if (device.isRegistered) {
-      Alert.alert('Medidor Registrado', 'Deseja reconfigurar o Wi-Fi?', [
+      Alert.alert('Medidor Registrado', 'O que você deseja fazer?', [
+        { text: 'Reconfigurar Wi-Fi', onPress: handleConnectAndOpenWifiModal },
+        // A NOVA OPÇÃO:
+        { text: 'Trocar Equipamento', onPress: handleChangeEquipment },
         { text: 'Cancelar', style: 'cancel' },
-        { text: 'Reconfigurar', onPress: handleConnectAndOpenWifiModal },
       ]);
       return;
     }
-    // Se for um item novo, inicia o fluxo
+    // Se for um item novo, o fluxo continua o mesmo
     handleConnectAndOpenWifiModal();
   };
 
@@ -160,6 +168,34 @@ const MeterButton: React.FC<MeterButtonProps> = ({
     );
   };
 
+  const handleUpdateEquipment = () => {
+    if (!selectedEquipmentId) {
+      Alert.alert('Atenção', 'Por favor, selecione o novo equipamento.');
+      return;
+    }
+
+    // Chama a nova função 'updateMeter' do hook
+    updateMeter(
+      {
+        meterId: device.originalId, // ID do medidor que estamos alterando
+        payload: { idEquipamento: selectedEquipmentId }, // Novo equipamento
+      },
+      {
+        onSuccess: () => {
+          Alert.alert(
+            'Sucesso!',
+            'O medidor foi associado ao novo equipamento.',
+          );
+          setIsEquipmentModalVisible(false);
+          onRegistrationSuccess?.(device.macAddress); // Chama o callback para atualizar a lista principal
+        },
+        onError: error => {
+          Alert.alert('Erro na Atualização', error.message);
+        },
+      },
+    );
+  };
+
   const closeModalAndDisconnect = () => {
     setIsWifiModalVisible(false);
     setIsEquipmentModalVisible(false);
@@ -170,7 +206,8 @@ const MeterButton: React.FC<MeterButtonProps> = ({
 
   // --- Lógica de UI ---
   const isButtonDisabled =
-    (isConnecting || isCreatingMeter) && !device.isRegistered;
+    (isConnecting || isCreatingMeter || isUpdatingMeter) &&
+    !device.isRegistered;
 
   let bluetoothStatusColor = ThemedColors.text || 'grey';
   let wifiStatusDisplayColor = ThemedColors.text || 'grey';
@@ -291,12 +328,17 @@ const MeterButton: React.FC<MeterButtonProps> = ({
             <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
               <View style={styles.modalView}>
                 <ThemedText style={styles.modalTitle}>
-                  Associar Medidor
+                  {device.isRegistered
+                    ? 'Trocar Equipamento'
+                    : 'Associar Medidor'}
                 </ThemedText>
+
                 <ThemedText style={styles.statusText}>
-                  Wi-Fi configurado! Agora, selecione a qual equipamento este
-                  medidor pertence.
+                  {device.isRegistered
+                    ? 'Selecione o novo equipamento ao qual este medidor será associado.'
+                    : 'Wi-Fi configurado! Agora, selecione a qual equipamento este medidor pertence.'}
                 </ThemedText>
+
                 {isLoadingEquipments ? (
                   <ActivityIndicator />
                 ) : (
@@ -319,8 +361,9 @@ const MeterButton: React.FC<MeterButtonProps> = ({
                     </Picker>
                   </View>
                 )}
+
                 <View>
-                  {isCreatingMeter ? (
+                  {isCreatingMeter || isUpdatingMeter ? (
                     <ActivityIndicator />
                   ) : (
                     <View style={styles.buttonContainer}>
@@ -328,6 +371,7 @@ const MeterButton: React.FC<MeterButtonProps> = ({
                         style={[styles.buttonBase, styles.cancelButton]}
                         onPress={closeModalAndDisconnect}
                         activeOpacity={0.7}
+                        disabled={isCreatingMeter || isUpdatingMeter}
                       >
                         <Text
                           style={[
@@ -338,10 +382,20 @@ const MeterButton: React.FC<MeterButtonProps> = ({
                           Cancelar
                         </Text>
                       </TouchableOpacity>
+
                       <View style={{ width: 10 }} />
+
                       <PrimaryButton
-                        title="Finalizar Registro"
-                        onPress={handleRegisterAndSave}
+                        title={
+                          device.isRegistered
+                            ? 'Salvar Alteração'
+                            : 'Finalizar Registro'
+                        }
+                        onPress={
+                          device.isRegistered
+                            ? handleUpdateEquipment
+                            : handleRegisterAndSave
+                        }
                         disabled={!selectedEquipmentId}
                       />
                     </View>
