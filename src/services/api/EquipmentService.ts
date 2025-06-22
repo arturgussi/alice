@@ -38,42 +38,56 @@ export const fetchEquipments = async (
 export const fetchEquipmentAnalytics = async (
   equipmentId: string,
   period: string,
+  startDate: Date,
+  endDate: Date,
 ): Promise<EquipmentAnalytics> => {
   console.log(
-    `[Service] Buscando dados FALSOS para ${equipmentId} no período ${period}`,
+    `[Service] Buscando dados REAIS para ${equipmentId} de ${startDate} a ${endDate}`,
   );
-  await new Promise(resolve => setTimeout(resolve, 500));
 
-  const labels =
-    period === '7d'
-      ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom']
-      : ['S1', 'S2', 'S3', 'S4'];
+  try {
+    // 1. Faz a chamada GET para o seu backend Node-RED
+    const response = await apiClient.get(`/medicao/${equipmentId}`, {
+      params: {
+        period, // ex: 'weeks'
+        startDate, // ex: '2025-06-16T03:00:00.000Z'
+        endDate, // ex: '2025-07-23T03:00:00.000Z'
+      },
+    });
 
-  // Cria os dados para as barras (consumo por intervalo)
-  const barData: DataPoint[] = labels.map(label => ({
-    label,
-    value: Math.random() * 20,
-  }));
+    // 2. A resposta da API já contém os kpis e o barData
+    const apiData = response.data;
 
-  // Cria os dados para a linha (consumo acumulado)
-  let accumulatedValue = 0;
-  const lineData: DataPoint[] = barData.map(item => {
-    accumulatedValue += item.value;
-    return { label: item.label, value: accumulatedValue };
-  });
+    // 3. A lógica para calcular a linha de consumo acumulado permanece no frontend.
+    //    Isso é eficiente e mantém o backend focado em entregar os dados brutos.
+    let accumulatedValue = 0;
+    const lineData: DataPoint[] = (apiData.chartData.barData || []).map(
+      (item: DataPoint) => {
+        accumulatedValue += item.value;
+        return { label: item.label, value: accumulatedValue };
+      },
+    );
 
-  return {
-    kpis: {
-      totalConsumption: accumulatedValue,
-      totalCost: accumulatedValue * 0.95, // Exemplo de cálculo de custo
-      avgDailyCost: (accumulatedValue * 0.95) / labels.length,
-      monthlyProjection: ((accumulatedValue * 0.95) / labels.length) * 30,
-    },
-    chartData: {
-      barData, // Array simples para as barras
-      lineData, // Array simples para a linha
-    },
-  };
+    // 4. Retorna o objeto final no formato que a tela espera
+    return {
+      kpis: apiData.kpis,
+      chartData: {
+        barData: apiData.chartData.barData,
+        lineData: lineData, // Adicionamos o lineData calculado
+      },
+    };
+  } catch (error: unknown) {
+    console.error(
+      '[Service] Erro ao buscar dados de análise do equipamento:',
+      error,
+    );
+    const errorMessage = extractApiErrorMessage(
+      error,
+      `Falha ao buscar medições do equipamento ${equipmentId}.`,
+    );
+
+    throw new Error(errorMessage);
+  }
 };
 
 export const fetchEquipmentById = async (

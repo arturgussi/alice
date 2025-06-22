@@ -1,6 +1,6 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -11,21 +11,18 @@ import {
   View,
 } from 'react-native';
 import { BarChart, lineDataItem } from 'react-native-gifted-charts';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import ThemedText from '@/components/texts/ThemedText';
 import { ThemedColors } from '@/constants/Theme.style';
-import { fetchEquipmentAnalytics } from '@/services/api/EquipmentService';
+import { useEquipmentDetail } from '@/hooks/useEquipmentDetail';
 import { EquipmentMeasureStackParamList } from '@/types/navigation/NavigationTypes';
 import {
   DateRangePeriod,
   formatCurrency,
   formatDate,
   formatNumber,
-  getDateRangeForPeriod,
 } from '@/Util';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { add, sub } from 'date-fns';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 // 1. Define o tipo para a prop 'navigation' específica desta tela
 type EquipmentDetailListNavigationProp = NativeStackNavigationProp<
@@ -67,72 +64,35 @@ const LANDSCAPE_CHART_HEIGHT_RATIO = 0.75;
 
 export const EquipmentMeasurementDetailScreen: React.FC<
   EquipmentDetailListScreenProps
-> = ({ navigation, route }) => {
+> = ({ route }) => {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const { equipmentId, equipmentName } = route.params;
 
-  const [period, setPeriod] = useState<DateRangePeriod>('weeks');
+  const {
+    isLoading,
+    isError,
+    error,
+    kpis,
+    barData,
+    consumoAcumulado,
+    yAxisMaxValue,
+    period,
+    setPeriod,
+    startDate,
+    endDate,
+    handleNavigatePeriod,
+  } = useEquipmentDetail(equipmentId);
+
   const periods: periodsProps[] = [
     { key: 'days', label: 'Dia' },
     { key: 'weeks', label: 'Semana' },
     { key: 'months', label: 'Mês' },
     { key: 'years', label: 'Ano' },
   ];
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  const { startDate, endDate } = useMemo(() => {
-    return getDateRangeForPeriod(period, currentDate);
-  }, [period, currentDate]);
-
-  const handleNavigatePeriod = (direction: 'previous' | 'next') => {
-    // Mapeia o período para a duração que a date-fns espera
-    const duration = { [period]: 1 }; // Ex: se period='semana', vira { weeks: 1 }
-    console.log(duration);
-    console.log(add(currentDate, duration));
-    console.log(sub(currentDate, duration));
-    // 'add' e 'sub' são funções da date-fns
-    const newDate =
-      direction === 'next'
-        ? add(currentDate, duration)
-        : sub(currentDate, duration);
-    console.log(newDate);
-    setCurrentDate(newDate);
-  };
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['equipmentAnalytics', equipmentId, period],
-    queryFn: () => fetchEquipmentAnalytics(equipmentId, period),
-  });
-
-  // // Define o título do header dinamicamente com o nome do equipamento
-  // useEffect(() => {
-  //   if (equipmentName) {
-  //     navigation.setOptions({ title: equipmentName });
-  //   }
-  // }, [equipmentName, navigation]);
-
-  // --- Lógica de Preparação do Gráfico ---
-  const barData =
-    data?.chartData.barData.map(item => ({
-      ...item,
-      frontColor: ThemedColors.purple,
-    })) || [];
-
   // --- Fim da Preparação do Gráfico ---
 
   const numItens = barData.length;
-
-  let acumulado = 0;
-  const consumoAcumulado = barData.map(item => {
-    acumulado += item.value;
-    return { value: acumulado, label: item.label };
-  });
-
-  const maxBarValue = Math.max(0, ...barData.map(d => d.value));
-  const maxLineValue = Math.max(0, ...consumoAcumulado.map(d => d.value));
-  const yAxisMaxValue =
-    Math.ceil(Math.max(maxBarValue, maxLineValue) * 1.1) + 1;
 
   const chartCardWidth = windowWidth - 30;
   // Largura do conteúdo do gráfico (descontando paddings do chartContainer)
@@ -173,9 +133,7 @@ export const EquipmentMeasurementDetailScreen: React.FC<
       contentContainerStyle={styles.scrollViewContentContainer}
     >
       <View style={{ marginBottom: 20 }}>
-        <ThemedText style={styles.pageTitle}>
-          {equipmentName}
-        </ThemedText>
+        <ThemedText style={styles.pageTitle}>{equipmentName}</ThemedText>
         <ThemedText style={{ textAlign: 'center' }}>
           Análise de Consumo
         </ThemedText>
@@ -252,17 +210,17 @@ export const EquipmentMeasurementDetailScreen: React.FC<
         <Text style={styles.errorText}>
           Erro ao carregar dados: {error?.message}
         </Text>
-      ) : data ? ( // Se tiver dados, mostra os KPIs e o Gráfico
+      ) : kpis && barData && barData.length > 0 ? ( // Se tiver dados, mostra os KPIs e o Gráfico
         <>
           {/* Cards de KPIs */}
           <View style={styles.kpiContainer}>
             <KpiCard
               label="Gasto no Período"
-              value={formatCurrency(data.kpis.totalCost)}
+              value={formatCurrency(kpis.totalCost)}
             />
             <KpiCard
               label="Consumo no Período"
-              value={`${formatNumber(data.kpis.totalConsumption, { maximumFractionDigits: 1 })} kWh`}
+              value={`${formatNumber(kpis.totalConsumption, { maximumFractionDigits: 1 })} kWh`}
             />
           </View>
 
@@ -279,7 +237,7 @@ export const EquipmentMeasurementDetailScreen: React.FC<
             <Text style={styles.chartTitle}>Consumo por Período (kWh)</Text>
             <BarChart
               height={barChartInnerContentHeight} // Altura explícita para o conteúdo do gráfico
-              width={chartContentWidth}
+              // width={chartContentWidth}
               data={barData}
               barWidth={barWidthValue}
               initialSpacing={15}
@@ -300,8 +258,12 @@ export const EquipmentMeasurementDetailScreen: React.FC<
               xAxisColor={ThemedColors.placeholder}
               xAxisLabelTextStyle={{
                 color: ThemedColors.text_primary,
-                fontSize: 10,
-                textAlign: 'center',
+                fontSize: 8,
+                transform: [
+                  { rotate: '-45deg' },
+                  { translateX: -6 },
+                  { translateY: 6 },
+                ],
               }}
               showLine
               lineData={consumoAcumulado}
