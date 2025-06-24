@@ -18,7 +18,8 @@
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier --write src/",
     "format": "npm run prettier && npm run lint:fix",
-    "test": "jest"
+    "test": "jest",
+    "install": "npx react-native build-android --mode=release"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.24.0",
